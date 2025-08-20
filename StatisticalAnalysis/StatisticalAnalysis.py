@@ -7,6 +7,7 @@ with app.setup:
     # Import auxiliar libraries
     import marimo as mo
 
+
     # Importing libraries
     import pandas as pd
     import numpy as np
@@ -16,6 +17,10 @@ with app.setup:
 
     import statsmodels.api as sm
     import statsmodels.formula.api as smf
+
+
+    # Importing Functions and Utils
+    import SourceStatisticalAnalysis as src
 
 
 @app.cell
@@ -105,10 +110,42 @@ def _(SleepDataset_Raw):
 
 
 @app.cell
+def _():
+    mo.md(r"## 2. Data Transformation")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"The missing values of `Sleep Disorder` are imputed and the values of `Blood Pressure` are splited into systolic and diastolic values.")
+    return
+
+
+@app.cell
 def _(SleepDataset_Raw):
     SleepDataset = SleepDataset_Raw.copy()
 
+    # Filling missing values
+
     SleepDataset['Sleep Disorder'] = SleepDataset['Sleep Disorder'].fillna('No')
+
+    # Splitting blood pressure into systolic and diastolic
+
+    SleepDataset[['Blood Pressure Systolic','Blood Pressure Diastolic']] = [*SleepDataset['Blood Pressure'].apply(src.SplitBloodPressure)]
+    SleepDataset.drop(columns=['Blood Pressure'],inplace=True)
+    return (SleepDataset,)
+
+
+@app.cell
+def _(SleepDataset):
+    mo.vstack(
+        [
+            mo.md("**Example of Instances After Transformations**"),
+            SleepDataset,
+
+        ], 
+        align = 'center',
+    )
     return
 
 
