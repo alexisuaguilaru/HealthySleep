@@ -149,5 +149,83 @@ def _(SleepDataset):
     return
 
 
+@app.cell
+def _():
+    mo.md(r"## 3. Univariate Analysis")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"")
+    return
+
+
+@app.cell
+def _(SleepDataset):
+    # Splitting features into numerical and categorial features
+
+    NumericalFeatures , CategoricalFeatures = src.SplitFeatures(SleepDataset)
+    return CategoricalFeatures, NumericalFeatures
+
+
+@app.cell
+def _():
+    KindPlot = mo.ui.dropdown(
+        {'Violin':sns.violinplot,'Box':sns.boxplot,'Histogram':sns.histplot},
+        value = 'Violin',
+        label = 'Choose a Kind of Plot: ',
+    )
+    return (KindPlot,)
+
+
+@app.cell
+def _(KindPlot, NumericalFeatures, SleepDataset):
+    _fig , _axes = plt.subplots(
+        3,3,
+        figsize = (12,12),
+    )
+
+    for _ax , _feature in zip(_axes.ravel(),NumericalFeatures):
+        KindPlot.value(
+            SleepDataset,
+            x = _feature,
+            ax = _ax,
+        )
+        _ax.set_xlabel('')
+        _ax.set_title(_feature)
+
+    mo.vstack([KindPlot,_fig])
+    return
+
+
+@app.cell
+def _(CategoricalFeatures, SleepDataset):
+    _fig , _axes = plt.subplots(
+        2,2,
+        figsize = (9,9),
+        layout = 'constrained',
+        gridspec_kw={'wspace':0.1,'hspace':0.1}
+    )
+
+    for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
+        sns.countplot(
+            SleepDataset,
+            x = _feature,
+            ax = _ax,
+        )
+        _xtick_labels = _ax.get_xticklabels()
+        _ax.set_xticks(
+            range(len(_xtick_labels)),
+            labels=_xtick_labels,
+            rotation=90,
+        )
+        _ax.set_xlabel('')
+        _ax.set_title(_feature)
+
+    _fig
+    return
+
+
 if __name__ == "__main__":
     app.run()
