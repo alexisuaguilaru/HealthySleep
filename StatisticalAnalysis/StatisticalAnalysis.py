@@ -51,7 +51,7 @@ def _():
         * `Daily Steps`
         * `Sleep Disorder`
     
-        There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed.
+        There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed. `Quality of Sleep` is the feature to predict (target) and study in this analysis.
         """
     )
     return
@@ -159,12 +159,6 @@ def _():
 
 
 @app.cell
-def _():
-    mo.md(r"")
-    return
-
-
-@app.cell
 def _(SleepDataset):
     # Splitting features into numerical and categorical features
 
@@ -225,6 +219,7 @@ def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
             SleepDataset,
             x = _feature,
             ax = _ax,
+            color = src.BaseColor,
         )
         _ax.set_xlabel('')
         _ax.set_title(_feature,size=16)
@@ -313,6 +308,7 @@ def _(CategoricalFeatures, SleepDataset):
             SleepDataset,
             x = _feature,
             ax = _ax,
+            color = src.BaseColor,
         )
         _xtick_labels = _ax.get_xticklabels()
         _ax.set_xticks(
@@ -346,6 +342,51 @@ def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
             pd.DataFrame(_DataChi2Results,columns=['Categorical Feature 1','Categorical Feature 2','P-Value']),
         ]
     )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"## 4. Regression Analysis")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (as stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.")
+    return
+
+
+@app.cell
+def _(NumericalFeatures):
+    # Splitting numerical features into regressors and target variables
+
+    TargetVariable = NumericalFeatures[2]
+    RegressorVariables = NumericalFeatures[:2] + NumericalFeatures[3:]
+    return RegressorVariables, TargetVariable
+
+
+@app.cell
+def _(RegressorVariables, SleepDataset, TargetVariable):
+    _fig , _axes = plt.subplots(
+        figsize = (12,9)
+    )
+
+    _CorrelationValue = SleepDataset[RegressorVariables+[TargetVariable]].corr()
+    _MaskValues = np.abs(_CorrelationValue) >= 0.2
+    sns.heatmap(
+        _CorrelationValue[_MaskValues],
+        vmin = -1,
+        vmax = 1,
+        annot = True,
+        annot_kws = {'size':14},
+        ax = _axes,
+        cmap = src.ColorMapContrast, 
+    )
+    _axes.set_title('Correlation Matrix of Numerical Features',size=24)
+    _axes.tick_params(axis='both',labelsize=16)
+
+    _fig
     return
 
 
