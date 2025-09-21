@@ -6,6 +6,7 @@ app = marimo.App(width="medium")
 with app.setup:
     # Import auxiliar libraries
     import marimo as mo
+    from itertools import combinations
 
 
     # Importing libraries
@@ -181,7 +182,7 @@ def _():
 def _():
     mo.md(
         r"""
-        None of the features are normal, so some of the techniques that will be used will yield insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be insignificant.
+        None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be insignificant.
     
         After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
         """
@@ -277,7 +278,24 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"")
+    mo.md(
+        r"""
+        Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders.
+    
+        After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant.
+        """
+    )
+    return
+
+
+@app.cell
+def _(CategoricalFeatures, SleepDataset):
+    mo.vstack(
+        [
+            mo.md("**Statistics of Categorical Features**"),
+            SleepDataset[CategoricalFeatures].describe().iloc[1:],
+        ], 
+    )
     return
 
 
@@ -310,6 +328,24 @@ def _(CategoricalFeatures, SleepDataset):
     _fig.suptitle('Distribution of Categorical Features',size=24)
 
     _fig
+    return
+
+
+@app.cell
+def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
+    _DataChi2Results = []
+    for _categorical_feature_1 , _categorical_feature_2 in combinations(CategoricalFeatures,2):
+        _chi2_result = stats.chi2_contingency(
+            SleepDataset.pivot_table(NumericalFeatures[0],_categorical_feature_1,_categorical_feature_2,'count',fill_value=0)
+        )
+        _DataChi2Results.append((_categorical_feature_1,_categorical_feature_2,_chi2_result.pvalue))
+
+    mo.vstack(
+        [
+            mo.md("**P-Values of Chi-Square Tests for the Independence between Features**"),
+            pd.DataFrame(_DataChi2Results,columns=['Categorical Feature 1','Categorical Feature 2','P-Value']),
+        ]
+    )
     return
 
 
