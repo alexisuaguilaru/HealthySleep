@@ -38,20 +38,31 @@ def _():
         r"""
         The dataset contains `374` instances, with `12` attributes which describe the sleep health of a patient. These columns are:
     
-        * `Gender`
-        * `Age`
-        * `Occupation`
-        * `Sleep Duration`
-        * `Quality of Sleep`
-        * `Physical Activity Level`
-        * `Stress Level`
-        * `BMI Category`
-        * `Blood Pressure`
-        * `Heart Rate`
-        * `Daily Steps`
-        * `Sleep Disorder`
+        * `Gender`: Nominal variable with Male and Female values 
     
-        There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed. `Quality of Sleep` is the feature to predict (target) and study in this analysis.
+        * `Age`: Discrete variable with range of values from 27 to 59 years
+    
+        * `Occupation`: Nominal variable with Software Engineer, Doctor, Sales Representative, Teacher, Nurse, Engineer, Accountant, Scientist, Lawyer, Salesperson and Manager values
+    
+        * `Sleep Duration`: Continuous variable with range of values from 5.8 to 8.5 hours
+    
+        * `Quality of Sleep`: Discrete variable with range of values from 4 to 9
+    
+        * `Physical Activity Level`: Discrete variable with range of values from 30 to 90
+    
+        * `Stress Level`: Discrete variable with range of values from 3 to 8
+    
+        * `BMI Category`: Ordinal variable with Normal, Normal Weight, Overweight and Obese values
+    
+        * `Blood Pressure`: Ordinal variable for pressure measure as Systolic/Diastolic form
+    
+        * `Heart Rate`: Discrete variable with range of values from 65 to 86 BPM
+    
+        * `Daily Steps`: Discrete variable with range of values from 3000 to 10000 steps
+    
+        * `Sleep Disorder`: Nominal variable with Sleep Apnea and Insomnia values
+    
+        There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed. There is a duplicate category in `BMI Category` (Normal and Normal Weight) which will be removed. `Quality of Sleep` is the feature to predict (target) and study in this analysis.
         """
     )
     return
@@ -120,7 +131,7 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"The missing values of `Sleep Disorder` are imputed with `No` and the values of `Blood Pressure` are splited into systolic and diastolic values.")
+    mo.md(r"The missing values of `Sleep Disorder` are imputed with `No`, the values of `Blood Pressure` are splitted into systolic and diastolic values, and the values with `Normal Weight` in `BMI Category` are transformed to `Normal`.")
     return
 
 
@@ -136,6 +147,11 @@ def _(SleepDataset_Raw):
 
     SleepDataset[['Blood Pressure Systolic','Blood Pressure Diastolic']] = [*SleepDataset['Blood Pressure'].apply(src.SplitBloodPressure)]
     SleepDataset.drop(columns=['Blood Pressure'],inplace=True)
+
+    # Remove duplicate category in BMI Category
+
+    _IndexBMINormalWeight = SleepDataset.query("`BMI Category` == 'Normal Weight'").index
+    SleepDataset.loc[_IndexBMINormalWeight,'BMI Category'] = 'Normal'
     return (SleepDataset,)
 
 
