@@ -228,6 +228,7 @@ def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
         figsize = (12,12),
         layout = 'constrained',
         gridspec_kw={'wspace':0.1,'hspace':0.1},
+        subplot_kw = {'frame_on':False},
     )
 
     for _ax , _feature in zip(_axes.ravel(),NumericalFeatures):
@@ -317,6 +318,7 @@ def _(CategoricalFeatures, SleepDataset):
         figsize = (9,9),
         layout = 'constrained',
         gridspec_kw={'wspace':0.1,'hspace':0.1},
+        subplot_kw = {'frame_on':False},
     )
 
     for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
@@ -363,13 +365,13 @@ def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
 
 @app.cell
 def _():
-    mo.md(r"## 4. Regression Analysis")
+    mo.md(r"## 4. Multivariate Exploratory")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (as stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.")
+    mo.md(r"## 5. Regression Analysis")
     return
 
 
@@ -380,6 +382,18 @@ def _(NumericalFeatures):
     TargetVariable = NumericalFeatures[2]
     RegressorVariables = NumericalFeatures[:2] + NumericalFeatures[3:]
     return RegressorVariables, TargetVariable
+
+
+@app.cell
+def _():
+    mo.md(r"### 5.1. Correlation Matrix")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (as stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.")
+    return
 
 
 @app.cell
@@ -403,6 +417,64 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
     _axes.tick_params(axis='both',labelsize=16)
 
     _fig
+    return
+
+
+@app.cell
+def _():
+    # _fig , _axes = plt.subplots(
+    #     2,2,
+    #     figsize = (9,9),
+    #     layout = 'constrained',
+    #     gridspec_kw={'wspace':0.1,'hspace':0.1},
+    #     subplot_kw = {'frame_on':False},
+    # )
+
+    # for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
+    #     sns.boxplot(
+    #         SleepDataset,
+    #         x = _feature,
+    #         y = TargetVariable,
+    #         ax = _ax,
+    #         color = src.BaseColor,
+    #     )
+    #     _xtick_labels = _ax.get_xticklabels()
+    #     _ax.set_xticks(
+    #         range(len(_xtick_labels)),
+    #         labels=_xtick_labels,
+    #         rotation=90,
+    #     )
+    #     _ax.set_xlabel('')
+    #     _ax.set_title(_feature,size=16)
+    #     _ax.tick_params(axis='both',labelsize=12)
+    #     _ax.set_ylabel(_ax.get_ylabel(),size=14)
+
+    # _fig.suptitle('Distribution of Categorical Features',size=24)
+
+    # _fig
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"### 5.2. Full Linear Mode")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"Using a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of quality of sleep of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model.")
+    return
+
+
+@app.cell
+def _(NumericalFeatures, RegressorVariables, SleepDataset, TargetVariable):
+    LinearModel = smf.ols(
+        f"Q('{TargetVariable}') ~ " + ' + '.join([f"Q('{regressor_variable}')" for regressor_variable in RegressorVariables]),
+        SleepDataset[NumericalFeatures],
+    ).fit()
+
+    print(LinearModel.summary())
     return
 
 
