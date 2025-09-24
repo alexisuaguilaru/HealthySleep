@@ -20,10 +20,19 @@ with app.setup:
     import statsmodels.formula.api as smf
 
     from scipy import stats
+    from sklearn.decomposition import PCA
 
 
     # Importing Functions and Utils
     import SourceStatisticalAnalysis as src
+
+
+@app.cell
+def _():
+    # Setting constants
+
+    RANDOM_STATE = 8013
+    return (RANDOM_STATE,)
 
 
 @app.cell
@@ -366,6 +375,152 @@ def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
 @app.cell
 def _():
     mo.md(r"## 4. Multivariate Exploratory")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"### 4.1. Bivariate Analysis")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"")
+    return
+
+
+@app.cell
+def _(CategoricalFeatures, NumericalFeatures):
+    # Creating selectors of numerical and categorical features for 
+    # box plots of numerical values using categorical values 
+
+    NumericalFeatureOptions_NumCat = mo.ui.dropdown(
+        NumericalFeatures,
+        value = NumericalFeatures[0],
+        label = 'Select a Numerical Feature',
+    )
+
+    CategoricalFeatureOptions_NumCat = mo.ui.dropdown(
+        CategoricalFeatures,
+        value = CategoricalFeatures[0],
+        label = 'Select a Categorical Feature',
+    )
+    return CategoricalFeatureOptions_NumCat, NumericalFeatureOptions_NumCat
+
+
+@app.cell
+def _(
+    CategoricalFeatureOptions_NumCat,
+    NumericalFeatureOptions_NumCat,
+    SleepDataset,
+):
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+
+    _categorical_feature = CategoricalFeatureOptions_NumCat.value
+    _numerical_feature = NumericalFeatureOptions_NumCat.value
+
+    _OrderCriteria = SleepDataset.groupby(
+        _categorical_feature
+    )[_numerical_feature].mean().sort_values().index
+
+    sns.boxplot(
+        SleepDataset,
+        x = _numerical_feature,
+        y = _categorical_feature,
+        ax = _axes,
+        legend = False,
+        color = src.BaseColor,
+        order = _OrderCriteria,
+    )
+
+    _axes.set_title(
+        f"{_numerical_feature} vs {_categorical_feature}",
+        size = 14,
+    )
+
+    mo.vstack(
+        [
+            mo.hstack([NumericalFeatureOptions_NumCat,CategoricalFeatureOptions_NumCat]),
+            _fig,
+        ]
+    )
+    return
+
+
+@app.cell
+def _(NumericalFeatures):
+    # Creating selectors of numerical features for regression
+    # plots of numerical values
+
+    NumericalFeatureOptions_1_NumNum = mo.ui.dropdown(
+        NumericalFeatures,
+        value = NumericalFeatures[0],
+        label = 'Select a Numerical Feature',
+    )
+
+    NumericalFeatureOptions_2_NumNum = mo.ui.dropdown(
+        NumericalFeatures,
+        value = NumericalFeatures[0],
+        label = 'Select a Numerical Feature',
+    )
+    return NumericalFeatureOptions_1_NumNum, NumericalFeatureOptions_2_NumNum
+
+
+@app.cell
+def _(
+    NumericalFeatureOptions_1_NumNum,
+    NumericalFeatureOptions_2_NumNum,
+    SleepDataset,
+):
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+
+    _numerical_feature_1 = NumericalFeatureOptions_1_NumNum.value
+    _numerical_feature_2 = NumericalFeatureOptions_2_NumNum.value
+
+    sns.regplot(
+        SleepDataset,
+        x = _numerical_feature_1,
+        y = _numerical_feature_2,
+        ax = _axes,
+        color = src.BaseColor,
+        ci = None,
+    )
+
+    _axes.set_title(
+        f"{_numerical_feature_1} vs {_numerical_feature_2}",
+        size = 14,
+    )
+
+    mo.vstack(
+        [
+            mo.hstack([NumericalFeatureOptions_1_NumNum,NumericalFeatureOptions_2_NumNum]),
+            _fig,
+        ]
+    )
+    return
+
+
+@app.cell
+def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
+    _DimensionalReduction = PCA(
+        whiten = True,
+        random_state = RANDOM_STATE,
+    )
+    _NumericalDatasetReduction = _DimensionalReduction.fit_transform(
+        SleepDataset[NumericalFeatures]
+    )
+    # print(_DimensionalReduction.explained_variance_ratio_)
+    # print(_DimensionalReduction.components_[1])
+
+    # sns.scatterplot(
+        # x = _NumericalDatasetReduction[:,0],
+        # y = _NumericalDatasetReduction[:,1],
+    # )
     return
 
 
