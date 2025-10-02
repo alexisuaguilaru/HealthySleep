@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.16.0"
+__generated_with = "0.16.4"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -386,7 +386,7 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"")
+    mo.md(r"The `Quality of Sleep` and `Sleep Duration` are influenced by `Occupation`, `BMI Category` and `Sleep Disorder`this is because this features are associated to the style of life, habits, health and physical condition. Both group of features interact with each other, which leads to see that if someone has good habits and health, he/she will tend to have a better sleep and recovery.")
     return
 
 
@@ -407,6 +407,12 @@ def _(CategoricalFeatures, NumericalFeatures):
         label = 'Select a Categorical Feature',
     )
     return CategoricalFeatureOptions_NumCat, NumericalFeatureOptions_NumCat
+
+
+@app.cell
+def _():
+    mo.md(r"And there is a positive correlation between `Quality of Sleep` and `Sleep Duration`, so their relation could be explain with a unique factor or as a consequence of something else. Therefore the `Quality of Sleep` could be modeled and analyzed using the most relevant factors, features and information without losing context and information about a patient.")
+    return
 
 
 @app.cell
@@ -612,7 +618,7 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"### 5.2. Full Linear Mode")
+    mo.md(r"### 5.2. Full Linear Model")
     return
 
 
