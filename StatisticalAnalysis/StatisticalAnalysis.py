@@ -20,8 +20,12 @@ with app.setup:
     import statsmodels.formula.api as smf
 
     from scipy import stats
+
     from sklearn.decomposition import PCA
     from sklearn.linear_model import LinearRegression
+    from sklearn.preprocessing import StandardScaler
+    from sklearn.pipeline import Pipeline
+
     from mlxtend.feature_selection  import SequentialFeatureSelector
 
 
@@ -529,6 +533,108 @@ def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
         # x = _NumericalDatasetReduction[:,0],
         # y = _NumericalDatasetReduction[:,1],
     # )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"### 4.2. Principal Component Analysis")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"")
+    return
+
+
+@app.cell
+def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
+    _PipelinePCA = Pipeline(
+        [
+            ('Standardization',StandardScaler()),
+            ('PrincipalComponents',PCA(random_state=RANDOM_STATE))
+        ]
+    )
+    SleepDatasetReducedPCA = _PipelinePCA.fit_transform(SleepDataset[NumericalFeatures])
+
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+
+    sns.lineplot(
+        x = np.arange(1,len(NumericalFeatures)+1),
+        y = _PipelinePCA['PrincipalComponents'].singular_values_,
+    
+        color = src.BaseColor,
+        linestyle = '--',
+        linewidth = 1.5,
+        marker = 'o',
+        markersize = 6,
+
+        ax = _axes,
+    )
+    _axes.set_xlabel('Principal Components',size=12)
+    _axes.set_ylabel('Eigenvalues',size=12)
+    _axes.set_title('Scree Plot for Selection of\nNumber of Principal Components',size=14)
+    _axes.tick_params(axis='both',labelsize=10)
+
+    _fig
+    return (SleepDatasetReducedPCA,)
+
+
+@app.cell
+def _(CategoricalFeatures):
+    CategoricalFeatureOptions_PCA = mo.ui.dropdown(
+        CategoricalFeatures,
+        value = CategoricalFeatures[0],
+        label = 'Select a Categorical Feature',
+    )
+    return (CategoricalFeatureOptions_PCA,)
+
+
+@app.cell
+def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
+    _fig , _axes = plt.subplot_mosaic(
+        '1122\n.33.',
+        subplot_kw = {'frame_on':False},
+        layout = 'constrained',
+        figsize = (7,5),
+    )
+
+    _CategoricalFeature = CategoricalFeatureOptions_PCA.value
+    _LenCategories = len(SleepDataset[_CategoricalFeature].unique())
+    _legend_handles = None
+    for (_pc_x , _pc_y) , _index_ax in zip(combinations(range(3),2),range(1,4)):
+        _ax = _axes[str(_index_ax)]
+        sns.scatterplot(
+            x = SleepDatasetReducedPCA[:,_pc_x],
+            y = SleepDatasetReducedPCA[:,_pc_y],
+            hue = SleepDataset[_CategoricalFeature],
+
+            palette = src.BasePalette(n_colors=_LenCategories),
+            ax = _ax,
+        )
+
+        _ax.set_xlabel(f'PC {_pc_x+1}',size=9)
+        _ax.set_ylabel(f'PC {_pc_y+1}',size=9)
+        _ax.tick_params(axis='both',labelsize=8)
+
+        _legend_handles = _ax.get_legend_handles_labels()
+        _ax.legend_ = None
+
+    _fig.legend(
+        *_legend_handles,
+        title = _CategoricalFeature,
+        loc = 'lower right'
+    )
+
+    mo.vstack(
+        [
+            CategoricalFeatureOptions_PCA,
+            _fig
+        ]
+    )
     return
 
 
