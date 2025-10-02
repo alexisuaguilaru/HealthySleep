@@ -21,6 +21,8 @@ with app.setup:
 
     from scipy import stats
     from sklearn.decomposition import PCA
+    from sklearn.linear_model import LinearRegression
+    from mlxtend.feature_selection  import SequentialFeatureSelector
 
 
     # Importing Functions and Utils
@@ -636,6 +638,56 @@ def _(NumericalFeatures, RegressorVariables, SleepDataset, TargetVariable):
     ).fit()
 
     print(LinearModel.summary())
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"### 5.3. Best Linear Model")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit. Therefore this model is better than the full model.")
+    return
+
+
+@app.cell
+def _(RegressorVariables, SleepDataset, TargetVariable):
+    _LinearModel = LinearRegression()
+    _StepwiseAlgorithm = SequentialFeatureSelector(
+        _LinearModel,
+        k_features = 'best',
+        floating = True,
+        scoring = src.AkaikeInformationCriterionScore,
+        cv = 2,
+        n_jobs = -1,
+        pre_dispatch = 'all',
+    )
+
+    _StepwiseAlgorithm.fit(
+        SleepDataset[RegressorVariables],
+        SleepDataset[TargetVariable]
+    )
+
+    BestSubsetRegressionFeatures = [RegressorVariables[_index] for _index in _StepwiseAlgorithm.k_feature_idx_]
+    return (BestSubsetRegressionFeatures,)
+
+
+@app.cell
+def _(
+    BestSubsetRegressionFeatures,
+    NumericalFeatures,
+    SleepDataset,
+    TargetVariable,
+):
+    BestLinearModel = smf.ols(
+        f"Q('{TargetVariable}') ~ " + ' + '.join([f"Q('{regressor_variable}')" for regressor_variable in BestSubsetRegressionFeatures]),
+        SleepDataset[NumericalFeatures],
+    ).fit()
+
+    print(BestLinearModel.summary())
     return
 
 
