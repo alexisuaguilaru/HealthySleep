@@ -35,6 +35,12 @@ with app.setup:
 
 @app.cell
 def _():
+    mo.md(r"##")
+    return
+
+
+@app.cell
+def _():
     # Setting constants
 
     RANDOM_STATE = 8013
@@ -550,13 +556,13 @@ def _():
 
 @app.cell
 def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
-    _PipelinePCA = Pipeline(
+    PipelinePCA = Pipeline(
         [
             ('Standardization',StandardScaler()),
             ('PrincipalComponents',PCA(random_state=RANDOM_STATE))
         ]
     )
-    SleepDatasetReducedPCA = _PipelinePCA.fit_transform(SleepDataset[NumericalFeatures])
+    SleepDatasetReducedPCA = PipelinePCA.fit_transform(SleepDataset[NumericalFeatures])
 
     _fig , _axes = plt.subplots(
         subplot_kw = {'frame_on':False},
@@ -564,8 +570,8 @@ def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
 
     sns.lineplot(
         x = np.arange(1,len(NumericalFeatures)+1),
-        y = _PipelinePCA['PrincipalComponents'].singular_values_,
-    
+        y = PipelinePCA['PrincipalComponents'].singular_values_,
+
         color = src.BaseColor,
         linestyle = '--',
         linewidth = 1.5,
@@ -580,17 +586,39 @@ def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
     _axes.tick_params(axis='both',labelsize=10)
 
     _fig
-    return (SleepDatasetReducedPCA,)
+    return PipelinePCA, SleepDatasetReducedPCA
 
 
 @app.cell
-def _(CategoricalFeatures):
+def _(NumericalFeatures, PipelinePCA):
+    _DataFrameLoadings = pd.DataFrame(
+        PipelinePCA['PrincipalComponents'].components_[:3].T,
+        columns = [f'PC {_IndexPC}' for _IndexPC in range(1,4)],
+        index = NumericalFeatures,
+    ).rename_axis('Features')
+
+    mo.vstack(
+        [
+            mo.md('**Loadings of Each Principal Component**'),
+            _DataFrameLoadings,
+        ]
+    )
+    return
+
+
+@app.cell
+def _(CategoricalFeatures, NumericalFeatures):
     CategoricalFeatureOptions_PCA = mo.ui.dropdown(
         CategoricalFeatures,
         value = CategoricalFeatures[0],
         label = 'Select a Categorical Feature',
     )
-    return (CategoricalFeatureOptions_PCA,)
+    NumericalFeatureOptions_PCA = mo.ui.dropdown(
+        NumericalFeatures,
+        value = NumericalFeatures[0],
+        label = 'Select a Numerical Feature',
+    )
+    return CategoricalFeatureOptions_PCA, NumericalFeatureOptions_PCA
 
 
 @app.cell
@@ -623,6 +651,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         _legend_handles = _ax.get_legend_handles_labels()
         _ax.legend_ = None
 
+    _fig.suptitle('PCA by Categorical Values',size=12)
     _fig.legend(
         *_legend_handles,
         title = _CategoricalFeature,
@@ -632,6 +661,50 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
     mo.vstack(
         [
             CategoricalFeatureOptions_PCA,
+            _fig
+        ]
+    )
+    return
+
+
+@app.cell
+def _(NumericalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
+    _fig , _axes = plt.subplot_mosaic(
+        '1122\n.33.',
+        subplot_kw = {'frame_on':False},
+        layout = 'constrained',
+        figsize = (7,5),
+    )
+
+    _NumericalFeature = NumericalFeatureOptions_PCA.value
+    _legend_handles = None
+    for (_pc_x , _pc_y) , _index_ax in zip(combinations(range(3),2),range(1,4)):
+        _ax = _axes[str(_index_ax)]
+        sns.scatterplot(
+            x = SleepDatasetReducedPCA[:,_pc_x],
+            y = SleepDatasetReducedPCA[:,_pc_y],
+            size = SleepDataset[_NumericalFeature],
+
+            color = src.BaseColor,
+            ax = _ax,
+        )
+
+        _ax.set_xlabel(f'PC {_pc_x+1}',size=9)
+        _ax.set_ylabel(f'PC {_pc_y+1}',size=9)
+        _ax.tick_params(axis='both',labelsize=8)
+
+        _legend_handles = _ax.get_legend_handles_labels()
+        _ax.legend_ = None
+
+    _fig.suptitle('PCA by Numerical Values',size=12)
+    _fig.legend(
+        *_legend_handles,
+        loc = 'lower right',
+        title = _NumericalFeature,
+    )
+    mo.vstack(
+        [
+            NumericalFeatureOptions_PCA,
             _fig
         ]
     )
