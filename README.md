@@ -18,6 +18,23 @@ Furthermore,  `Quality of Sleep` and `Sleep Duration` are also influenced by `Oc
 Performing a Principal Component Analysis (PCA) on the numerical features allows visualizing the patients based on their sleep quality (PC 1), general health (PC 2) and physical condition (PC 3). And it can also be seen the interaction with the categorical features where `Sleep Disorder` follows a slight pattern, this means that a healthy life tends to have less sleep disorders.
 ![PCA with Sleep Disorder](./Resources/PCAPlot_SleepDisorder.jpg)
 
+## Installation and Usage
+1. First it has to clone the repository and move to the project directory:
+```bash
+git clone https://github.com/alexisuaguilaru/HealthySleep.git
+cd HealthySleep
+```
+
+2. Preferably using a virtual environment of Python, install the libraries required for the project with:
+```bash 
+pip install -r requirements.txt
+```
+
+3. Finally, run and view the Marimo notebook with the following command:
+```bash
+marimo run StatisticalAnalysis/StatisticalAnalysis.py
+```
+
 ## Author, Affiliation and Contact
 Alexis Aguilar [Student of Bachelor's Degree in "Tecnologías para la Información en Ciencias" at Universidad Nacional Autónoma de México [UNAM](https://www.unam.mx/)]: alexis.uaguilaru@gmail.com
 
