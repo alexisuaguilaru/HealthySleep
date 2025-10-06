@@ -550,7 +550,14 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"")
+    mo.md(
+        r"""
+        Using elbow method on the eigenvalues, the best selection for the number of principal component is three that explain the $87.14\%$ of the variance in the dataset. Which comes from:
+        * Sleep quality (PC 1): Its positives loadings are concentrated on how well and long you sleep and its negatives on your stress levels
+        * General health (PC 2): Its positives loadings explain an increase in blood pressure (hypertension or another condition) and in old age, as well as an increase in exercise to counteract the damage associated with old age
+        * Physical condition (PC 3): Its positives loadings are related to how much physical activities and exercise you do and its negatives loadings to the medical condition of your body
+        """
+    )
     return
 
 
@@ -602,6 +609,18 @@ def _(NumericalFeatures, PipelinePCA):
             mo.md('**Loadings of Each Principal Component**'),
             _DataFrameLoadings,
         ]
+    )
+    return
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        There is not a clearly separation or grouping between instances, therefore using only numerical features is insufficient to create clusters or including categorical features may be necessary to separate instances. 
+    
+        Using `BMI Category` and `Sleep Disorder` in principal components plots is possible to find slight patterns and groups, so this implies that there is a complex relation between features to determine the type of sleep disorder and the BMI of a patient.
+        """
     )
     return
 
