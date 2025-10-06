@@ -398,7 +398,7 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"The `Quality of Sleep` and `Sleep Duration` are influenced by `Occupation`, `BMI Category` and `Sleep Disorder`this is because this features are associated to the style of life, habits, health and physical condition. Both group of features interact with each other, which leads to see that if someone has good habits and health, he/she will tend to have a better sleep and recovery.")
+    mo.md(r"The `Quality of Sleep` and `Sleep Duration` are influenced by `Occupation`, `BMI Category` and `Sleep Disorder` this is because this features are associated to the style of life, habits, health and physical condition. Both group of features interact with each other, which leads to see that if someone has good habits and health, he/she will tend to have a better sleep and recovery.")
     return
 
 
@@ -459,6 +459,7 @@ def _(
         size = 14,
     )
 
+    # _fig.savefig(f'./Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg')
     mo.vstack(
         [
             mo.hstack([NumericalFeatureOptions_NumCat,CategoricalFeatureOptions_NumCat]),
@@ -514,6 +515,7 @@ def _(
         size = 14,
     )
 
+    # _fig.savefig(f'./Resources/BivariatePlot_{_numerical_feature_1.replace(' ','')}_{_numerical_feature_2.replace(' ','')}.jpg')
     mo.vstack(
         [
             mo.hstack([NumericalFeatureOptions_1_NumNum,NumericalFeatureOptions_2_NumNum]),
@@ -677,6 +679,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         loc = 'lower right'
     )
 
+    # _fig.savefig(f'./Resources/PCAPlot_{_CategoricalFeature.replace(' ','')}.jpg')
     mo.vstack(
         [
             CategoricalFeatureOptions_PCA,
