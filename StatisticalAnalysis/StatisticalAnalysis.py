@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.16.4"
+__generated_with = "0.16.5"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -45,6 +45,12 @@ def _():
 
     RANDOM_STATE = 8013
     return (RANDOM_STATE,)
+
+
+@app.cell
+def _():
+    mo.md(r"Sleep quality may be influenced by habits and lifestyle of a person; therefore, understanding how these values and measures influence a person could determine how well they sleep. Thus, this study examines how various factors that determine lifestyle of a person can impact their sleep quality.")
+    return
 
 
 @app.cell
@@ -137,10 +143,19 @@ def _(SleepDataset_Raw):
 
 @app.cell
 def _(SleepDataset_Raw):
-    SleepDataset_Raw.groupby(
+    _MissingValuesInSleepDisorder = SleepDataset_Raw.groupby(
         'Sleep Disorder',
         dropna = False,
     )['Gender'].count()
+
+    mo.vstack(
+        [
+            mo.md("**Missing Values In `Sleep Disorder`**"),
+            _MissingValuesInSleepDisorder,
+
+        ], 
+        align = 'center',
+    )
     return
 
 
@@ -213,9 +228,9 @@ def _():
 def _():
     mo.md(
         r"""
-        None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be insignificant.
+        None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be insignificant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
     
-        After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
+        Fifty percent of patients have a sleep quality between 6 and 8, and a sleep duration of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a person becomes older, which impacts the number of hours needed to feel rested after sleeping.
         """
     )
     return
@@ -313,9 +328,9 @@ def _():
 def _():
     mo.md(
         r"""
-        Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders.
+        Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant. 
     
-        After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant.
+        Daily stress, time for physical activity, time for personal and recreational activities, diet, and rest time are factors that are subject to a daily routine and lifestyle of a person. By showing that there is evidence of dependence between the categories (features), this premise and relationship can be reinforced.
         """
     )
     return
