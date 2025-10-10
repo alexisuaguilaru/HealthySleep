@@ -481,7 +481,15 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"The `Quality of Sleep` and `Sleep Duration` are influenced by `Occupation`, `BMI Category` and `Sleep Disorder` this is because this features are associated to the style of life, habits, health and physical condition. Both group of features interact with each other, which leads to see that if someone has good habits and health, he/she will tend to have a better sleep and recovery.")
+    mo.md(
+        r"""
+        By varying the different numerical and categorical features, it can be shown how each group defined by categorical values behaves differently in terms of numerical variables (specifically `Quality of Sleep` and `Sleep Duration`). This reflects how lifestyle and daily routine interact with quality of life of a person.
+    
+        It can be observed `Occupation` of a person influences their `Quality of Sleep` and `Stress Level`, in addition to the fact that these factors have a negative correlation. The above can be verified in reality by considering that job position directly impacts the stress and pressure someone experiences.
+    
+        Obesity and overweight are two conditions that increase the occurrence of conditions such as sleep apnea due to airway obstruction, which can be observed in how `Quality of Sleep` is diminished according to `BMI Category` of a person, as well as the tendency to have more `Sleep Disorder` as weight increases.
+        """
+    )
     return
 
 
@@ -502,12 +510,6 @@ def _(CategoricalFeatures, NumericalFeatures):
         label = 'Select a Categorical Feature',
     )
     return CategoricalFeatureOptions_NumCat, NumericalFeatureOptions_NumCat
-
-
-@app.cell
-def _():
-    mo.md(r"And there is a positive correlation between `Quality of Sleep` and `Sleep Duration`, so their relation could be explain with a unique factor or as a consequence of something else. Therefore the `Quality of Sleep` could be modeled and analyzed using the most relevant factors, features and information without losing context and information about a patient.")
-    return
 
 
 @app.cell
@@ -603,6 +605,58 @@ def _(
         [
             mo.hstack([NumericalFeatureOptions_1_NumNum,NumericalFeatureOptions_2_NumNum]),
             _fig,
+        ]
+    )
+    return
+
+
+@app.cell
+def _(CategoricalFeatures):
+    # Creating selectors of categorical features for pivot
+    # tables of categorical values
+
+    CategoricalFeatureOptions_1_CatCat = mo.ui.dropdown(
+        CategoricalFeatures,
+        value = CategoricalFeatures[0],
+        label = 'Select a Categorical Feature',
+    )
+
+    CategoricalFeatureOptions_2_CatCat = mo.ui.dropdown(
+        CategoricalFeatures,
+        value = CategoricalFeatures[1],
+        label = 'Select a Categorical Feature',
+    )
+    return (
+        CategoricalFeatureOptions_1_CatCat,
+        CategoricalFeatureOptions_2_CatCat,
+    )
+
+
+@app.cell
+def _(
+    CategoricalFeatureOptions_1_CatCat,
+    CategoricalFeatureOptions_2_CatCat,
+    NumericalFeatures,
+    SleepDataset,
+):
+    _categorical_feature_1 = CategoricalFeatureOptions_1_CatCat.value
+    _categorical_feature_2 = CategoricalFeatureOptions_2_CatCat.value
+    try:
+        _SummaryCategoricalValues = SleepDataset.pivot_table(
+            NumericalFeatures[0],
+            _categorical_feature_1,
+            _categorical_feature_2,
+            'count',
+            fill_value = 0,
+        )
+    except:
+        _SummaryCategoricalValues = pd.DataFrame()
+
+    mo.vstack(
+        [
+            mo.hstack([CategoricalFeatureOptions_1_CatCat,CategoricalFeatureOptions_2_CatCat]),
+            mo.md("**Summary of Categorical Values**"),
+            _SummaryCategoricalValues,
         ]
     )
     return
