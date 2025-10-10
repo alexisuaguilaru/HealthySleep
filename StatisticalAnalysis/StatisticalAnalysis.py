@@ -6,7 +6,7 @@ app = marimo.App(width="medium")
 with app.setup:
     # Import auxiliar libraries
     import marimo as mo
-    from itertools import combinations
+    from itertools import combinations , product
 
 
     # Importing libraries
@@ -230,7 +230,7 @@ def _():
         r"""
         None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be insignificant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
     
-        Fifty percent of patients have a sleep quality between 6 and 8, and a sleep duration of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a person becomes older, which impacts the number of hours needed to feel rested after sleeping.
+        Fifty percent of patients have a `Quality of Sleep` between 6 and 8, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a person becomes older, which impacts the number of hours needed to feel rested after sleeping.
         """
     )
     return
@@ -328,7 +328,7 @@ def _():
 def _():
     mo.md(
         r"""
-        Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant. 
+        Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying chi square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant. 
     
         Daily stress, time for physical activity, time for personal and recreational activities, diet, and rest time are factors that are subject to a daily routine and lifestyle of a person. By showing that there is evidence of dependence between the categories (features), this premise and relationship can be reinforced.
         """
@@ -394,6 +394,74 @@ def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
         [
             mo.md("**P-Values of Chi-Square Tests for the Independence between Features**"),
             pd.DataFrame(_DataChi2Results,columns=['Categorical Feature 1','Categorical Feature 2','P-Value']),
+        ]
+    )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"### 3.3 Final Observations and Conclusions")
+    return
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        From Spearman correlation tests, it can be shown that `Quality of Sleep` of a patient is influenced by factors such as `Physical Activity Level`, `Stress Levels`, and `Sleep Duration`, where the first two relate to lifestyle and quality of life of a person; additionally, the `Sleep Duration` has a significant influence and impact in determining how well one sleeps. Thus, it follows that some of the factors that measure lifestyle of a person determine `Quality of Sleep`.
+    
+        As assumed, `Occupation` (job) and `BMI Category` of a person can alter both the quality and duration of sleep, but also the own quality of life of a patient; this dual influence or relationship makes them high-impact factors on overall well-being of a person and, specifically, how they sleep.
+    
+        Based on these observations, a model could be created to evaluate or predict `Quality of Sleep` of a person based on their lifestyle or quality of life (measured through these factors and features).
+        """
+    )
+    return
+
+
+@app.cell
+def _(SleepDataset):
+    _CorrelationColumns = ['Quality of Sleep','Sleep Duration']
+    _CorrelationIndex = ['Physical Activity Level','Stress Level','Daily Steps','Sleep Duration']
+    _CorrelationTests = pd.DataFrame(
+        columns = _CorrelationColumns,
+        index = _CorrelationIndex,
+    )
+
+    for _IndexLabel , _ColumnLabel in product(_CorrelationIndex,_CorrelationColumns):
+        _CorrelationTests.loc[_IndexLabel,_ColumnLabel] = stats.spearmanr(
+            SleepDataset[_IndexLabel],
+            SleepDataset[_ColumnLabel],
+        ).pvalue
+
+    mo.vstack(
+        [
+            mo.md("**P-Values of Spearman Correlation Tests**"),
+            _CorrelationTests,
+        ]
+    )
+    return
+
+
+@app.cell
+def _(SleepDataset):
+    _ANOVAColumns = ['Quality of Sleep','Sleep Duration']
+    _ANOVAIndex = ['Occupation','BMI Category']
+    _ANOVATests = pd.DataFrame(
+        columns = _ANOVAColumns,
+        index = _ANOVAIndex,
+    )
+
+    for _IndexLabel , _ColumnLabel in product(_ANOVAIndex,_ANOVAColumns):
+        _CategoriesDataset = SleepDataset.groupby(_IndexLabel)
+        _ANOVATests.loc[_IndexLabel,_ColumnLabel] = stats.kruskal(
+            *[_CategoriesDataset.get_group(_group)[_ColumnLabel] for _group in _CategoriesDataset.groups]
+        ).pvalue
+
+    mo.vstack(
+        [
+            mo.md("**P-Values of Kruskal-Wallis Tests**"),
+            _ANOVATests,
         ]
     )
     return
