@@ -691,10 +691,10 @@ def _():
 def _():
     mo.md(
         r"""
-        Using elbow method on the eigenvalues, the best selection for the number of principal component is three that explain the $87.14\%$ of the variance in the dataset. Which comes from:
-        * Sleep quality (PC 1): Its positives loadings are concentrated on how well and long you sleep and its negatives on your stress levels
-        * General health (PC 2): Its positives loadings explain an increase in blood pressure (hypertension or another condition) and in old age, as well as an increase in exercise to counteract the damage associated with old age
-        * Physical condition (PC 3): Its positives loadings are related to how much physical activities and exercise you do and its negatives loadings to the medical condition of your body
+        Using elbow method on the eigenvalues, the best selection for the number of principal component is three that explains the $87.14\%$ of the variance in the dataset. Which comes from:
+        * *Sleep quality* (PC 1): Its positives loadings are concentrated on how well and long someone sleeps and its negatives on their stress levels
+        * *General health* (PC 2): Its positives loadings explain the increase in blood pressure (hypertension or another conditions) and in old age, as well as an increase in exercise to counteract the damage associated with old age
+        * *Physical condition* (PC 3): Its positives loadings are related to how much physical activities and exercise someone does and its negatives loadings to the medical condition of their body
         """
     )
     return
@@ -756,9 +756,9 @@ def _(NumericalFeatures, PipelinePCA):
 def _():
     mo.md(
         r"""
-        There is not a clearly separation or grouping between instances, therefore using only numerical features is insufficient to create clusters or including categorical features may be necessary to separate instances. 
+        Considering that aspects related to physical and sleep health are integrally related, it becomes natural to expect certain patterns when plotting the principal components using `BMI Category` and `Sleep Disorder` as categorical values. Specifically, it can be observed that having a high positive value in PC1 (better sleep health) and a low negative value in PC2 (greater youth) tends to result in normal weight and absence of sleep disorders.
     
-        Using `BMI Category` and `Sleep Disorder` in principal components plots is possible to find slight patterns and groups, so this implies that there is a complex relation between features to determine the type of sleep disorder and the BMI of a patient.
+        There is not a clearly separation or grouping between instances, therefore using only numerical features is insufficient to create clusters or including categorical features may be necessary to separate instances.
         """
     )
     return
@@ -823,6 +823,12 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
             _fig
         ]
     )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"Using PCA with numerical attributes allows capturing and summarizing the general aspects to describe the profile of a person, achieved through their simple interactions. This can be observed by assigning point sizes according to their `Quality of Sleep` value, which allows seeing in which regions certain values are more concentrated. Specifically, using PC1 and PC2 creates diagonal strips where as their values increases, so does `Quality of Sleep` value along these strips.")
     return
 
 
