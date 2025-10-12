@@ -18,6 +18,7 @@ with app.setup:
 
     import statsmodels.api as sm
     import statsmodels.formula.api as smf
+    from statsmodels.stats.diagnostic import het_breuschpagan
 
     from scipy import stats
 
@@ -899,7 +900,13 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (as stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.")
+    mo.md(
+        r"""
+        The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.
+    
+        Through the correlation matrix, one can better appreciate how the different factors that constitute the lifestyle and quality of a person interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as blood pressure values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
+        """
+    )
     return
 
 
@@ -970,7 +977,7 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"Using a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of quality of sleep of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model.")
+    mo.md(r"Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of quality of sleep of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model.")
     return
 
 
@@ -993,7 +1000,13 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit. Therefore this model is better than the full model.")
+    mo.md(
+        r"""
+        Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit, this means generating better predictions (more accurate). Therefore this model is better than the full model.
+    
+        The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the stress of a a person encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a person and their sleep quality.
+        """
+    )
     return
 
 
@@ -1032,6 +1045,111 @@ def _(
     ).fit()
 
     print(BestLinearModel.summary())
+    return (BestLinearModel,)
+
+
+@app.cell
+def _():
+    mo.md(r"### 5.4 Validation of Assumptions")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"#### Normality in Residuals")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"Since none of the features are normal, their linear combination generates non-normal distributions. This is reflected when considering the residuals of the linear model, which also do not follow a normal distribution. Therefore, this assumption is not met by the model.")
+    return
+
+
+@app.cell
+def _(BestLinearModel):
+    _QuantilesTheoObs , _RegressionLineParams = stats.probplot(
+        BestLinearModel.resid,
+        dist = 'norm',
+        sparams = (0,BestLinearModel.resid.std(ddof=1))
+    )
+
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+    sns.scatterplot(
+        x = _QuantilesTheoObs[0],
+        y = _QuantilesTheoObs[1],
+        color = src.BaseColor,
+        ax = _axes,
+    )
+
+    _axes.axline(
+        (0,0),
+        slope = _RegressionLineParams[0],
+        color = 'gray',
+        linestyle = ':',
+    )
+    _axes.set_xlabel('Theorical Quartiles',size=11)
+    _axes.set_ylabel('Residuals Quartiles',size=11)
+    _axes.set_title('Normality of the Residuals',size=14)
+    _axes.tick_params(axis='both',labelsize=9)
+
+    _fig
+    return
+
+
+@app.cell
+def _(BestLinearModel):
+    _TestResult = stats.shapiro(
+        BestLinearModel.resid,
+    )
+
+    mo.md(f"**P-Values of Shapiro-Wilk Test: **{_TestResult.pvalue:.6f}")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"#### Homoscedasticity")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"As shown in the plot, the model residuals follow a systematic (functional) pattern; therefore, they are not homoscedastic and the model predictions will not be robust.")
+    return
+
+
+@app.cell
+def _(BestLinearModel, TargetVariable):
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+    
+    sns.scatterplot(
+        x = BestLinearModel.fittedvalues,
+        y = BestLinearModel.resid,
+        color = src.BaseColor,
+        ax = _axes,
+    )
+    _axes.set_xlabel(TargetVariable,size=11)
+    _axes.set_ylabel('Residuals',size=11)
+    _axes.tick_params(axis='both',labelsize=10)
+    _axes.set_title('Residuals as a Function of Predicted Values',size=14)
+
+    _fig
+    return
+
+
+@app.cell
+def _(BestLinearModel):
+    _TestResult = het_breuschpagan(
+        BestLinearModel.resid,
+        BestLinearModel.model.exog
+    )[1]
+
+    mo.md(f"**P-Values of Breusch-Pagan Test: **{_TestResult:.6f}")
     return
 
 
