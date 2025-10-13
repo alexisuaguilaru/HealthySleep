@@ -19,12 +19,14 @@ with app.setup:
     import statsmodels.api as sm
     import statsmodels.formula.api as smf
     from statsmodels.stats.diagnostic import het_breuschpagan
+    from statsmodels.multivariate.factor import Factor
 
     from scipy import stats
 
     from sklearn.decomposition import PCA
     from sklearn.linear_model import LinearRegression
     from sklearn.preprocessing import StandardScaler
+    from sklearn.preprocessing import OrdinalEncoder , OneHotEncoder 
     from sklearn.pipeline import Pipeline
 
     from mlxtend.feature_selection  import SequentialFeatureSelector
@@ -250,6 +252,8 @@ def _(NumericalFeatures, SleepDataset):
 
 @app.cell
 def _():
+    # Creating selector of kind of plot
+
     KindPlotNumericalFeatures = mo.ui.dropdown(
         {'Violin':sns.violinplot,'Box':sns.boxplot,'Histogram':sns.histplot},
         value = 'Box',
@@ -429,10 +433,10 @@ def _(SleepDataset):
         index = _CorrelationIndex,
     )
 
-    for _IndexLabel , _ColumnLabel in product(_CorrelationIndex,_CorrelationColumns):
-        _CorrelationTests.loc[_IndexLabel,_ColumnLabel] = stats.spearmanr(
-            SleepDataset[_IndexLabel],
-            SleepDataset[_ColumnLabel],
+    for _index_label , _column_label in product(_CorrelationIndex,_CorrelationColumns):
+        _CorrelationTests.loc[_index_label,_column_label] = stats.spearmanr(
+            SleepDataset[_index_label],
+            SleepDataset[_column_label],
         ).pvalue
 
     mo.vstack(
@@ -453,10 +457,10 @@ def _(SleepDataset):
         index = _ANOVAIndex,
     )
 
-    for _IndexLabel , _ColumnLabel in product(_ANOVAIndex,_ANOVAColumns):
-        _CategoriesDataset = SleepDataset.groupby(_IndexLabel)
-        _ANOVATests.loc[_IndexLabel,_ColumnLabel] = stats.kruskal(
-            *[_CategoriesDataset.get_group(_group)[_ColumnLabel] for _group in _CategoriesDataset.groups]
+    for _index_label , _column_label in product(_ANOVAIndex,_ANOVAColumns):
+        _CategoriesDataset = SleepDataset.groupby(_index_label)
+        _ANOVATests.loc[_index_label,_column_label] = stats.kruskal(
+            *[_CategoriesDataset.get_group(_group)[_column_label] for _group in _CategoriesDataset.groups]
         ).pvalue
 
     mo.vstack(
@@ -767,6 +771,8 @@ def _():
 
 @app.cell
 def _(CategoricalFeatures, NumericalFeatures):
+    # Creating selectos for categorical and numerical features for PCA plots
+
     CategoricalFeatureOptions_PCA = mo.ui.dropdown(
         CategoricalFeatures,
         value = CategoricalFeatures[0],
@@ -1012,6 +1018,8 @@ def _():
 
 @app.cell
 def _(RegressorVariables, SleepDataset, TargetVariable):
+    # Using Stepwise Algoithm for selection of the best subset of features
+
     _LinearModel = LinearRegression()
     _StepwiseAlgorithm = SequentialFeatureSelector(
         _LinearModel,
@@ -1150,6 +1158,154 @@ def _(BestLinearModel):
     )[1]
 
     mo.md(f"**P-Values of Breusch-Pagan Test: **{_TestResult:.6f}")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"## 6. Factor Analysis")
+    return
+
+
+@app.cell
+def _(SleepDataset):
+    # Encoding categorical features of the dataset and 
+    # applying standard scaler over all the features
+
+    SleepDataset_Processed = SleepDataset.copy(True)
+
+    for _ordinal_feature , _categories in zip(['Gender','BMI Category'],[['Female','Male'],['Normal','Overweight','Obese']]):
+        _OrdinalEncoder = OrdinalEncoder(categories=[_categories])
+        SleepDataset_Processed[_ordinal_feature] = _OrdinalEncoder.fit_transform(SleepDataset_Processed[[_ordinal_feature]])
+
+    for _one_hot_feature in ['Occupation','Sleep Disorder']:
+        _OneHotEncoder = OneHotEncoder(sparse_output=False)
+        _OneHotValues = _OneHotEncoder.fit_transform(SleepDataset_Processed[[_one_hot_feature]])
+        SleepDataset_Processed.drop(columns=_one_hot_feature,inplace=True)
+        SleepDataset_Processed[_one_hot_feature + ' :: ' + np.array(*_OneHotEncoder.categories_)] = _OneHotValues
+
+    _NumericalScaler = StandardScaler()
+    SleepDataset_Processed[SleepDataset_Processed.columns] = _NumericalScaler.fit_transform(SleepDataset_Processed)
+    return (SleepDataset_Processed,)
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        Factor analysis is performed with numerical features and encoded categorical variables to encompass all possible interactions between features that can be explained through the factors.
+    
+        Using the elbow method on the eigenvalues of the factors, it is determined that using four factors allows explaining $89.31\%$ of the data variance (only positive eigenvalues are considered). Additionally, it can be noted that negative eigenvalues were found, which implies the existence of highly correlated features (multicollinearity), a fact that can be observed in the correlation matrix and in the auxiliary plots using categorical features.
+        """
+    )
+    return
+
+
+@app.cell
+def _(SleepDataset_Processed):
+    _FactorAnalysis = Factor(
+        SleepDataset_Processed,
+    )
+    _FAResults = _FactorAnalysis.fit()
+    _Eigenvalues = _FAResults.eigenvals
+
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+
+    sns.lineplot(
+        x = range(1,len(_Eigenvalues)+1),
+        y = _Eigenvalues,
+
+        color = src.BaseColor,
+        linestyle = '--',
+        linewidth = 1.5,
+        marker = 'o',
+        markersize = 6,
+
+        ax = _axes,
+    )
+    _axes.set_xlabel('Number of Factors',size=12)
+    _axes.set_ylabel('Eigenvalues',size=12)
+    _axes.set_title('Scree Plot for Selection of\nNumber of Factors',size=14)
+    _axes.tick_params(axis='both',labelsize=10)
+
+    _fig
+    return
+
+
+@app.cell
+def _(SleepDataset_Processed):
+    # Performing the factor analysis with 4 factors 
+    # based on the observations
+
+    FactorAnalysis = Factor(
+        SleepDataset_Processed,
+        n_factor = 4, 
+    )
+
+    FactorAnalysisResults = FactorAnalysis.fit()
+    return (FactorAnalysisResults,)
+
+
+@app.cell
+def _(FactorAnalysisResults):
+    _fig , _axes = plt.subplots()
+
+    sns.heatmap(
+        FactorAnalysisResults.loadings,
+        cmap = src.ColorMapContrast,
+        vmax = 1,
+        vmin = -1,
+        annot = True,
+        annot_kws = {'size':8},
+        ax = _axes
+    )
+    _axes.set_xlabel('Factors',size=12)
+    _axes.set_ylabel('Features',size=12)
+    _axes.set_title('Factor Loadings',size=14)
+    _axes.tick_params(axis='both',labelsize=10)
+
+    _fig
+    return
+
+
+@app.cell
+def _(FactorAnalysisResults, SleepDataset_Processed):
+    print('Relevant Features in each Factor')
+    _Loadings = FactorAnalysisResults.loadings
+    for _factor in range(4):
+        _significant_loadings = np.abs(_Loadings[:,_factor]) > 0.4
+
+        print(f'\nFactor {_factor+1} :: {FactorAnalysisResults.eigenvals[_factor]}')
+        for _feature , _load in zip(SleepDataset_Processed.columns[_significant_loadings],_Loadings[_significant_loadings,_factor]):
+            print(f'{_feature} {_load:.4f}')
+    return
+
+
+@app.cell
+def _(FactorAnalysisResults, SleepDataset_Processed):
+    _MeanCommunality = FactorAnalysisResults.communality.mean()
+
+    _RelevantCommunalities = FactorAnalysisResults.communality >= 0.3
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+    sns.barplot(
+        x = SleepDataset_Processed.columns[_RelevantCommunalities],
+        y = FactorAnalysisResults.communality[_RelevantCommunalities],
+        color = src.BaseColor,
+        ax = _axes,
+    )
+    _axes.text(5,1.2,f'Mean Communality: {_MeanCommunality:.4f}')
+
+    _axes.set_xlabel('Features',size=10)
+    _axes.set_ylabel('Communality',size=12)
+    _axes.set_title('Quality of Communalities',size=14)
+    _axes.tick_params(axis='both',labelsize=10)
+    _axes.tick_params(axis='x',rotation=90)
+
+    _fig
     return
 
 
