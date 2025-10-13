@@ -1249,6 +1249,68 @@ def _(SleepDataset_Processed):
 
 
 @app.cell
+def _():
+    mo.md(
+        r"""
+        Using the mean of the communalities, it is found that the Factor Analysis model has moderate quality, meaning that not all variables are adequately explained by the factors. Although some of the variances of the variables are adequately explained by the factors (such as `Gender`, `Quality of Sleep`, `Blood Pressure`, `Sleep Disorder`, `BMI Category`, `Age`, `Physical Activity`), some others are not (such as `Occupation`, `Daily Steps`).
+    
+        The above compromises the confidence in the interpretation of the factors and in the final quality of the results. Therefore, the loadings of the variables that are adequately explained by the factors have greater importance in what each factor represents for the data.
+        """
+    )
+    return
+
+
+@app.cell
+def _(FactorAnalysisResults, SleepDataset_Processed):
+    _RelevantCommunalities = FactorAnalysisResults.communality >= 0
+    _SortedFilteredCommunalities = sorted(
+        zip(SleepDataset_Processed.columns[_RelevantCommunalities],FactorAnalysisResults.communality[_RelevantCommunalities]),
+        key = lambda communality : communality[1],
+        reverse = True,
+    )
+    _MeanCommunality = FactorAnalysisResults.communality.mean()
+
+    _fig , _axes = plt.subplots(
+        subplot_kw = {'frame_on':False},
+    )
+    sns.barplot(
+        x = [_communality[0] for _communality in _SortedFilteredCommunalities],
+        y = [_communality[1] for _communality in _SortedFilteredCommunalities],
+        color = src.BaseColor,
+        ax = _axes,
+    )
+    _axes.text(7.5,1.2,f'Mean Communality: {_MeanCommunality:.4f}')
+
+    _axes.set_xlabel('Features',size=10)
+    _axes.set_ylabel('Communality',size=12)
+    _axes.set_title('Quality of Communalities',size=14)
+    _axes.tick_params(axis='both',labelsize=10)
+    _axes.tick_params(axis='x',rotation=90)
+
+    _fig
+    return
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        **Factors Interpretation**
+    
+    
+        * *Factor 1*: Pertains to explaining the health of a patient (their precarity or deficiencies) based on their physical condition and sleep disorders.
+    
+        * *Factor 2*: Is associated with the overall quality of sleep, how well one sleeps and recovers, also encompassing how having a stressful life affects sleep (high stress levels and hypertension).
+    
+        * *Factor 3*: Is linked to the physical activity and activation levels of a patient and their connection to the presence of insomnia (possible relationship between the energy and mood someone has throughout the day).
+    
+        * *Factor 4*: Does not provide relevant information or relationships.
+        """
+    )
+    return
+
+
+@app.cell
 def _(FactorAnalysisResults):
     _fig , _axes = plt.subplots()
 
@@ -1261,6 +1323,8 @@ def _(FactorAnalysisResults):
         annot_kws = {'size':8},
         ax = _axes
     )
+    _axes.set_xticklabels(range(1,5))
+    # _axes.set_yticklabels(SleepDataset_Processed.columns)
     _axes.set_xlabel('Factors',size=12)
     _axes.set_ylabel('Features',size=12)
     _axes.set_title('Factor Loadings',size=14)
@@ -1280,32 +1344,6 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
         print(f'\nFactor {_factor+1} :: {FactorAnalysisResults.eigenvals[_factor]}')
         for _feature , _load in zip(SleepDataset_Processed.columns[_significant_loadings],_Loadings[_significant_loadings,_factor]):
             print(f'{_feature} {_load:.4f}')
-    return
-
-
-@app.cell
-def _(FactorAnalysisResults, SleepDataset_Processed):
-    _MeanCommunality = FactorAnalysisResults.communality.mean()
-
-    _RelevantCommunalities = FactorAnalysisResults.communality >= 0.3
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
-    sns.barplot(
-        x = SleepDataset_Processed.columns[_RelevantCommunalities],
-        y = FactorAnalysisResults.communality[_RelevantCommunalities],
-        color = src.BaseColor,
-        ax = _axes,
-    )
-    _axes.text(5,1.2,f'Mean Communality: {_MeanCommunality:.4f}')
-
-    _axes.set_xlabel('Features',size=10)
-    _axes.set_ylabel('Communality',size=12)
-    _axes.set_title('Quality of Communalities',size=14)
-    _axes.tick_params(axis='both',labelsize=10)
-    _axes.tick_params(axis='x',rotation=90)
-
-    _fig
     return
 
 
