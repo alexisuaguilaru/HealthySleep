@@ -919,7 +919,7 @@ def _():
 @app.cell
 def _(RegressorVariables, SleepDataset, TargetVariable):
     _fig , _axes = plt.subplots(
-        figsize = (12,9)
+        figsize = (12,9),
     )
 
     _CorrelationValue = SleepDataset[RegressorVariables+[TargetVariable]].corr()
@@ -934,44 +934,10 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
         cmap = src.ColorMapContrast, 
     )
     _axes.set_title('Correlation Matrix of Numerical Features',size=24)
-    _axes.tick_params(axis='both',labelsize=16)
+    _axes.tick_params(axis='both',labelsize=14)
 
+    # _fig.savefig(f'./Resources/CorrelationMatrix.jpg',bbox_inches='tight')
     _fig
-    return
-
-
-@app.cell
-def _():
-    # _fig , _axes = plt.subplots(
-    #     2,2,
-    #     figsize = (9,9),
-    #     layout = 'constrained',
-    #     gridspec_kw={'wspace':0.1,'hspace':0.1},
-    #     subplot_kw = {'frame_on':False},
-    # )
-
-    # for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
-    #     sns.boxplot(
-    #         SleepDataset,
-    #         x = _feature,
-    #         y = TargetVariable,
-    #         ax = _ax,
-    #         color = src.BaseColor,
-    #     )
-    #     _xtick_labels = _ax.get_xticklabels()
-    #     _ax.set_xticks(
-    #         range(len(_xtick_labels)),
-    #         labels=_xtick_labels,
-    #         rotation=90,
-    #     )
-    #     _ax.set_xlabel('')
-    #     _ax.set_title(_feature,size=16)
-    #     _ax.tick_params(axis='both',labelsize=12)
-    #     _ax.set_ylabel(_ax.get_ylabel(),size=14)
-
-    # _fig.suptitle('Distribution of Categorical Features',size=24)
-
-    # _fig
     return
 
 
@@ -1134,7 +1100,7 @@ def _(BestLinearModel, TargetVariable):
     _fig , _axes = plt.subplots(
         subplot_kw = {'frame_on':False},
     )
-    
+
     sns.scatterplot(
         x = BestLinearModel.fittedvalues,
         y = BestLinearModel.resid,
@@ -1230,6 +1196,7 @@ def _(SleepDataset_Processed):
     _axes.set_title('Scree Plot for Selection of\nNumber of Factors',size=14)
     _axes.tick_params(axis='both',labelsize=10)
 
+    # _fig.savefig(f'./Resources/FactorAnalysis_Communalities.jpg')
     _fig
     return
 
@@ -1297,7 +1264,6 @@ def _():
         r"""
         **Factors Interpretation**
     
-    
         * *Factor 1*: Pertains to explaining the health of a patient (their precarity or deficiencies) based on their physical condition and sleep disorders.
     
         * *Factor 2*: Is associated with the overall quality of sleep, how well one sleeps and recovers, also encompassing how having a stressful life affects sleep (high stress levels and hypertension).
@@ -1311,7 +1277,7 @@ def _():
 
 
 @app.cell
-def _(FactorAnalysisResults):
+def _(FactorAnalysisResults, SleepDataset_Processed):
     _fig , _axes = plt.subplots()
 
     sns.heatmap(
@@ -1324,12 +1290,13 @@ def _(FactorAnalysisResults):
         ax = _axes
     )
     _axes.set_xticklabels(range(1,5))
-    # _axes.set_yticklabels(SleepDataset_Processed.columns)
+    _axes.set_yticklabels(SleepDataset_Processed.columns)
     _axes.set_xlabel('Factors',size=12)
     _axes.set_ylabel('Features',size=12)
     _axes.set_title('Factor Loadings',size=14)
-    _axes.tick_params(axis='both',labelsize=10)
+    _axes.tick_params(axis='both',labelsize=8)
 
+    # _fig.savefig(f'./Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
     _fig
     return
 
