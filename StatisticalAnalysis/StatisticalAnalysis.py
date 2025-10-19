@@ -52,7 +52,13 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"Sleep quality may be influenced by habits and lifestyle of a person; therefore, understanding how these values and measures influence a person could determine how well they sleep. Thus, this study examines how various factors that determine lifestyle of a person can impact their sleep quality.")
+    mo.md(
+        r"""
+        # Exploratory Data Analysis
+    
+        Sleep quality may be influenced by habits and lifestyle of a person; therefore, understanding how these values and measures influence a person could determine how well they sleep. Thus, this study examines how various factors that determine lifestyle of a person can impact their sleep quality.
+        """
+    )
     return
 
 
@@ -104,7 +110,7 @@ def _():
 
     PATH = './Datasets/'
     PATH_DATASET = PATH + 'Sleep_health_and_lifestyle_dataset.csv'
-    return (PATH_DATASET,)
+    return PATH, PATH_DATASET
 
 
 @app.cell
@@ -175,7 +181,7 @@ def _():
 
 
 @app.cell
-def _(SleepDataset_Raw):
+def _(PATH, SleepDataset_Raw):
     SleepDataset = SleepDataset_Raw.copy()
 
     # Filling missing values
@@ -191,6 +197,12 @@ def _(SleepDataset_Raw):
 
     _IndexBMINormalWeight = SleepDataset.query("`BMI Category` == 'Normal Weight'").index
     SleepDataset.loc[_IndexBMINormalWeight,'BMI Category'] = 'Normal'
+
+    # Saving a clean dataset
+
+    SleepDataset.to_csv(
+        PATH + 'CleanSleepDataset.csv'
+    )
     return (SleepDataset,)
 
 
@@ -1134,7 +1146,7 @@ def _():
 
 
 @app.cell
-def _(SleepDataset):
+def _(PATH, SleepDataset):
     # Encoding categorical features of the dataset and 
     # applying standard scaler over all the features
 
@@ -1149,6 +1161,12 @@ def _(SleepDataset):
         _OneHotValues = _OneHotEncoder.fit_transform(SleepDataset_Processed[[_one_hot_feature]])
         SleepDataset_Processed.drop(columns=_one_hot_feature,inplace=True)
         SleepDataset_Processed[_one_hot_feature + ' :: ' + np.array(*_OneHotEncoder.categories_)] = _OneHotValues
+
+    # Saving the final preprocessed dataset
+
+    SleepDataset_Processed.to_csv(
+        PATH + 'ProcessedSleepDataset.csv'
+    )
 
     _NumericalScaler = StandardScaler()
     SleepDataset_Processed[SleepDataset_Processed.columns] = _NumericalScaler.fit_transform(SleepDataset_Processed)
