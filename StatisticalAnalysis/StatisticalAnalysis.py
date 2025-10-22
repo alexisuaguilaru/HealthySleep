@@ -38,20 +38,6 @@ with app.setup:
 
 @app.cell
 def _():
-    mo.md(r"##")
-    return
-
-
-@app.cell
-def _():
-    # Setting constants
-
-    RANDOM_STATE = 8013
-    return (RANDOM_STATE,)
-
-
-@app.cell
-def _():
     mo.md(
         r"""
         # Exploratory Data Analysis
@@ -108,9 +94,8 @@ def _():
 def _():
     # Defining useful variables
 
-    PATH = './Datasets/'
-    PATH_DATASET = PATH + 'Sleep_health_and_lifestyle_dataset.csv'
-    return PATH, PATH_DATASET
+    PATH_DATASET = src.PATH + 'Sleep_health_and_lifestyle_dataset.csv'
+    return (PATH_DATASET,)
 
 
 @app.cell
@@ -181,7 +166,7 @@ def _():
 
 
 @app.cell
-def _(PATH, SleepDataset_Raw):
+def _(SleepDataset_Raw):
     SleepDataset = SleepDataset_Raw.copy()
 
     # Filling missing values
@@ -201,7 +186,7 @@ def _(PATH, SleepDataset_Raw):
     # Saving a clean dataset
 
     SleepDataset.to_csv(
-        PATH + 'CleanSleepDataset.csv'
+        src.PATH + 'CleanSleepDataset.csv'
     )
     return (SleepDataset,)
 
@@ -276,12 +261,9 @@ def _():
 
 @app.cell
 def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
-    _fig , _axes = plt.subplots(
+    _fig , _axes = src.CreatePlot(
         3,3,
-        figsize = (12,12),
-        layout = 'constrained',
-        gridspec_kw={'wspace':0.1,'hspace':0.1},
-        subplot_kw = {'frame_on':False},
+        (12,12)
     )
 
     for _ax , _feature in zip(_axes.ravel(),NumericalFeatures):
@@ -291,12 +273,14 @@ def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
             ax = _ax,
             color = src.BaseColor,
         )
-        _ax.set_xlabel('')
-        _ax.set_title(_feature,size=16)
-        _ax.tick_params(axis='both',labelsize=12)
-        _ax.set_ylabel(_ax.get_ylabel(),size=14)
+        src.SetLabelsToPlot(
+            _ax,
+            _feature,
+            '',
+            _ax.get_ylabel(),
+        )
 
-    _fig.suptitle('Distribution of Numerical Features',size=24)
+    src.SetFigureTitle(_fig,'Distribution of Numerical Features')
 
     mo.vstack([KindPlotNumericalFeatures,_fig])
     return
@@ -366,12 +350,9 @@ def _(CategoricalFeatures, SleepDataset):
 
 @app.cell
 def _(CategoricalFeatures, SleepDataset):
-    _fig , _axes = plt.subplots(
+    _fig , _axes = src.CreatePlot(
         2,2,
-        figsize = (9,9),
-        layout = 'constrained',
-        gridspec_kw={'wspace':0.1,'hspace':0.1},
-        subplot_kw = {'frame_on':False},
+        (9,9),
     )
 
     for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
@@ -387,12 +368,14 @@ def _(CategoricalFeatures, SleepDataset):
             labels=_xtick_labels,
             rotation=90,
         )
-        _ax.set_xlabel('')
-        _ax.set_title(_feature,size=16)
-        _ax.tick_params(axis='both',labelsize=12)
-        _ax.set_ylabel(_ax.get_ylabel(),size=14)
+        src.SetLabelsToPlot(
+            _ax,
+            '',
+            _feature,
+            _ax.get_ylabel(),
+        )
 
-    _fig.suptitle('Distribution of Categorical Features',size=24)
+    src.SetFigureTitle(_fig,'Distribution of Categorical Features')
 
     _fig
     return
@@ -535,9 +518,7 @@ def _(
     NumericalFeatureOptions_NumCat,
     SleepDataset,
 ):
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot()
 
     _categorical_feature = CategoricalFeatureOptions_NumCat.value
     _numerical_feature = NumericalFeatureOptions_NumCat.value
@@ -556,9 +537,10 @@ def _(
         order = _OrderCriteria,
     )
 
-    _axes.set_title(
+    src.SetLabelsToPlot(
+        _axes,
         f"{_numerical_feature} vs {_categorical_feature}",
-        size = 14,
+        TitleSize=14
     )
 
     # _fig.savefig(f'./Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg')
@@ -596,9 +578,7 @@ def _(
     NumericalFeatureOptions_2_NumNum,
     SleepDataset,
 ):
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot()
 
     _numerical_feature_1 = NumericalFeatureOptions_1_NumNum.value
     _numerical_feature_2 = NumericalFeatureOptions_2_NumNum.value
@@ -612,9 +592,10 @@ def _(
         ci = None,
     )
 
-    _axes.set_title(
+    src.SetLabelsToPlot(
+        _axes,
         f"{_numerical_feature_1} vs {_numerical_feature_2}",
-        size = 14,
+        TitleSize=14
     )
 
     # _fig.savefig(f'./Resources/BivariatePlot_{_numerical_feature_1.replace(' ','')}_{_numerical_feature_2.replace(' ','')}.jpg')
@@ -680,25 +661,6 @@ def _(
 
 
 @app.cell
-def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
-    _DimensionalReduction = PCA(
-        whiten = True,
-        random_state = RANDOM_STATE,
-    )
-    _NumericalDatasetReduction = _DimensionalReduction.fit_transform(
-        SleepDataset[NumericalFeatures]
-    )
-    # print(_DimensionalReduction.explained_variance_ratio_)
-    # print(_DimensionalReduction.components_[1])
-
-    # sns.scatterplot(
-        # x = _NumericalDatasetReduction[:,0],
-        # y = _NumericalDatasetReduction[:,1],
-    # )
-    return
-
-
-@app.cell
 def _():
     mo.md(r"### 4.2. Principal Component Analysis")
     return
@@ -718,11 +680,11 @@ def _():
 
 
 @app.cell
-def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
+def _(NumericalFeatures, SleepDataset):
     PipelinePCA = Pipeline(
         [
             ('Standardization',StandardScaler()),
-            ('PrincipalComponents',PCA(random_state=RANDOM_STATE))
+            ('PrincipalComponents',PCA(random_state=src.RANDOM_STATE))
         ]
     )
     SleepDatasetReducedPCA = PipelinePCA.fit_transform(SleepDataset[NumericalFeatures])
@@ -743,10 +705,12 @@ def _(NumericalFeatures, RANDOM_STATE, SleepDataset):
 
         ax = _axes,
     )
-    _axes.set_xlabel('Principal Components',size=12)
-    _axes.set_ylabel('Eigenvalues',size=12)
-    _axes.set_title('Scree Plot for Selection of\nNumber of Principal Components',size=14)
-    _axes.tick_params(axis='both',labelsize=10)
+    src.SetLabelsToPlot(
+        _axes,
+        'Scree Plot for Selection of\nNumber of Principal Components',
+        'Principal Components',
+        'Eigenvalues',
+    )
 
     _fig
     return PipelinePCA, SleepDatasetReducedPCA
@@ -820,15 +784,23 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
             palette = src.BasePalette(n_colors=_LenCategories),
             ax = _ax,
         )
-
-        _ax.set_xlabel(f'PC {_pc_x+1}',size=9)
-        _ax.set_ylabel(f'PC {_pc_y+1}',size=9)
-        _ax.tick_params(axis='both',labelsize=8)
+        src.SetLabelsToPlot(
+            _ax,
+            None,
+            f'PC {_pc_x+1}',
+            f'PC {_pc_y+1}',
+            None,9,8
+        )
 
         _legend_handles = _ax.get_legend_handles_labels()
         _ax.legend_ = None
 
-    _fig.suptitle('PCA by Categorical Values',size=12)
+    src.SetFigureTitle(
+        _fig,
+        'PCA by Categorical Values',
+        12
+    )
+
     _fig.legend(
         *_legend_handles,
         title = _CategoricalFeature,
@@ -872,20 +844,28 @@ def _(NumericalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
             color = src.BaseColor,
             ax = _ax,
         )
-
-        _ax.set_xlabel(f'PC {_pc_x+1}',size=9)
-        _ax.set_ylabel(f'PC {_pc_y+1}',size=9)
-        _ax.tick_params(axis='both',labelsize=8)
+        src.SetLabelsToPlot(
+            _ax,
+            None,
+            f'PC {_pc_x+1}',
+            f'PC {_pc_y+1}',
+            None,9,8
+        )
 
         _legend_handles = _ax.get_legend_handles_labels()
         _ax.legend_ = None
 
-    _fig.suptitle('PCA by Numerical Values',size=12)
+    src.SetFigureTitle(
+        _fig,
+        'PCA by Numerical Values',
+        12
+    )
     _fig.legend(
         *_legend_handles,
         loc = 'lower right',
         title = _NumericalFeature,
     )
+
     mo.vstack(
         [
             NumericalFeatureOptions_PCA,
@@ -930,9 +910,7 @@ def _():
 
 @app.cell
 def _(RegressorVariables, SleepDataset, TargetVariable):
-    _fig , _axes = plt.subplots(
-        figsize = (12,9),
-    )
+    _fig , _axes = src.CreatePlot(FigSize=(12,9))
 
     _CorrelationValue = SleepDataset[RegressorVariables+[TargetVariable]].corr()
     _MaskValues = np.abs(_CorrelationValue) >= 0.2
@@ -945,8 +923,12 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
         ax = _axes,
         cmap = src.ColorMapContrast, 
     )
-    _axes.set_title('Correlation Matrix of Numerical Features',size=24)
-    _axes.tick_params(axis='both',labelsize=14)
+    src.SetLabelsToPlot(
+        _axes,
+        'Correlation Matrix of Numerical Features',
+        TitleSize = 24,
+        TickSize = 14, 
+    )
 
     # _fig.savefig(f'./Resources/CorrelationMatrix.jpg',bbox_inches='tight')
     _fig
@@ -1076,10 +1058,14 @@ def _(BestLinearModel):
         color = 'gray',
         linestyle = ':',
     )
-    _axes.set_xlabel('Theorical Quartiles',size=11)
-    _axes.set_ylabel('Residuals Quartiles',size=11)
-    _axes.set_title('Normality of the Residuals',size=14)
-    _axes.tick_params(axis='both',labelsize=9)
+
+    src.SetLabelsToPlot(
+        _axes,
+        'Normality of the Residuals',
+        'Theorical Quartiles',
+        'Residuals Quartiles',
+        14,12,10
+    )
 
     _fig
     return
@@ -1119,10 +1105,13 @@ def _(BestLinearModel, TargetVariable):
         color = src.BaseColor,
         ax = _axes,
     )
-    _axes.set_xlabel(TargetVariable,size=11)
-    _axes.set_ylabel('Residuals',size=11)
-    _axes.tick_params(axis='both',labelsize=10)
-    _axes.set_title('Residuals as a Function of Predicted Values',size=14)
+    src.SetLabelsToPlot(
+        _axes,
+        'Residuals as a Function of Predicted Values',
+        TargetVariable,
+        'Residuals',
+        14,12,10,
+    )
 
     _fig
     return
@@ -1146,7 +1135,7 @@ def _():
 
 
 @app.cell
-def _(PATH, SleepDataset):
+def _(SleepDataset):
     # Encoding categorical features of the dataset and 
     # applying standard scaler over all the features
 
@@ -1165,7 +1154,7 @@ def _(PATH, SleepDataset):
     # Saving the final preprocessed dataset
 
     SleepDataset_Processed.to_csv(
-        PATH + 'ProcessedSleepDataset.csv'
+        src.PATH + 'ProcessedSleepDataset.csv'
     )
 
     _NumericalScaler = StandardScaler()
@@ -1209,10 +1198,13 @@ def _(SleepDataset_Processed):
 
         ax = _axes,
     )
-    _axes.set_xlabel('Number of Factors',size=12)
-    _axes.set_ylabel('Eigenvalues',size=12)
-    _axes.set_title('Scree Plot for Selection of\nNumber of Factors',size=14)
-    _axes.tick_params(axis='both',labelsize=10)
+    src.SetLabelsToPlot(
+        _axes,
+        'Scree Plot for Selection of\nNumber of Factors',
+        'Number of Factors',
+        'Eigenvalues',
+        14,12,10
+    )
 
     # _fig.savefig(f'./Resources/FactorAnalysis_Communalities.jpg')
     _fig
@@ -1266,10 +1258,13 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     )
     _axes.text(7.5,1.2,f'Mean Communality: {_MeanCommunality:.4f}')
 
-    _axes.set_xlabel('Features',size=10)
-    _axes.set_ylabel('Communality',size=12)
-    _axes.set_title('Quality of Communalities',size=14)
-    _axes.tick_params(axis='both',labelsize=10)
+    src.SetLabelsToPlot(
+        _axes,
+        'Quality of Communalities',
+        'Features',
+        'Communality',
+        14,11,10
+    )
     _axes.tick_params(axis='x',rotation=90)
 
     _fig
@@ -1309,10 +1304,14 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     )
     _axes.set_xticklabels(range(1,5))
     _axes.set_yticklabels(SleepDataset_Processed.columns)
-    _axes.set_xlabel('Factors',size=12)
-    _axes.set_ylabel('Features',size=12)
-    _axes.set_title('Factor Loadings',size=14)
-    _axes.tick_params(axis='both',labelsize=8)
+
+    src.SetLabelsToPlot(
+        _axes,
+        'Factor Loadings',
+        'Factors',
+        'Features',
+        14,12,8
+    )
 
     # _fig.savefig(f'./Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
     _fig
