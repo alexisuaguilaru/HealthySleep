@@ -24,10 +24,10 @@ with app.setup:
 
     from sklearn.decomposition import PCA
     from sklearn.cluster import AgglomerativeClustering , KMeans , DBSCAN
-    from sklearn.preprocessing import StandardScaler
+    from sklearn.preprocessing import scale
     from sklearn.pipeline import Pipeline
 
-    from sklearn.metrics import silhouette_score
+    from sklearn.metrics import silhouette_score , mutual_info_score
 
 
     # Importing Functions and Utils
@@ -44,9 +44,8 @@ def _():
 def _():
     # Setting constants
 
-    RANDOM_STATE = 8013
-    PATH = './Datasets/{}SleepDataset.csv'
-    return PATH, RANDOM_STATE
+    PATH = src.PATH + '{}SleepDataset.csv'
+    return (PATH,)
 
 
 @app.cell
@@ -72,12 +71,18 @@ def _(ProcessedSleepDataset, SleepDataset):
     TargetLabel = 'Quality of Sleep'
     Features = [_label for _label in SleepDataset.columns if _label != TargetLabel]
     ProcessedFeatures = [_label for _label in ProcessedSleepDataset.columns if _label != TargetLabel]
-    return
+    return ProcessedFeatures, TargetLabel
 
 
 @app.cell
 def _():
     mo.md(r"# Data Mining")
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"")
     return
 
 
@@ -89,139 +94,199 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"")
+    mo.md(
+        r"""
+        Using the processed dataset with encoded categorical values, K Means and Agglomerative clustering (both single and complete) are employed in order to evaluate which algorithm generates the best results using Euclidean distance as the metric (due to the presence of mixed data).
+    
+        No scaling transformation was performed, even though the features belong to different scales, because it was noted that rescaling "distorts" the distances between data points enough to lose part of the inherent structure they possess, that is, the groups they form and their natural separability.
+    
+        Due to how each clustering algorithm works, Silhouette score was chosen to measure the quality of the algorithms and compare them based on how well they separate and generate clusters. Using the elbow method, it is found that similar results are reached where the optimal number of clusters is $6$ along with comparable scores.
+        """
+    )
     return
 
 
-@app.function
-def PlotSilhouetteResults(
-        ValuesCriterion: list[int|float],
-        SilhouetteScores: list[float],
-        CriterionName: str,
-        ClusteringTechnique: str,
-    ):
+@app.cell
+def _(ProcessedFeatures):
+    # Creating selectors of features for plotting the values
 
-    fig , axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
+    FeatureOptionsCluster_1 = mo.ui.dropdown(
+        ProcessedFeatures,
+        value = ProcessedFeatures[0],
+        label = 'Select a Feature',
+        allow_select_none = False,
     )
 
-    sns.lineplot(
-        x = ValuesCriterion,
-        y = SilhouetteScores,
-        color = src.BaseColor,
-        linestyle = '--',
-        linewidth = 1.5,
-        marker = 'o',
-        markersize = 6,
-        ax = axes,
+    FeatureOptionsCluster_2 = mo.ui.dropdown(
+        ProcessedFeatures,
+        value = ProcessedFeatures[0],
+        label = 'Select a Feature',
+        allow_select_none = False,
     )
-    axes.set_xlabel(CriterionName,size=12)
-    axes.set_ylabel('Inertia value',size=12)
-    axes.set_title(f'Scree Plot for Selection of\n{CriterionName} in {ClusteringTechnique}',size=14)
-    axes.tick_params(axis='both',labelsize=10)
-
-    return fig
+    return FeatureOptionsCluster_1, FeatureOptionsCluster_2
 
 
 @app.cell
-def _(ProcessedSleepDataset, RANDOM_STATE):
+def _(ProcessedFeatures, ProcessedSleepDataset, TargetLabel):
+    # Splitting dataset into features and target values
+
+    ProcessedSleepDataset_Features = ProcessedSleepDataset[ProcessedFeatures]
+    ProcessedSleepDataset_ScaledFeatures = scale(ProcessedSleepDataset_Features)
+    ProcessedSleepDataset_Target = ProcessedSleepDataset[TargetLabel]
+
+    DatasetClustering = ProcessedSleepDataset_Features
+    return (
+        DatasetClustering,
+        ProcessedSleepDataset_Features,
+        ProcessedSleepDataset_Target,
+    )
+
+
+@app.cell
+def _(
+    FeatureOptionsCluster_1,
+    FeatureOptionsCluster_2,
+    ProcessedSleepDataset_Features,
+):
+    _fig , _axes = src.CreatePlot()
+
+    _Feature_1 = FeatureOptionsCluster_1.value
+    _Feature_2 = FeatureOptionsCluster_2.value
+    sns.scatterplot(
+        x = ProcessedSleepDataset_Features[_Feature_1],
+        y = ProcessedSleepDataset_Features[_Feature_2],
+        c = src.BaseColor,
+        ax = _axes
+    )
+    src.SetLabelsToPlot(
+        _axes,
+        f'{_Feature_1} vs {_Feature_2}',
+        _Feature_1,
+        _Feature_2,
+    )
+
+    mo.vstack(
+        [
+            mo.hstack([FeatureOptionsCluster_1,FeatureOptionsCluster_2]),
+            _fig 
+        ]
+    )
+    return
+
+
+@app.cell
+def _(DatasetClustering):
     # Calculating and plotting Silhouette scores for K-Means
 
-    _DimensionalReduction = PCA(n_components=4,whiten=True,random_state=RANDOM_STATE)
-    _Clustering = KMeans(random_state=RANDOM_STATE)
-    _TransformedDataset = _DimensionalReduction.fit_transform(ProcessedSleepDataset)
+    ClusteringKMeans = KMeans(random_state=src.RANDOM_STATE)
 
     _MaxNumClusters = 10
     _SilhouetteResults = []
     for _num_clusters in range(2,_MaxNumClusters+1):
-        _Clustering.set_params(n_clusters=_num_clusters)
-        _labels_clusters = _Clustering.fit_predict(ProcessedSleepDataset)
+        ClusteringKMeans.set_params(n_clusters=_num_clusters)
+        _labels_clusters = ClusteringKMeans.fit_predict(DatasetClustering)
 
-        _score = silhouette_score(_TransformedDataset,_labels_clusters)
+        _score = silhouette_score(DatasetClustering,_labels_clusters)
         _SilhouetteResults.append(_score)
 
-    PlotSilhouetteResults(
+    _fig = src.PlotSilhouetteResults(
         range(2,_MaxNumClusters+1),
         _SilhouetteResults,
         'Number of Clusters',
         'K Means'
     )
-    return
+
+    _fig
+    return (ClusteringKMeans,)
 
 
 @app.cell
-def _(ProcessedSleepDataset, RANDOM_STATE):
+def _(DatasetClustering):
     # Calculating and plotting Silhouette scores for Single Agglomerative Clustering
 
-    _DimensionalReduction = PCA(n_components=4,whiten=True,random_state=RANDOM_STATE)
-    _Clustering = AgglomerativeClustering(linkage='single')
-    _TransformedDataset = _DimensionalReduction.fit_transform(ProcessedSleepDataset)
+    ClusteringAgglomerativeSingle = AgglomerativeClustering(linkage='single')
 
     _MaxNumClusters = 10
     _SilhouetteResults = []
     for _num_clusters in range(2,_MaxNumClusters+1):
-        _Clustering.set_params(n_clusters=_num_clusters)
-        _labels_clusters = _Clustering.fit_predict(ProcessedSleepDataset)
+        ClusteringAgglomerativeSingle.set_params(n_clusters=_num_clusters)
+        _labels_clusters = ClusteringAgglomerativeSingle.fit_predict(DatasetClustering)
 
-        _score = silhouette_score(_TransformedDataset,_labels_clusters)
+        _score = silhouette_score(DatasetClustering,_labels_clusters)
         _SilhouetteResults.append(_score)
 
-    PlotSilhouetteResults(
+    _fig = src.PlotSilhouetteResults(
         range(2,_MaxNumClusters+1),
         _SilhouetteResults,
         'Number of Clusters',
         'Single Agglomerative'
     )
-    return
+
+    _fig
+    return (ClusteringAgglomerativeSingle,)
 
 
 @app.cell
-def _(ProcessedSleepDataset, RANDOM_STATE):
+def _(DatasetClustering):
     # Calculating and plotting Silhouette scores for Complete Agglomerative Clustering
 
-    _DimensionalReduction = PCA(n_components=4,whiten=True,random_state=RANDOM_STATE)
-    _Clustering = AgglomerativeClustering(linkage='complete')
-    _TransformedDataset = _DimensionalReduction.fit_transform(ProcessedSleepDataset)
+    ClusteringAgglomerativeComplete = AgglomerativeClustering(linkage='complete')
 
     _MaxNumClusters = 10
     _SilhouetteResults = []
     for _num_clusters in range(2,_MaxNumClusters+1):
-        _Clustering.set_params(n_clusters=_num_clusters)
-        _labels_clusters = _Clustering.fit_predict(ProcessedSleepDataset)
+        ClusteringAgglomerativeComplete.set_params(n_clusters=_num_clusters)
+        _labels_clusters = ClusteringAgglomerativeComplete.fit_predict(DatasetClustering)
 
-        _score = silhouette_score(_TransformedDataset,_labels_clusters)
+        _score = silhouette_score(DatasetClustering,_labels_clusters)
         _SilhouetteResults.append(_score)
 
-    PlotSilhouetteResults(
+    _fig = src.PlotSilhouetteResults(
         range(2,_MaxNumClusters+1),
         _SilhouetteResults,
         'Number of Clusters',
         'Complete Agglomerative'
     )
+
+    _fig
+    return (ClusteringAgglomerativeComplete,)
+
+
+@app.cell
+def _():
+    mo.md(r"Using mutual information score to compare the labels assigned by the clustering algorithms and the ground truth labels of the target (`Quality of Sleep`), the three algorithms have similar and significant scores. This indicates that the processed data (and therefore the original data) form clusters, that is, there exists some pattern surrounding the sleep quality of patients that allows the data to have a structure enabling the generation of potential profiles and descriptions of patients based on their factors and habits.")
     return
 
 
 @app.cell
-def _(ProcessedSleepDataset, RANDOM_STATE):
-    # Calculating and plotting Silhouette scores for DBSCAN
+def _(
+    ClusteringAgglomerativeComplete,
+    ClusteringAgglomerativeSingle,
+    ClusteringKMeans,
+    DatasetClustering,
+    ProcessedSleepDataset_Target,
+):
+    # Evaluating each clustering algorithm with the best number of clusters
 
-    _DimensionalReduction = PCA(n_components=4,whiten=True,random_state=RANDOM_STATE)
-    _Clustering = DBSCAN()
-    _TransformedDataset = _DimensionalReduction.fit_transform(ProcessedSleepDataset)
+    _ClusteringAlgorithms = [
+        (ClusteringKMeans,'K Means'),
+        (ClusteringAgglomerativeSingle,'Single Agglomerative'),
+        (ClusteringAgglomerativeComplete,'Complete Agglomerative'),
+    ]
 
-    _SilhouetteResults = []
-    for _num_clusters in np.linspace(0.1,1,10):
-        _Clustering.set_params(eps=_num_clusters)
-        _labels_clusters = _Clustering.fit_predict(ProcessedSleepDataset)
+    _TableEvaluationResults = []
+    for _clustering , _name in _ClusteringAlgorithms:
+        _clustering.set_params(n_clusters=6)
+        _labels_clusters = _clustering.fit_predict(DatasetClustering)
 
-        _score = silhouette_score(_TransformedDataset,_labels_clusters)
-        _SilhouetteResults.append(_score)
+        _score = mutual_info_score(ProcessedSleepDataset_Target,_labels_clusters)
+        _TableEvaluationResults.append([_name,_score])
 
-    PlotSilhouetteResults(
-        np.linspace(0.1,1,10),
-        _SilhouetteResults,
-        'Epsilon',
-        'DBSCAN'
+    mo.vstack(
+        [
+            mo.md('**Mutual Information Scores With 6 Clusters**'),
+            pd.DataFrame(_TableEvaluationResults,columns=['Clustering Algorithm','MI Score']),
+        ]
     )
     return
 
