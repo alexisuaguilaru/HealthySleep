@@ -196,6 +196,7 @@ def _(DatasetClustering):
         'K Means'
     )
 
+    # _fig.savefig(f'./Resources/ClusterAnalysis_ScreeKMeans.jpg')
     _fig
     return (ClusteringKMeans,)
 
@@ -286,6 +287,87 @@ def _(
         [
             mo.md('**Mutual Information Scores With 6 Clusters**'),
             pd.DataFrame(_TableEvaluationResults,columns=['Clustering Algorithm','MI Score']),
+        ]
+    )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"### 1.1. Profiles of Patients")
+    return
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        Because of K-Means has the best Silhouette score and a high MI score, it is chosen for the profiles and their respective description are generated based on its results of clustering (cluster centers). The next profiles are discovered:
+    
+        * **Profile 1**: Women aged 46 with low stress levels and moderate physical activity, which is reflected in a life with normal blood pressure and heart rate, allowing them to sleep for sufficient time with good rest, and not suffer from insomnia, tend to have sleep apnea derived from a tendency to be overweight. Their main professions are accountants and nursing, fields that allow for a balanced lifestyle with low stress levels.
+    
+        * **Profile 2**: People between 43 and 44 years old with moderately stressful lives, getting 6.5 hours of daily sleep derived or caused by mostly suffering from insomnia, who have low physical activity resulting in overweight along with slightly above-normal blood pressure and heart rate. Their main professions are managers and teachers, fields with constant work pressure that consume most of their time.
+    
+        * **Profile 3**: Women between 48 and 49 years old with deplorable sleep quality and rest derived from suffering from sleep apnea, which causes a highly stressful life with arrhythmias (high blood pressure and heart rate), they have high levels of physical activity which benefits their overall condition. They are mostly nurses, a field where sleep hours are low and work shifts are stressful.
+    
+        * **Profile 4**: Men aged 36 with moderately stressful lives that allow them to have ideal rest and recovery, engage in some physical activity, which is explained by considering they don't suffer from sleep disorders or overweight/obesity. They are mostly doctors and lawyers by profession, fields that do involve stress but once they achieve a stable position allow for a more controlled life.
+    
+        * **Profile 5**: Mostly men aged 35 with deplorable sleep quality derived from suffering from sleep disorders that result in less willingness to engage in physical activity and worse quality of life (greater tendency to be overweight), which also leads to higher than normal blood pressure and heart rate. They are mostly software engineers and sales representatives, two fields that require high time demands and constant workload.
+    
+        * **Profile 6**: People between 42 and 43 years old with moderate sleep quality living lives with little physical activity but without sleep disorders or overweight, both their blood pressure and heart rate are slightly above normal but not alarming. They are mostly engineers and scientists, fields that limit time dedicated to physical and recreational activities.
+        """
+    )
+    return
+
+
+@app.cell
+def _(
+    ClusteringKMeans,
+    DatasetClustering,
+    ProcessedSleepDataset_Target,
+    TargetLabel,
+):
+    # Calculating values for feature and target in each profile
+
+    ClusteringKMeans.set_params(n_clusters=6)
+    ClusteringLabels = ClusteringKMeans.fit_predict(DatasetClustering)
+
+    ClusterProfiles = pd.DataFrame(
+        ClusteringKMeans.cluster_centers_,
+        columns = DatasetClustering.columns,
+    )
+    ClusterProfiles[TargetLabel] = ProcessedSleepDataset_Target.groupby(ClusteringLabels).mean()
+
+    ClusterProfiles.index = [f'Profile {_profile}' for _profile in range(1,7)]
+    ClusterProfiles = ClusterProfiles.T
+    return (ClusterProfiles,)
+
+
+@app.cell
+def _(ClusterProfiles):
+    mo.vstack(
+        [
+            mo.md('**Profiles for Each Cluster**'),
+            ClusterProfiles,
+        ]
+    )
+    return
+
+
+@app.cell
+def _(ClusterProfiles):
+    MaxMinClusterProfiles = pd.concat(
+        [
+            ClusterProfiles.apply(np.argmin,axis=1),
+            ClusterProfiles.apply(np.argmax,axis=1),
+        ],axis=1,
+    ) + 1
+    MaxMinClusterProfiles.columns = ['Min Value Profile','Max Value Profile']
+
+    mo.vstack(
+        [
+            mo.md('**Minimum and Maximum Values on each Feature**'),
+            MaxMinClusterProfiles,
         ]
     )
     return
