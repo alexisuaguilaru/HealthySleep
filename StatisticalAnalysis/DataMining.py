@@ -26,8 +26,9 @@ with app.setup:
     from sklearn.cluster import AgglomerativeClustering , KMeans , DBSCAN
     from sklearn.preprocessing import scale
     from sklearn.pipeline import Pipeline
-
     from sklearn.metrics import silhouette_score , mutual_info_score
+
+    from mlxtend.frequent_patterns import apriori, association_rules
 
 
     # Importing Functions and Utils
@@ -398,6 +399,8 @@ def _(ProcessedSleepDataset, SleepDataset):
 
     EncodedSleepDataset = ProcessedSleepDataset.copy(True)
 
+    EncodedSleepDataset.rename(columns={'Gender':'Male'},inplace=True)
+
     EncodedSleepDataset['BMI Category'] = SleepDataset['BMI Category']
     src.OneHotEncoderFeature(
         EncodedSleepDataset,'BMI Category',
@@ -457,6 +460,53 @@ def _(EncodedSleepDataset):
             EncodedSleepDataset,
         ]
     )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"")
+    return
+
+
+@app.cell
+def _(EncodedSleepDataset):
+    # Searching frequent patterns on the dataset
+
+    BooleanSleepDataset = EncodedSleepDataset.astype(bool)
+
+    FrequentPatterns = apriori(
+        BooleanSleepDataset,
+        min_support = 0.1,
+        use_colnames = True,
+    )
+    FrequentPatterns['itemsets'] = FrequentPatterns['itemsets'].apply(list)
+
+    mo.vstack(
+        [
+            mo.md('**Frequent Patterns**'),
+            FrequentPatterns,
+        ]
+    )
+    return (FrequentPatterns,)
+
+
+@app.cell
+def _(FrequentPatterns):
+    # Generation of association rules
+
+    AssociationRules = association_rules(
+        FrequentPatterns,
+        metric = 'lift',
+        min_threshold = 1,
+    )
+    AssociationRules['antecedents'] = AssociationRules['antecedents'].apply(list)
+    AssociationRules['consequents'] = AssociationRules['consequents'].apply(list)
+
+    _RelevantMetrics = ['support','confidence','lift',]
+    AssociationRules.sort_values(_RelevantMetrics,ascending=False,inplace=True)
+    AssociationRules.query("support > 0.15 & confidence > 0.9 & lift > 5",inplace=True)
+    AssociationRules[['antecedents','consequents',*_RelevantMetrics]]
     return
 
 
