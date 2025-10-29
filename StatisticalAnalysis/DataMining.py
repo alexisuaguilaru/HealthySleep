@@ -373,5 +373,92 @@ def _(ClusterProfiles):
     return
 
 
+@app.cell
+def _():
+    mo.md(r"## 2. Patterns And Association Rules")
+    return
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        In order to apply pattern extraction techniques, the data must be binary; that is, each feature must represent the absence or presence of a certain property. Therefore, the numerical features first had to be categorized (trough creating value ranges) before applying One Hot Encoding to each of them to obtain their respective binary features (values).
+    
+        For features such as `Age`, `Sleep Duration`, `Heart Rate`, `Daily Steps`, and `Blood Pressure`, the official value ranges were researched according to recognizable health organizations. For the remaining features, ranges were created based on the values they take and their descriptions according to the metadata of the dataset (these ranges are more arbitrary).
+        """
+    )
+    return
+
+
+@app.cell
+def _(ProcessedSleepDataset, SleepDataset):
+    # Discretization of numerical values 
+    # (transformation into categorical features)
+
+    EncodedSleepDataset = ProcessedSleepDataset.copy(True)
+
+    EncodedSleepDataset['BMI Category'] = SleepDataset['BMI Category']
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'BMI Category',
+        None,None,
+    )
+
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Age',[25,30,50,60],
+        ['Young Adult','Adult','Middle-Aged'],
+    )
+
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Sleep Duration',
+        [5,6,7,9],['Lack','Short','Optimal'],
+    )
+
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Quality of Sleep',
+        [3,6,8,10],['Low','Regular','Excellent'],
+    )
+
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Physical Activity Level',
+        [20,45,60,75,100],['Sedentary','Low','Moderate','High'],
+    )
+ 
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Stress Level',
+        [2,5,7,9],['Low','Moderate','High'],
+    )
+                
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Heart Rate',
+        [60,80,100],['Normal','High'],
+    )
+                
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Daily Steps',
+        [2000,5000,7000,8000,11000],
+        ['Sedentary','Low','Moderate','High'],
+    )
+
+    EncodedSleepDataset['Blood Pressure'] = EncodedSleepDataset[['Blood Pressure Systolic','Blood Pressure Diastolic']].apply(lambda blood_pressure: src.CategorizeBloodPressure(*blood_pressure),axis=1)
+    EncodedSleepDataset.drop(columns=['Blood Pressure Systolic','Blood Pressure Diastolic'],inplace=True)
+    src.OneHotEncoderFeature(
+        EncodedSleepDataset,'Blood Pressure',
+        None,None,
+    )
+    return (EncodedSleepDataset,)
+
+
+@app.cell
+def _(EncodedSleepDataset):
+    mo.vstack(
+        [
+            mo.md('**Examples of Encoded Records**'),
+            EncodedSleepDataset,
+        ]
+    )
+    return
+
+
 if __name__ == "__main__":
     app.run()
