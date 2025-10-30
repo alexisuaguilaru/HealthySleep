@@ -41,6 +41,23 @@ The interpretation of the resulted factors is given:
 
 <img src="./Resources/FactorAnalysis_FactorLoadings.jpg" alt="Factor loadings" width=600 height=400/>
 
+## Data Mining
+The full data mining process can be found in [Data Mining](./StatisticalAnalysis/DataMining.py) as an interactive Marimo notebook. This notebook explains in detail each decision taken to perform the extraction of insights.
+
+### Cluster Analysis
+Using K-Means on the dataset with encoded categorical features, without standarization and Euclidean distance, 6 profiles were discovered from the centroids of each clusters:
+* **Profile 1**: Consists mostly of women (aged 46) who maintain a balanced lifestyle with low stress, moderate physical activity, and normal vitals (blood pressure and heart rate). Despite achieving good sleep duration and rest, they show a tendency toward overweight resulting in sleep apnea. They are typically accountants and nurses.
+* **Profile 2**: Consists of individuals (aged 43–44) experiencing moderate stress and insomnia, which severely limits their sleep to 6.5 hours. This stress, combined with low physical activity, leads to overweight and slightly elevated blood pressure and heart rate. They are frequently managers and teachers, professions known for high constant pressure.
+* **Profile 3**: Primarily women (aged 48–49) characterized by a highly stressful life linked to a deplorable sleep quality due to sleep apnea. This poor rest causes arrhythmias (high blood pressure and heart rate). Crucially, their high physical activity levels likely benefit their overall condition despite the stress. They are mostly nurses.
+* **Profile 4**: Consists of men (aged 36) who manage their moderate stress well, allowing for ideal rest and recovery. They maintain some physical activity and do not suffer from any sleep disorders or overweight/obesity. They are typically doctors and lawyers who have established a stable, controlled professional life.
+* **Profile 5**: Dominated by men (aged 35) suffering from deplorable sleep quality due to sleep disorders. This directly results in a lack of willingness to engage in physical activity and a resulting overweight tendency, accompanied by elevated blood pressure and heart rate. They work in demanding fields like software engineering and sales.
+* **Profile 6**: Includes individuals (aged 42–43) who enjoy moderate sleep quality and are not overweight or affected by sleep disorders. They have low physical activity levels, which results in slightly elevated (but non-alarming) vitals. They are primarily engineers and scientists, professions where work demands limit the time available for exercise.
+
+### Association Rules
+With a minimum support of 15%, confidence of 90% and lift of 5, two relevante rules were discovered for explaining and showing some associations between the data and real facts:
+* **Rule 1**: Reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
+* **Rule 2**: Shows the association that exists between having a precarious health status and the habits of an individual. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
+
 ## Installation and Usage
 1. First it has to clone the repository and move to the project directory:
 ```bash
@@ -53,9 +70,10 @@ cd HealthySleep
 pip install -r requirements.txt
 ```
 
-3. Finally, run and view the Marimo notebook with the following command:
+3. Finally, run and view the Marimo notebooks with the following commands:
 ```bash
 marimo run StatisticalAnalysis/StatisticalAnalysis.py
+marimo run StatisticalAnalysis/DataMining.py
 ```
 
 ## Author, Affiliation and Contact

@@ -83,7 +83,7 @@ def _():
 
 @app.cell
 def _():
-    mo.md(r"")
+    mo.md(r"Derived from the statistical analysis performed, different patterns and associations were detected that can be clarified or discovered using Data Mining techniques. This notebook explores and discusses the results of these techniques (Cluster Analysis and Association Rules), which allow for the verification of the observations made during the EDA.")
     return
 
 
@@ -465,7 +465,7 @@ def _(EncodedSleepDataset):
 
 @app.cell
 def _():
-    mo.md(r"Based on the results obtained from the frequent patterns, using a minimum support of 15% (approximately 56 patients), association rules are derived whose confidence is greater than 90% and a lift greater than 5 to ensure they are strong rules and non-random behaviors. The rules found and considered relevant for the study are the following:")
+    mo.md(r"Based on the results obtained from the frequent patterns, using a minimum support of 15% (approximately 56 patients), association rules are derived whose confidence is greater than 90% and a lift greater than 5 to ensure they are strong rules and non-random behaviors. The rules discovered and considered relevant for the study are the following:")
     return
 
 
@@ -540,7 +540,13 @@ def _(FrequentPatterns):
     _RelevantMetrics = ['support','confidence','lift',]
     AssociationRules.sort_values(_RelevantMetrics,ascending=False,inplace=True)
     AssociationRules.query("confidence > 0.9 & lift > 5",inplace=True)
-    AssociationRules[['antecedents','consequents',*_RelevantMetrics]]
+
+    mo.vstack(
+        [
+            mo.md('**Association Rules**'),
+            AssociationRules[['antecedents','consequents',*_RelevantMetrics]],
+        ]
+    )
     return
 
 
