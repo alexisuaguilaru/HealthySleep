@@ -465,7 +465,41 @@ def _(EncodedSleepDataset):
 
 @app.cell
 def _():
-    mo.md(r"")
+    mo.md(r"Based on the results obtained from the frequent patterns, using a minimum support of 15% (approximately 56 patients), association rules are derived whose confidence is greater than 90% and a lift greater than 5 to ensure they are strong rules and non-random behaviors. The rules found and considered relevant for the study are the following:")
+    return
+
+
+@app.cell
+def _():
+    _RelevantRules = pd.DataFrame(
+        [
+            ['Sleep Duration = Optimal , Age = Middle-Aged , Stress Level = Low','Heart Rate = Normal , Quality of Sleep = Excellent'],
+            ['BMI Category = Overweight , Sleep Disorder = Insomnia','Sleep Duration = Short , Daily Steps = Low , Heart Rate = Normal , Physical Activity Level = Sedentary'],
+            ['Blood Pressure  = Hypertension Stage 2, Occupation = Nurse','Sleep Disorder = Sleep Apnea , BMI Category = Overweight'],
+        ],
+        columns = ['Antecedent','Consequent']
+    )
+
+    mo.vstack(
+        [
+            mo.md('**Relevant Association Rules**'),
+            _RelevantRules,
+        ]
+    )
+    return
+
+
+@app.cell
+def _():
+    mo.md(
+        r"""
+        The first rule reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
+    
+        The second rule shows the association that exists between having a precarious health status (overweight and insomnia) and the habits of an individual. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
+    
+        The third rule appears as a particular case within the professional life of nurses, where those suffering from hypertension tend to be overweight and have apnea. This fact can be verified by considering that the onset of hypertension is associated with being overweight and poor habits, and that apnea is frequent among overweight individuals.
+        """
+    )
     return
 
 
@@ -477,7 +511,7 @@ def _(EncodedSleepDataset):
 
     FrequentPatterns = apriori(
         BooleanSleepDataset,
-        min_support = 0.1,
+        min_support = 0.15,
         use_colnames = True,
     )
     FrequentPatterns['itemsets'] = FrequentPatterns['itemsets'].apply(list)
@@ -505,7 +539,7 @@ def _(FrequentPatterns):
 
     _RelevantMetrics = ['support','confidence','lift',]
     AssociationRules.sort_values(_RelevantMetrics,ascending=False,inplace=True)
-    AssociationRules.query("support > 0.15 & confidence > 0.9 & lift > 5",inplace=True)
+    AssociationRules.query("confidence > 0.9 & lift > 5",inplace=True)
     AssociationRules[['antecedents','consequents',*_RelevantMetrics]]
     return
 
