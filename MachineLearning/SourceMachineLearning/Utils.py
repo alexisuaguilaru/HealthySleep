@@ -15,8 +15,8 @@ def SplittingFeatures(
     Features: list[str]
         Features that are being splitted
 
-    Return
-    ------
+    Returns
+    -------
     Numerical: list[str]
         Numerical features (integer, float)
     Binary: list[str]
