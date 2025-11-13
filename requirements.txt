@@ -9,4 +9,5 @@ scikit-learn >= 1.7.0
 statsmodels >= 0.14.5
 mlxtend >= 0.23.4
 marimo >= 0.16
+jupyter >= 1.1.1
 optuna >= 4.4.0

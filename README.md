@@ -1,7 +1,7 @@
 # Healthy Sleep Analysis
 
 ## Abstract
-Statistical analysis of sleep quality of patients based on their habits, quality of life, physical activity and sleep disorders.
+This project aims to perform a Statistical Analysis (EDA) and build a Machine Learning (ML) model to predict patient sleep quality based on their habits, quality of life, physical activity, and sleep disorders.
 
 ## About the Dataset
 The dataset is taken from [Health and Sleep relation](https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024). This dataset explores the relationship between sleep patterns and overall health. It includes detailed information on individual sleep habits, health metrics, and lifestyle factors, enabling analysis of how sleep quality and duration impact physical and mental well-being.
@@ -58,6 +58,17 @@ With a minimum support of 15%, confidence of 90% and lift of 5, two relevante ru
 * **Rule 1**: Reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
 * **Rule 2**: Shows the association that exists between having a precarious health status and the habits of an individual. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
 
+## Machine Learning Models
+The detailed process for model definition and creation can be found in [ModelsTraining.ipynb](./MachineLearning/ModelsTraining.ipynb). Four different classification models are proposed, trained with weighted F1 (due to the notable class imbalance in the dataset) and fine-tuned using [Optuna](https://optuna.org/) in order to predict the `Quality of Sleep` of a patient. Derived from the [Statistical Analysis](#exploratory-data-analysis), non-linear models (SVM, Random Forest, and AdaBoost) and a linear model (Logistic Regression) are employed, with the latter serving as a baseline and comparison point for the other models.
+
+Using Logistic Regression as a baseline allows for the evaluation that the classes were not entirely linearly separable. However, the addition of non-linear elements (polynomial operations or non-linear functions) enables the classes to be correctly separated and classified (based on the confusion matrices), where errors decrease and metrics increase considerably. Furthermore, these non-linear models generate more consistent and robust predictions; specifically, when they do not predict the correct class, their prediction differs by at most one class or level (this comparison method is valid because `Quality of Sleep` is an ordinal variable).
+
+<img src="./Resources/ConfusionMatrix_Models.jpg" alt="Correlation between Sleep Duration and Quality of Sleep" width=450/>
+
+Based on the results and their subsequent analysis performed in [ModelsTraining.ipynb](./MachineLearning/ModelsTraining.ipynb), the AdaBoost model is chosen for production deployment, as its metrics are high and its predictions are consistent. These characteristics are a result of how this ensemble is trained, along with appropriate fine-tuning.
+
+<img src="./Resources/Results_Models.jpg" alt="Correlation between Sleep Duration and Quality of Sleep" width=450/>
+
 ## Installation and Usage
 1. First it has to clone the repository and move to the project directory:
 ```bash
@@ -70,10 +81,17 @@ cd HealthySleep
 pip install -r requirements.txt
 ```
 
-3. Finally, run and view the Marimo notebooks with the following commands:
+### Statistical Analysis
+1. Run and view the Marimo notebooks with the following commands:
 ```bash
 marimo run StatisticalAnalysis/StatisticalAnalysis.py
 marimo run StatisticalAnalysis/DataMining.py
+```
+
+### Machine Learning Models
+1. Open and run the Jupyter notebook with the following command:
+```bash
+jupyter notebook MachineLearning/ModelsTraining.ipynb
 ```
 
 ## Author, Affiliation and Contact
