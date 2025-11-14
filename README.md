@@ -63,7 +63,7 @@ The detailed process for model definition and creation can be found in [ModelsTr
 
 Using Logistic Regression as a baseline allows for the evaluation that the classes were not entirely linearly separable. However, the addition of non-linear elements (polynomial operations or non-linear functions) enables the classes to be correctly separated and classified (based on the confusion matrices), where errors decrease and metrics increase considerably. Furthermore, these non-linear models generate more consistent and robust predictions; specifically, when they do not predict the correct class, their prediction differs by at most one class or level (this comparison method is valid because `Quality of Sleep` is an ordinal variable).
 
-<img src="./Resources/ConfusionMatrix_Models.jpg" alt="Correlation between Sleep Duration and Quality of Sleep" width=450/>
+<img src="./Resources/ConfusionMatrix_Models.jpg" alt="Correlation between Sleep Duration and Quality of Sleep" width=500/>
 
 Based on the results and their subsequent analysis performed in [ModelsTraining.ipynb](./MachineLearning/ModelsTraining.ipynb), the AdaBoost model is chosen for production deployment, as its metrics are high and its predictions are consistent. These characteristics are a result of how this ensemble is trained, along with appropriate fine-tuning.
 
