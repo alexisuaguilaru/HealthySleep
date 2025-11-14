@@ -1,5 +1,9 @@
 from fastapi import FastAPI
-from ModelAPI import InputMLModel , OutputMLModel
+from ModelAPI import InputMLModel , OutputMLModel , LoadModel , ClassifyPatient
+
+import pandas as pd
+
+ML_Model = LoadModel('./','ML_Model')
 
 app = FastAPI()
 
@@ -8,5 +12,5 @@ app = FastAPI()
     summary = 'Method for classify the quality of sleep of a patient',
     response_model = OutputMLModel,
 )
-def Classify(Input: InputMLModel):
-    return {'LevelQualitySleep':0,'NameQualitySleep':'Low'}
+def Classify(InputPatient: InputMLModel):
+    return ClassifyPatient(InputPatient,ML_Model)

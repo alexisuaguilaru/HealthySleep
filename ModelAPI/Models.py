@@ -1,9 +1,13 @@
 from re import findall
-from pydantic import BaseModel , Field , ConfigDict , AliasGenerator
+from pydantic import BaseModel , Field , ConfigDict , AliasGenerator , computed_field
 from typing import Literal
 
 RegexFieldNameRepresentation = r'[A-Z][a-z]+'
 class InputMLModel(BaseModel):
+    """
+    Data model for defining the input features of a patient.
+    """
+
     Gender: Literal['Male', 'Female'] = Field(...,)
 
     Age: int = Field(...,ge=0)
@@ -36,7 +40,22 @@ class InputMLModel(BaseModel):
         )
     )
 
+NamesLevelQualitySleep = {
+    4: 'Deficient',
+    5: 'Poor',
+    6: 'Acceptable',
+    7: 'Good',
+    8: 'Optimal',
+    9: 'Regenerative',
+}
 class OutputMLModel(BaseModel):
-    LevelQualitySleep: int = Field(...,ge=0)
+    """
+    Data model for defining the predicted output for a patient.
+    """
 
-    NameQualitySleep: str = Field(...)
+    LevelQualitySleep: int = Field(...,ge=4,le=9)
+
+    @computed_field
+    @property
+    def NameQualitySleep(self) -> str:
+        return NamesLevelQualitySleep[self.LevelQualitySleep]
