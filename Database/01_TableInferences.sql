@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS ML.ModelInferences (
                               'Teacher', 'Nurse', 'Engineer', 'Accountant', 'Scientist', 
                               'Lawyer', 'Salesperson', 'Manager')),
 
-    SleepDuration NUMERIC(3, 2) NOT NULL 
+    SleepDuration NUMERIC(5, 2) NOT NULL 
         CHECK (SleepDuration >= 0 AND SleepDuration <= 24),
 
     PhysicalActivityLevel SMALLINT NOT NULL 
@@ -39,5 +39,8 @@ CREATE TABLE IF NOT EXISTS ML.ModelInferences (
         CHECK (BloodPressureSystolic >= 0),
 
     BloodPressureDiastolic SMALLINT NOT NULL
-        CHECK (BloodPressureDiastolic >= 0)
+        CHECK (BloodPressureDiastolic >= 0),
+
+    LevelQualitySleep SMALLINT NOT NULL
+        CHECK (LevelQualitySleep >= 4 AND LevelQualitySleep <= 9)
 );
