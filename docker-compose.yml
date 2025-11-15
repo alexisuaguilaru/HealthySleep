@@ -16,5 +16,21 @@ services:
             - DataInference:/var/lib/postgresql/data
             - ./Database:/docker-entrypoint-initdb.d
 
+    api:
+        container_name: api
+        build:
+            context: ./ModelAPI
+            dockerfile: Dockerfile
+        ports:
+            - "8000:8000"
+        environment:
+            DB_HOST: database
+            DB_PORT: 5432
+            DB_NAME: ${POSTGRES_DB}
+            DB_USER: ${API_DB_USER}
+            DB_PASSWORD: ${API_DB_PASSWORD}
+        depends_on:
+            - database
+
 volumes:
     DataInference: 
