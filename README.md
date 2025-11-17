@@ -69,6 +69,11 @@ Based on the results and their subsequent analysis performed in [ModelsTraining.
 
 <img src="./Resources/Results_Models.jpg" alt="Correlation between Sleep Duration and Quality of Sleep" width=450/>
 
+## Model API 
+A RESTful API was implemented using [FastAPI](https://fastapi.tiangolo.com/) to classify incoming patient requests. The API utilizes a POST method to process the patient features via the model developed in the [Machine Learning Models](#machine-learning-models) section. For long-term model evaluation, the patient features and their predicted classification are logged into a PostgreSQL database. 
+
+The main entrypoint for the API is the `POST /Classify` endpoint, where the request body contains the patient features. The response includes the predicted level and name of the quality of sleep of the patient.
+
 ## Installation and Usage
 1. First it has to clone the repository and move to the project directory:
 ```bash
@@ -81,7 +86,7 @@ cd HealthySleep
 pip install -r requirements.txt
 ```
 
-### Statistical Analysis
+### Statistical Analysis (EDA and Data Mining)
 1. Run and view the Marimo notebooks with the following commands:
 ```bash
 marimo run StatisticalAnalysis/StatisticalAnalysis.py
