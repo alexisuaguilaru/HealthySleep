@@ -14,7 +14,7 @@ services:
 
         volumes:
             - DataInference:/var/lib/postgresql/data
-            - ./Database:/docker-entrypoint-initdb.d
+            - ./Database:/docker-entrypoint-initdb.d:ro
 
     api:
         container_name: api
