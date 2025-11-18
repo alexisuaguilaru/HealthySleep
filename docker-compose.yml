@@ -32,5 +32,17 @@ services:
         depends_on:
             - database
 
+    frontend:
+        container_name: frontend
+        build:
+            context: ./Frontend
+            dockerfile: Dockerfile
+            args:
+                VITE_API_URL: http://api:8000
+        ports:
+            - "8080:8080"
+        depends_on:
+            - api
+
 volumes:
     DataInference: 

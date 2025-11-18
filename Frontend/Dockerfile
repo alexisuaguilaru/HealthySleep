@@ -1,0 +1,31 @@
+# STAGE 1: Build
+FROM node:24-alpine AS build
+
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+WORKDIR /Frontend
+
+COPY package.json ./
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+
+# STAGE 2: Run
+FROM node:24-alpine AS run
+
+ENV APP_USER=vue_user
+ENV APP_HOME=/home/$APP_USER/Frontend
+RUN addgroup -S $APP_USER && adduser -S $APP_USER -G $APP_USER
+
+COPY --from=build /Frontend/dist $APP_HOME
+
+RUN chown -R $APP_USER:$APP_USER $APP_HOME
+
+EXPOSE 8080
+
+USER $APP_USER
+
+CMD ["npx", "serve", "-s", "/home/vue_user/Frontend", "-l", "8080"]

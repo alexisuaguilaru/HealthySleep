@@ -49,12 +49,11 @@ const submitForm = async () => {
         console.log(classificationResult.value);
         
     } catch (e) {
-        // if (e.response && e.response.data && e.response.data.detail) {
-            // error.value = e.response.data.detail[0].msg;
-        // } else {
-            // error.value = 'Connection error to API';
-        // }
-        error.value = 'Connection error to API';
+        if (e.response && e.response.data && e.response.data.detail) {
+            error.value = e.response.data.detail[0].msg;
+        } else {
+            error.value = 'Connection error to API';
+        }
     } finally {
         isLoading.value = false;
     }
