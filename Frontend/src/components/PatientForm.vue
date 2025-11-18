@@ -19,6 +19,9 @@ const classificationResult = ref(null);
 const isLoading = ref(false);
 const error = ref(null);
 
+let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+API_URL = API_URL + '/Classify';
+
 const submitForm = async () => {
     isLoading.value = true;
     error.value = null;
@@ -40,17 +43,18 @@ const submitForm = async () => {
     };
 
     try {
-        const response = await axios.post('http://localhost:8000/Classify', payload);
+        const response = await axios.post(API_URL, payload);
         
         classificationResult.value = response.data.NameQualitySleep;
         console.log(classificationResult.value);
         
     } catch (e) {
-        if (e.response && e.response.data && e.response.data.detail) {
-            error.value = e.response.data.detail[0].msg;
-        } else {
-            error.value = 'Connection error to API';
-        }
+        // if (e.response && e.response.data && e.response.data.detail) {
+            // error.value = e.response.data.detail[0].msg;
+        // } else {
+            // error.value = 'Connection error to API';
+        // }
+        error.value = 'Connection error to API';
     } finally {
         isLoading.value = false;
     }
@@ -59,26 +63,26 @@ const submitForm = async () => {
 
 <template>
   <div class="form-container">
-    <h2>Which are your habits/style of life?</h2>
+    <h2>Which Are Your Habits/Style Of Life?</h2>
     
     <form @submit.prevent="submitForm">
       
       <div class="form-group">
-        <label for="gender">Gender:</label>
+        <label for="gender">What is your gender?:</label>
         <select id="gender" v-model="Gender" required>
-          <option value="" disabled>Seleccione</option>
+          <option value="" disabled>Select</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select>
-      </div>
+      </div><br></br>
       
       <div class="form-group">
-        <label for="age">Age (years):</label>
+        <label for="age">How old are you?:</label>
         <input type="number" id="age" v-model.number="Age" required min="0">
-      </div>
+      </div><br></br>
 
       <div class="form-group">
-        <label for="occupation">Occupation:</label>
+        <label for="occupation">What is your current occupation or job title?:</label>
         <select id="occupation" v-model="Occupation" required>
           <option value="" disabled>Select</option>
           <option value="Software Engineer">Software Engineer</option>
@@ -93,67 +97,67 @@ const submitForm = async () => {
           <option value="Salesperson">Salesperson</option>
           <option value="Manager">Manager</option>
         </select>
-      </div>
+      </div><br></br>
       
       <div class="form-group">
-        <label for="sleepDuration">Sleep Duration (0-24h):</label>
+        <label for="sleepDuration">How many hours do you typically sleep per night?:</label>
         <input type="number" id="sleepDuration" v-model.number="SleepDuration" 
                required min="0" max="24" step="0.1">
-      </div>
+      </div><br></br>
 
       <div class="form-group">
-        <label for="physicalActivityLevel">Physical Activity Level (0-100):</label>
+        <label for="physicalActivityLevel">On average, what is your daily physical activity level (in an activity score from 0-100)?:</label>
         <input type="number" id="physicalActivityLevel" v-model.number="PhysicalActivityLevel" 
                required min="0" max="100">
-      </div>
+      </div><br></br>
       
       <div class="form-group">
-        <label for="stressLevel">Stress Level (1-10):</label>
+        <label for="stressLevel">On a scale of 1 to 10 (1 being very calm, 10 being highly stressed), what is your average stress level?:</label>
         <input type="number" id="stressLevel" v-model.number="StressLevel" 
                required min="1" max="10">
-      </div>
+      </div><br></br>
 
       <div class="form-group">
-        <label for="bmiCategory">BMI Category:</label>
+        <label for="bmiCategory">What is your current BMI Category?:</label>
         <select id="bmiCategory" v-model="BMICategory" required>
           <option value="" disabled>Select</option>
           <option value="Normal">Normal</option>
           <option value="Overweight">Overweight</option>
           <option value="Obese">Obese</option>
         </select>
-      </div>
+      </div><br></br>
 
       <div class="form-group">
-        <label for="heartRate">Heart Rate (BPM):</label>
+        <label for="heartRate">What is your average resting heart rate (in beats per minute)?:</label>
         <input type="number" id="heartRate" v-model.number="HeartRate" 
                required min="0" max="300">
-      </div>
+      </div><br></br>
       
       <div class="form-group">
-        <label for="dailySteps">Daily Steps:</label>
+        <label for="dailySteps">Roughly, how many steps do you take on a typical day?:</label>
         <input type="number" id="dailySteps" v-model.number="DailySteps" 
                required min="0">
-      </div>
+      </div><br></br>
       
       <div class="form-group">
-        <label for="sleepDisorder">Sleep Disorder:</label>
+        <label for="sleepDisorder">Do you currently have a diagnosed sleep disorder?:</label>
         <select id="sleepDisorder" v-model="SleepDisorder" required>
           <option value="" disabled>Select</option>
           <option value="No">No</option>
           <option value="Sleep Apnea">Sleep Apnea</option>
           <option value="Insomnia">Insomnia</option>
         </select>
-      </div>
+      </div><br></br>
 
       <div class="form-group">
-        <label for="bps">Systolic Blood Pressure:</label>
+        <label for="bps">What is your Systolic Blood Pressure (the top number)?:</label>
         <input type="number" id="bps" v-model.number="BloodPressureSystolic" required min="0">
-      </div>
+      </div><br></br>
       
       <div class="form-group">
-        <label for="bpd">Diastolic Blood Pressure:</label>
+        <label for="bpd">What is your Diastolic Blood Pressure (the bottom number)?:</label>
         <input type="number" id="bpd" v-model.number="BloodPressureDiastolic" required min="0">
-      </div>
+      </div><br></br>
 
       <button type="submit" :disabled="isLoading">
         {{ isLoading ? 'Sending...' : 'Get prediction' }}
@@ -177,21 +181,51 @@ const submitForm = async () => {
   max-width: 600px;
   margin: 50px auto;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 2.5px solid #B57EDC;
+  background-color: white;
   border-radius: 8px;
 }
 .form-group {
   margin-bottom: 15px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 label {
   display: block;
+  width: 80%;
   margin-bottom: 5px;
   font-weight: bold;
+  color: #5b2d79;
 }
-input[type="number"], select {
-  width: 100%;
+h2 {
+  color: #B57EDC;
+}
+input , select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  width: 80%;
   padding: 8px;
   box-sizing: border-box;
+  border: 2px solid #B57EDC;
+  color: #5b2d79;
+  text-align: center;
+  font-size: normal;
+}
+button {
+  background-color: #B57EDC;
+  color: black;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: normal;
+  font-weight: bold;
+}
+button:hover {
+  background-color: #E1D02A;
 }
 .message {
   margin-top: 20px;
