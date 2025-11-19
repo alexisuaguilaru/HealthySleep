@@ -74,6 +74,9 @@ A RESTful API was implemented using [FastAPI](https://fastapi.tiangolo.com/) to 
 
 The main entrypoint for the API is the `POST /Classify` endpoint, where the request body contains the patient features. The response includes the predicted level and name of the quality of sleep of the patient.
 
+## Frontend
+A simple, minimalist frontend was developed using [Vue.js](https://vuejs.org/). It features a form designed to capture the input features of the patient and display the predicted level of sleep quality in an additional field.
+
 ## Installation and Usage
 1. First it has to clone the repository and move to the project directory:
 ```bash
@@ -97,6 +100,20 @@ marimo run StatisticalAnalysis/DataMining.py
 1. Open and run the Jupyter notebook with the following command:
 ```bash
 jupyter notebook MachineLearning/ModelsTraining.ipynb
+```
+
+### Local Deployment 
+1. Copy the `.env_example` file to `.env`:
+```bash
+cp .env_example .env
+```
+2. Build and start the Docker containers:
+```bash
+docker compose up -d --build
+```
+1. Access the frontend by navigating to:
+```bash
+http://localhost:8080/
 ```
 
 ## Author, Affiliation and Contact
