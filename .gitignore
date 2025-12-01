@@ -2,6 +2,7 @@
 __pycache__
 .ipynb_checkpoints
 .env
+__marimo__
 
 .vscode
 node_modules

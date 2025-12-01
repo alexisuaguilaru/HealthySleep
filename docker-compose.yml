@@ -1,4 +1,34 @@
 services:
+    statistical-analysis:
+        container_name: statistical-analysis
+        build:
+            context: ./StatisticalAnalysis
+            dockerfile: Dockerfile
+
+        ports:
+            - "5050:8080"
+
+        volumes:
+            - ./Datasets:/Analysis/Datasets
+            - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
+        
+        command: marimo run --host 0.0.0.0 -p 8080 StatisticalAnalysis/StatisticalAnalysis.py
+
+    data-mining:
+        container_name: data-mining
+        build:
+            context: ./StatisticalAnalysis
+            dockerfile: Dockerfile
+
+        ports:
+            - "5151:8181"
+
+        volumes:
+            - ./Datasets:/Analysis/Datasets
+            - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
+        
+        command: marimo run --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
+        
     database:
         container_name: database
         image: postgres:16-alpine
