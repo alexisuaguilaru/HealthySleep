@@ -1,31 +1,28 @@
+x-common-marimo-analysis: &analysis
+    build:
+        context: ./StatisticalAnalysis
+        dockerfile: Dockerfile
+    
+    volumes:
+        - ./Datasets:/Analysis/Datasets
+        - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
+
 services:
     statistical-analysis:
         container_name: statistical-analysis
-        build:
-            context: ./StatisticalAnalysis
-            dockerfile: Dockerfile
+        <<: *analysis
 
         ports:
             - "5050:8080"
-
-        volumes:
-            - ./Datasets:/Analysis/Datasets
-            - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
         
         command: marimo run --host 0.0.0.0 -p 8080 StatisticalAnalysis/StatisticalAnalysis.py
 
     data-mining:
         container_name: data-mining
-        build:
-            context: ./StatisticalAnalysis
-            dockerfile: Dockerfile
+        <<: *analysis
 
         ports:
             - "5151:8181"
-
-        volumes:
-            - ./Datasets:/Analysis/Datasets
-            - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
         
         command: marimo run --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
         
