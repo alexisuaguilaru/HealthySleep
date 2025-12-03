@@ -19,8 +19,7 @@ const classificationResult = ref(null);
 const isLoading = ref(false);
 const error = ref(null);
 
-let API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-API_URL = API_URL + '/Classify';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const submitForm = async () => {
     isLoading.value = true;

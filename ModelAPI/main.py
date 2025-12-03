@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from ModelAPI import InputMLModel , OutputMLModel , LoadModel , ClassifyPatient , GetDatabaseConnection , InsertModelInference
 from psycopg2.extensions import connection
 
+from os import getenv
 import pandas as pd
 
 ML_Model = LoadModel('./','ML_Model')
@@ -10,8 +11,8 @@ ML_Model = LoadModel('./','ML_Model')
 app = FastAPI()
 origins = [
     'http://localhost',
-    'http://localhost:5173',
     'http://localhost:8080',
+    'https://'+getenv('DOMAIN','project.com'),
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -22,7 +23,7 @@ app.add_middleware(
 )
 
 @app.post(
-    '/Classify',
+    '/',
     summary = 'Method for classify the quality of sleep of a patient',
     response_model = OutputMLModel,
 )
