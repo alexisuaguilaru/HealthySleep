@@ -8,24 +8,6 @@ x-common-marimo-analysis: &analysis
         - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
 
 services:
-    statistical-analysis:
-        container_name: statistical-analysis
-        <<: *analysis
-
-        ports:
-            - "5050:8080"
-        
-        command: marimo run --host 0.0.0.0 -p 8080 StatisticalAnalysis/StatisticalAnalysis.py
-
-    data-mining:
-        container_name: data-mining
-        <<: *analysis
-
-        ports:
-            - "5151:8181"
-        
-        command: marimo run --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
-        
     database:
         container_name: database
         image: postgres:16-alpine
@@ -43,6 +25,44 @@ services:
             - DataInference:/var/lib/postgresql/data
             - ./Database:/docker-entrypoint-initdb.d:ro
 
+    statistical-analysis:
+        container_name: statistical-analysis
+        <<: *analysis
+
+        ports:
+            - "5050:8282"
+        
+        command: marimo run --host 0.0.0.0 -p 8282 StatisticalAnalysis/StatisticalAnalysis.py
+
+        # networks:
+            # - traefik_proxy
+
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.statistical-analysis.rule=Host(`${DOMAIN}`) && PathPrefix(`/StatisticalAnalysis`)"
+            - "traefik.http.routers.statistical-analysis.entrypoints=https"
+            - "traefik.http.routers.statistical-analysis.tls.certresolver=cloudflare"
+            - "traefik.http.services.statistical-analysis.loadbalancer.server.port=8282"
+
+    data-mining:
+        container_name: data-mining
+        <<: *analysis
+
+        ports:
+            - "5151:8181"
+        
+        command: marimo run --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
+
+        # networks:
+            # - traefik_proxy
+
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.data-mining.rule=Host(`${DOMAIN}`) && PathPrefix(`/DataMining`)"
+            - "traefik.http.routers.data-mining.entrypoints=https"
+            - "traefik.http.routers.data-mining.tls.certresolver=cloudflare"
+            - "traefik.http.services.data-mining.loadbalancer.server.port=8181"
+
     api:
         container_name: api
         build:
@@ -59,6 +79,16 @@ services:
         depends_on:
             - database
 
+        # networks:
+            # - traefik_proxy
+
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+            - "traefik.http.routers.api.entrypoints=https"
+            - "traefik.http.routers.api.tls.certresolver=cloudflare"
+            - "traefik.http.services.api.loadbalancer.server.port=8080"
+
     frontend:
         container_name: frontend
         build:
@@ -71,5 +101,19 @@ services:
         depends_on:
             - api
 
+        # networks:
+            # - traefik_proxy
+
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.frontend.rule=Host(`${DOMAIN}`)"
+            - "traefik.http.routers.frontend.entrypoints=https"
+            - "traefik.http.routers.frontend.tls.certresolver=cloudflare"
+            - "traefik.http.services.frontend.loadbalancer.server.port=8080"
+
 volumes:
     DataInference: 
+
+# networks:
+#   traefik_proxy:
+    # external: true
