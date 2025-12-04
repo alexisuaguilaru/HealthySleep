@@ -1,6 +1,8 @@
 from sklearn.linear_model import LinearRegression
 import numpy as np
 
+from typing import Any
+
 def AkaikeInformationCriterionScore(
         LinearModel: LinearRegression,
         X: np.ndarray,
@@ -34,3 +36,27 @@ def AkaikeInformationCriterionScore(
     DegreeFreedom = X.shape[1] + 1
 
     return -(LenDataset*np.log(2*np.pi*SumSquareErrors)+LenDataset+2*DegreeFreedom)
+
+def OutputFormatting(
+        Value: Any,
+        Precision: int = 4
+    ) -> str | Any:
+    """
+    Function for formatting numerical values 
+    with 4-digits precision.
+
+    Parameter
+    ---------
+    Value: Any
+        Value to format
+
+    Return
+    ------
+    FormattedValue: str | Any
+        Formatted string
+    """
+    
+    try:
+        return round(Value,Precision)
+    except:
+        return Value
