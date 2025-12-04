@@ -44,6 +44,16 @@ services:
             - "traefik.http.routers.statistical-analysis.tls.certresolver=cloudflare"
             - "traefik.http.services.statistical-analysis.loadbalancer.server.port=8282"
 
+            - "traefik.http.routers.statistical-analysis.middlewares=eda-redirect@docker,eda-stripprefix@docker"
+
+            - "traefik.http.routers.statistical-analysis.middlewares=eda-redirect@docker,eda-stripprefix@docker"
+
+            - "traefik.http.middlewares.eda-redirect.redirectregex.regex=/(StatisticalAnalysis)$$"
+            - "traefik.http.middlewares.eda-redirect.redirectregex.replacement=/$${1}/"
+            - "traefik.http.middlewares.eda-redirect.redirectregex.permanent=true"
+
+            - "traefik.http.middlewares.eda-stripprefix.stripprefix.prefixes=/StatisticalAnalysis"
+
     data-mining:
         container_name: data-mining
         <<: *analysis
@@ -62,6 +72,14 @@ services:
             - "traefik.http.routers.data-mining.entrypoints=https"
             - "traefik.http.routers.data-mining.tls.certresolver=cloudflare"
             - "traefik.http.services.data-mining.loadbalancer.server.port=8181"
+
+            - "traefik.http.routers.data-mining.middlewares=dm-redirect@docker,dm-stripprefix@docker"
+
+            - "traefik.http.middlewares.dm-redirect.redirectregex.regex=/(DataMining)$$"
+            - "traefik.http.middlewares.dm-redirect.redirectregex.replacement=/$${1}/"
+            - "traefik.http.middlewares.dm-redirect.redirectregex.permanent=true"
+
+            - "traefik.http.middlewares.dm-stripprefix.stripprefix.prefixes=/DataMining"
 
     api:
         container_name: api
@@ -102,6 +120,7 @@ services:
                 VITE_API_URL: ${VITE_API_URL}
         ports:
             - "8080:8080"
+            
         depends_on:
             - api
 
