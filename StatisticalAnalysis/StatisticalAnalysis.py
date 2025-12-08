@@ -1209,9 +1209,7 @@ def _(SleepDataset_Processed):
     _FAResults = _FactorAnalysis.fit()
     _Eigenvalues = _FAResults.eigenvals
 
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot(FigSize=(5,4))
 
     sns.lineplot(
         x = range(1,len(_Eigenvalues)+1),
@@ -1230,7 +1228,7 @@ def _(SleepDataset_Processed):
         'Scree Plot for Selection of\nNumber of Factors',
         'Number of Factors',
         'Eigenvalues',
-        14,12,10
+        13,11,9
     )
 
     # _fig.savefig(f'./Resources/FactorAnalysis_Communalities.jpg')
@@ -1272,23 +1270,22 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     )
     _MeanCommunality = FactorAnalysisResults.communality.mean()
 
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot(FigSize=(6,6.5))
+
     sns.barplot(
         x = [_communality[0] for _communality in _SortedFilteredCommunalities],
         y = [_communality[1] for _communality in _SortedFilteredCommunalities],
         color = src.BaseColor,
         ax = _axes,
     )
-    _axes.text(7.5,1.2,f'Mean Communality: {_MeanCommunality:.4f}')
+    _axes.text(12,1.2,f'Mean Communality: {_MeanCommunality:.4f}',size=11,horizontalalignment='center')
 
     src.SetLabelsToPlot(
         _axes,
         'Quality of Communalities',
         'Features',
         'Communality',
-        14,11,10
+        13,11,9
     )
     _axes.tick_params(axis='x',rotation=90)
 
@@ -1322,7 +1319,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
         vmax = 1,
         vmin = -1,
         annot = True,
-        annot_kws = {'size':8},
+        annot_kws = {'size':7.5},
         ax = _axes
     )
     _axes.set_xticklabels(range(1,5))
@@ -1333,8 +1330,9 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
         'Factor Loadings',
         'Factors',
         'Features',
-        14,12,8
+        13,11,8
     )
+    _axes._colorbars[0].tick_params(labelsize=8)
 
     # _fig.savefig(f'./Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
     _fig
