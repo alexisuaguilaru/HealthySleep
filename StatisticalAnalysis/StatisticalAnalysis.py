@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.3"
 app = marimo.App(width="medium", app_title="Statistical Analysis")
 
 with app.setup:
@@ -58,51 +58,44 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The dataset contains `374` instances, with `12` attributes which describe the sleep health of a patient. These columns are:
+    The dataset contains `374` instances, with `12` attributes which describe the patient's sleep health. These columns (attributes) are:
 
-    * `Gender`: Nominal variable with Male and Female values
+    * `Gender` (*Nominal*): The patient's biological sex (Male or Female)
 
-    * `Age`: Discrete variable with range of values from 27 to 59 years
+    * `Age` (*Discrete*): The patient's age
 
-    * `Occupation`: Nominal variable with Software Engineer, Doctor, Sales Representative, Teacher, Nurse, Engineer, Accountant, Scientist, Lawyer, Salesperson and Manager values
+    * `Occupation` (*Nominal*): The patient's current job title (e.g., Doctor, Engineer, Teacher)
 
-    * `Sleep Duration`: Continuous variable with range of values from 5.8 to 8.5 hours
+    * `Sleep Duration` (*Continuous*): The average time spent sleeping per night, measured in hours
 
-    * `Quality of Sleep`: Discrete variable with range of values from 4 to 9
+    * `Quality of Sleep` (*Discrete*): A subjective rating of sleep quality
 
-    * `Physical Activity Level`: Discrete variable with range of values from 30 to 90
+    * `Physical Activity Level` (*Discrete*): A subjective rating of physical activity
 
-    * `Stress Level`: Discrete variable with range of values from 3 to 8
+    * `Stress Level` (*Discrete*): The patient's perceived stress level
 
-    * `BMI Category`: Ordinal variable with Normal, Normal Weight, Overweight and Obese values
+    * `BMI Category` (*Ordinal*): The patient's Body Mass Index classification (Normal, Overweight, etc.)
 
-    * `Blood Pressure`: Ordinal variable for pressure measure as Systolic/Diastolic form
+    * `Blood Pressure` (*Ordinal*): The measure of blood pressure, provided as a Systolic/Diastolic ratio
 
-    * `Heart Rate`: Discrete variable with range of values from 65 to 86 BPM
+    * `Heart Rate` (*Discrete*): The patient's average heart rate, measured in Beats Per Minute (BPM)
 
-    * `Daily Steps`: Discrete variable with range of values from 3000 to 10000 steps
+    * `Daily Steps` (*Discrete*): The total number of steps taken by the patient on a daily basis
 
-    * `Sleep Disorder`: Nominal variable with Sleep Apnea and Insomnia values
+    * `Sleep Disorder` (*Nominal*): Indicates the presence or absence of a diagnosed sleep disorder, such as Sleep Apnea or Insomnia
 
-    There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed. There is a duplicate category in `BMI Category` (Normal and Normal Weight) which will be removed. `Quality of Sleep` is the feature to predict (target) and study in this analysis.
+    There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed. There is a duplicate category in `BMI Category` (Normal and Normal Weight) which one of them will be removed. `Quality of Sleep` is the feature to predict (target) and study in this analysis.
     """)
     return
 
 
 @app.cell
 def _():
-    # Defining useful variables
-
-    PATH_DATASET = src.PATH + 'Sleep_health_and_lifestyle_dataset.csv'
-    return (PATH_DATASET,)
-
-
-@app.cell
-def _(PATH_DATASET):
     # Loading dataset
 
+    _RawDataset = 'Sleep_health_and_lifestyle_dataset.csv'
     SleepDataset_Raw = pd.read_csv(
-        PATH_DATASET,
+        src.PATH + _RawDataset,
         index_col = 0,
     )
     return (SleepDataset_Raw,)
@@ -126,7 +119,6 @@ def _(SleepDataset_Raw):
         [
             mo.md("**Missing Values**"),
             SleepDataset_Raw.isna().sum(axis = 0),
-
         ], 
         align = 'center',
     )
@@ -144,7 +136,6 @@ def _(SleepDataset_Raw):
         [
             mo.md("**Missing Values In `Sleep Disorder`**"),
             _MissingValuesInSleepDisorder,
-
         ], 
         align = 'center',
     )
@@ -235,7 +226,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be insignificant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
+    None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be less significant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
 
     Fifty percent of patients have a `Quality of Sleep` between 6 and 8, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a person becomes older, which impacts the number of hours needed to feel rested after sleeping.
     """)
