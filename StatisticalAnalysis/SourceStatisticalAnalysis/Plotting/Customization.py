@@ -6,9 +6,9 @@ def SetLabelsToPlot(
         Tittle: str = None,
         LabelX: str = None,
         LabelY: str = None,
-        TitleSize: int = 16,
-        LabelSize: int = 14,
-        TickSize: int = 12,
+        TitleSize: int = 10,
+        LabelSize: int = 8,
+        TickSize: int = 7,
     ) -> None:
     """
     Function for setting the label 
@@ -46,7 +46,7 @@ def SetLabelsToPlot(
 def SetFigureTitle(
         Fig: Figure,
         Tittle: str = None,
-        Size: int = 24,
+        Size: int = 14,
     ) -> None:
     """
     Function for setting the tittle of 

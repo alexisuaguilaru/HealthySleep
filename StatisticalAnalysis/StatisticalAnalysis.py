@@ -42,7 +42,7 @@ def _():
     mo.md(r"""
     # Exploratory Data Analysis
 
-    Sleep quality may be influenced by habits and lifestyle of a person; therefore, understanding how these values and measures influence a person could determine how well they sleep. Thus, this study examines how various factors that determine lifestyle of a person can impact their sleep quality.
+    Sleep quality may be influenced by habits and lifestyle of a subject; therefore, understanding how these values and measures influence a subject could determine how well they sleep. Thus, this study examines how various factors that determine lifestyle of a subject can impact their sleep quality.
     """)
     return
 
@@ -154,6 +154,8 @@ def _():
 def _():
     mo.md(r"""
     The missing values of `Sleep Disorder` are imputed with `No`, the values of `Blood Pressure` are splitted into systolic and diastolic values, and the values with `Normal Weight` in `BMI Category` are transformed to `Normal`.
+
+    For a better understanding and interpretation of the target, the values of `Quality of Sleep` are rearranging from 1 to 6.
     """)
     return
 
@@ -171,10 +173,14 @@ def _(SleepDataset_Raw):
     SleepDataset[['Blood Pressure Systolic','Blood Pressure Diastolic']] = [*SleepDataset['Blood Pressure'].apply(src.SplitBloodPressure)]
     SleepDataset.drop(columns=['Blood Pressure'],inplace=True)
 
-    # Remove duplicate category in BMI Category
+    # Removing duplicate category in BMI Category
 
     _IndexBMINormalWeight = SleepDataset.query("`BMI Category` == 'Normal Weight'").index
     SleepDataset.loc[_IndexBMINormalWeight,'BMI Category'] = 'Normal'
+
+    # Rearranging values of Quality of Sleep
+
+    SleepDataset['Quality of Sleep'] = SleepDataset['Quality of Sleep'] - 3
 
     # Saving a clean dataset
 
@@ -228,7 +234,7 @@ def _():
     mo.md(r"""
     None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be less significant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
 
-    Fifty percent of patients have a `Quality of Sleep` between 6 and 8, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a person becomes older, which impacts the number of hours needed to feel rested after sleeping.
+    Fifty percent of patients have a `Quality of Sleep` between 3 and 5, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a subject becomes older, which impacts the number of hours needed to feel rested after sleeping.
     """)
     return
 
@@ -260,7 +266,7 @@ def _():
 def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
     _fig , _axes = src.CreatePlot(
         3,3,
-        (12,12)
+        (6,6)
     )
 
     for _ax , _feature in zip(_axes.ravel(),NumericalFeatures):
@@ -272,8 +278,8 @@ def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
         )
         src.SetLabelsToPlot(
             _ax,
+            None,
             _feature,
-            '',
             _ax.get_ylabel(),
         )
 
@@ -327,9 +333,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying chi square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant.
+    Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant.
 
-    Daily stress, time for physical activity, time for personal and recreational activities, diet, and rest time are factors that are subject to a daily routine and lifestyle of a person. By showing that there is evidence of dependence between the categories (features), this premise and relationship can be reinforced.
+    Daily stress, time for physical activity, time for personal and recreational activities, diet, and rest time are factors that are dependent on subject's daily routine and lifestyle. By showing that there is evidence of dependence between the categories (features), this premise and relationship can be reinforced.
     """)
     return
 
@@ -349,7 +355,7 @@ def _(CategoricalFeatures, SleepDataset):
 def _(CategoricalFeatures, SleepDataset):
     _fig , _axes = src.CreatePlot(
         2,2,
-        (9,9),
+        (6,6),
     )
 
     for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
@@ -370,6 +376,8 @@ def _(CategoricalFeatures, SleepDataset):
             '',
             _feature,
             _ax.get_ylabel(),
+            LabelSize = 10,
+            TickSize = 9,
         )
 
     src.SetFigureTitle(_fig,'Distribution of Categorical Features')
@@ -407,11 +415,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    From Spearman correlation tests, it can be shown that `Quality of Sleep` of a patient is influenced by factors such as `Physical Activity Level`, `Stress Levels`, and `Sleep Duration`, where the first two relate to lifestyle and quality of life of a person; additionally, the `Sleep Duration` has a significant influence and impact in determining how well one sleeps. Thus, it follows that some of the factors that measure lifestyle of a person determine `Quality of Sleep`.
+    From Spearman Correlation tests, it can be shown that `Quality of Sleep` of a patient is influenced by factors such as `Physical Activity Level`, `Stress Levels`, and `Sleep Duration`, where the first two relate to lifestyle and quality of life of a subject; additionally, the `Sleep Duration` has a significant influence and impact in determining how well one sleeps. Thus, it follows that some of the factors that measure lifestyle of a subject determine `Quality of Sleep`.
 
-    As assumed, `Occupation` (job) and `BMI Category` of a person can alter both the quality and duration of sleep, but also the own quality of life of a patient; this dual influence or relationship makes them high-impact factors on overall well-being of a person and, specifically, how they sleep.
+    As assumed, `Occupation` (job) and `BMI Category` of a subject can alter both the quality and duration of sleep, but also the own quality of life of a patient; this dual influence or relationship makes them high-impact factors on overall well-being of a subject and, specifically, how they sleep.
 
-    Based on these observations, a model could be created to evaluate or predict `Quality of Sleep` of a person based on their lifestyle or quality of life (measured through these factors and features).
+    Based on these observations, a model could be created to evaluate or predict `Quality of Sleep` of a patient based on their lifestyle or quality of life (measured through these factors and features).
     """)
     return
 
