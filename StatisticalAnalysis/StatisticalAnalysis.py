@@ -917,14 +917,14 @@ def _():
     mo.md(r"""
     The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.
 
-    Through the correlation matrix, one can better appreciate how the different factors that constitute the lifestyle and quality of a person interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as blood pressure values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
+    Through the correlation matrix, one can better appreciate how the different factors that constitute the lifestyle and quality of a patient interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as blood pressure values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
     """)
     return
 
 
 @app.cell
 def _(RegressorVariables, SleepDataset, TargetVariable):
-    _fig , _axes = src.CreatePlot(FigSize=(12,9))
+    _fig , _axes = src.CreatePlot(FigSize=(6,5))
 
     _CorrelationValue = SleepDataset[RegressorVariables+[TargetVariable]].corr()
     _MaskValues = np.abs(_CorrelationValue) >= 0.2
@@ -933,16 +933,17 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
         vmin = -1,
         vmax = 1,
         annot = True,
-        annot_kws = {'size':14},
+        annot_kws = {'size':7},
         ax = _axes,
         cmap = src.ColorMapContrast, 
     )
     src.SetLabelsToPlot(
         _axes,
         'Correlation Matrix of Numerical Features',
-        TitleSize = 24,
-        TickSize = 14, 
+        TitleSize = 11,
+        TickSize = 9, 
     )
+    _axes._colorbars[0].tick_params(labelsize=8)
 
     # _fig.savefig(f'./Resources/CorrelationMatrix.jpg',bbox_inches='tight')
     _fig
@@ -989,7 +990,7 @@ def _():
     mo.md(r"""
     Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit, this means generating better predictions (more accurate). Therefore this model is better than the full model.
 
-    The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the stress of a a person encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a person and their sleep quality.
+    The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the subject's stress encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a patient and their sleep quality.
     """)
     return
 
@@ -1005,8 +1006,6 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
         floating = True,
         scoring = src.AkaikeInformationCriterionScore,
         cv = 2,
-        n_jobs = -1,
-        pre_dispatch = 'all',
     )
 
     _StepwiseAlgorithm.fit(
@@ -1037,7 +1036,7 @@ def _(
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ### 5.4 Validation of Assumptions
+    ### 5.4. Validation of Assumptions
     """)
     return
 
@@ -1045,7 +1044,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    #### Normality in Residuals
+    #### 5.4.1. Normality in Residuals
     """)
     return
 
@@ -1066,9 +1065,8 @@ def _(BestLinearModel):
         sparams = (0,BestLinearModel.resid.std(ddof=1))
     )
 
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot(FigSize=(5,4))
+
     sns.scatterplot(
         x = _QuantilesTheoObs[0],
         y = _QuantilesTheoObs[1],
@@ -1088,7 +1086,7 @@ def _(BestLinearModel):
         'Normality of the Residuals',
         'Theorical Quartiles',
         'Residuals Quartiles',
-        14,12,10
+        13,11,9
     )
 
     _fig
@@ -1108,7 +1106,7 @@ def _(BestLinearModel):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    #### Homoscedasticity
+    #### 5.4.2. Homoscedasticity
     """)
     return
 
@@ -1123,9 +1121,7 @@ def _():
 
 @app.cell
 def _(BestLinearModel, TargetVariable):
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot(FigSize=(5,4))
 
     sns.scatterplot(
         x = BestLinearModel.fittedvalues,
@@ -1138,7 +1134,7 @@ def _(BestLinearModel, TargetVariable):
         'Residuals as a Function of Predicted Values',
         TargetVariable,
         'Residuals',
-        14,12,10,
+        13,11,9,
     )
 
     _fig
