@@ -491,11 +491,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    By varying the different numerical and categorical features, it can be shown how each group defined by categorical values behaves differently in terms of numerical variables (specifically `Quality of Sleep` and `Sleep Duration`). This reflects how lifestyle and daily routine interact with quality of life of a person.
+    By varying the different numerical and categorical features, it can be shown how each group defined by categorical values behaves differently in terms of numerical variables (specifically `Quality of Sleep` and `Sleep Duration`). This reflects how lifestyle and daily routine interact with patient's quality of life.
 
-    It can be observed `Occupation` of a person influences their `Quality of Sleep` and `Stress Level`, in addition to the fact that these factors have a negative correlation. The above can be verified in reality by considering that job position directly impacts the stress and pressure someone experiences.
+    It can be observed `Occupation` of a subject influences their `Quality of Sleep` and `Stress Level`, in addition to the fact that these factors have a negative correlation. The above can be verified in reality by considering that job position directly impacts the stress and pressure someone experiences.
 
-    Obesity and overweight are two conditions that increase the occurrence of conditions such as sleep apnea due to airway obstruction, which can be observed in how `Quality of Sleep` is diminished according to `BMI Category` of a person, as well as the tendency to have more `Sleep Disorder` as weight increases.
+    Obesity and overweight are two conditions that increase the occurrence of conditions such as sleep apnea due to airway obstruction, which can be observed in how `Quality of Sleep` is diminished according to subject's `BMI Category`, as well as the tendency to have more `Sleep Disorder` as weight increases.
     """)
     return
 
@@ -525,7 +525,7 @@ def _(
     NumericalFeatureOptions_NumCat,
     SleepDataset,
 ):
-    _fig , _axes = src.CreatePlot()
+    _fig , _axes = src.CreatePlot(FigSize=(5,4))
 
     _categorical_feature = CategoricalFeatureOptions_NumCat.value
     _numerical_feature = NumericalFeatureOptions_NumCat.value
@@ -547,7 +547,9 @@ def _(
     src.SetLabelsToPlot(
         _axes,
         f"{_numerical_feature} vs {_categorical_feature}",
-        TitleSize=14
+        TitleSize = 14,
+        LabelSize = 12,
+        TickSize = 10,
     )
 
     # _fig.savefig(f'./Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg')
@@ -585,7 +587,7 @@ def _(
     NumericalFeatureOptions_2_NumNum,
     SleepDataset,
 ):
-    _fig , _axes = src.CreatePlot()
+    _fig , _axes = src.CreatePlot(FigSize=(4,4))
 
     _numerical_feature_1 = NumericalFeatureOptions_1_NumNum.value
     _numerical_feature_2 = NumericalFeatureOptions_2_NumNum.value
@@ -602,7 +604,9 @@ def _(
     src.SetLabelsToPlot(
         _axes,
         f"{_numerical_feature_1} vs {_numerical_feature_2}",
-        TitleSize=14
+        TitleSize = 14,
+        LabelSize = 12,
+        TickSize = 10,
     )
 
     # _fig.savefig(f'./Resources/BivariatePlot_{_numerical_feature_1.replace(' ','')}_{_numerical_feature_2.replace(' ','')}.jpg')
@@ -696,9 +700,7 @@ def _(NumericalFeatures, SleepDataset):
     )
     SleepDatasetReducedPCA = PipelinePCA.fit_transform(SleepDataset[NumericalFeatures])
 
-    _fig , _axes = plt.subplots(
-        subplot_kw = {'frame_on':False},
-    )
+    _fig , _axes = src.CreatePlot(FigSize=(5,4))
 
     sns.lineplot(
         x = np.arange(1,len(NumericalFeatures)+1),
@@ -717,6 +719,9 @@ def _(NumericalFeatures, SleepDataset):
         'Scree Plot for Selection of\nNumber of Principal Components',
         'Principal Components',
         'Eigenvalues',
+        TitleSize = 13,
+        LabelSize = 11,
+        TickSize = 9,
     )
 
     _fig
@@ -773,7 +778,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         '1122\n.33.',
         subplot_kw = {'frame_on':False},
         layout = 'constrained',
-        figsize = (7,5),
+        figsize = (6,5),
     )
 
     _CategoricalFeature = CategoricalFeatureOptions_PCA.value
@@ -803,7 +808,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
     src.SetFigureTitle(
         _fig,
         'PCA by Categorical Values',
-        12
+        13,
     )
 
     _fig.legend(
@@ -825,7 +830,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Using PCA with numerical attributes allows capturing and summarizing the general aspects to describe the profile of a person, achieved through their simple interactions. This can be observed by assigning point sizes according to their `Quality of Sleep` value, which allows seeing in which regions certain values are more concentrated. Specifically, using PC1 and PC2 creates diagonal strips where as their values increases, so does `Quality of Sleep` value along these strips.
+    Using PCA with numerical attributes allows capturing and summarizing the general aspects to describe the subject's profile, achieved through their simple interactions. This can be observed by assigning point sizes according to their `Quality of Sleep` value, which allows seeing in which regions certain values are more concentrated. Specifically, using PC1 and PC2 creates diagonal strips where as their values increases, so does `Quality of Sleep` value along these strips.
     """)
     return
 
@@ -836,7 +841,7 @@ def _(NumericalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         '1122\n.33.',
         subplot_kw = {'frame_on':False},
         layout = 'constrained',
-        figsize = (7,5),
+        figsize = (6,5),
     )
 
     _NumericalFeature = NumericalFeatureOptions_PCA.value
@@ -865,7 +870,7 @@ def _(NumericalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
     src.SetFigureTitle(
         _fig,
         'PCA by Numerical Values',
-        12
+        13,
     )
     _fig.legend(
         *_legend_handles,
