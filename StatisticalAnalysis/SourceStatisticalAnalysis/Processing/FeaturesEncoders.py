@@ -62,4 +62,4 @@ def OneHotEncoderFeature(
     SleepDataset.drop(columns=Feature,inplace=True)
     TransformerOHE = OneHotEncoder(sparse_output=False)
     OneHotValues = TransformerOHE.fit_transform(EncodedValuesFeature)
-    SleepDataset[Feature + ' :: ' + np.array(*TransformerOHE.categories_)] = OneHotValues
+    SleepDataset[Feature + ' :: ' + np.array(*TransformerOHE.categories_,dtype=str)] = OneHotValues

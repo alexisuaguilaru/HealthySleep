@@ -33,7 +33,7 @@ def PlotSilhouetteResults(
         Figure with the plot of the results
     """
 
-    Fig , Axes = CreatePlot()
+    Fig , Axes = CreatePlot(FigSize=(6,5))
     
     sns.lineplot(
         x = ValuesCriterion,
@@ -50,7 +50,7 @@ def PlotSilhouetteResults(
         f'Scree Plot for Selection of\n{CriterionName} in {ClusteringTechnique}',
         CriterionName,
         'Silhouette Score',
-        14,12,10
+        13,11,10
     )
 
     return Fig

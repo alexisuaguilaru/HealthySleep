@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.1"
+__generated_with = "0.18.3"
 app = marimo.App(width="medium", app_title="Data Mining")
 
 with app.setup:
@@ -96,7 +96,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Using the processed dataset with encoded categorical values, K Means and Agglomerative clustering (both single and complete) are employed in order to evaluate which algorithm generates the best results using Euclidean distance as the metric (due to the presence of mixed data).
+    Using the processed dataset with encoded categorical values, K Means and Agglomerative clustering (both single and complete linkage) are employed in order to evaluate which algorithm generates the best results using Euclidean distance as the metric (due to the presence of mixed data).
 
     No scaling transformation was performed, even though the features belong to different scales, because it was noted that rescaling "distorts" the distances between data points enough to lose part of the inherent structure they possess, that is, the groups they form and their natural separability.
 
@@ -147,7 +147,7 @@ def _(
     FeatureOptionsCluster_2,
     ProcessedSleepDataset_Features,
 ):
-    _fig , _axes = src.CreatePlot()
+    _fig , _axes = src.CreatePlot(FigSize=(5.5,5.5))
 
     _Feature_1 = FeatureOptionsCluster_1.value
     _Feature_2 = FeatureOptionsCluster_2.value
@@ -162,6 +162,7 @@ def _(
         f'{_Feature_1} vs {_Feature_2}',
         _Feature_1,
         _Feature_2,
+        13,11,10
     )
 
     mo.vstack(
@@ -496,7 +497,7 @@ def _():
     mo.md(r"""
     The first rule reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
 
-    The second rule shows the association that exists between having a precarious health status (overweight and insomnia) and the habits of an individual. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
+    The second rule shows the association that exists between having a precarious health status (overweight and insomnia) and the habits of a patient. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
 
     The third rule appears as a particular case within the professional life of nurses, where those suffering from hypertension tend to be overweight and have apnea. This fact can be verified by considering that the onset of hypertension is associated with being overweight and poor habits, and that apnea is frequent among overweight individuals.
     """)
