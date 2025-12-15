@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.3"
+__generated_with = "0.18.4"
 app = marimo.App(width="medium", app_title="Statistical Analysis")
 
 with app.setup:
@@ -35,6 +35,12 @@ with app.setup:
 
     # Importing Functions and Utils
     import SourceStatisticalAnalysis as src
+
+
+@app.cell
+def _():
+    mo.Html(src.HeaderNav)
+    return
 
 
 @app.cell(hide_code=True)
@@ -1358,6 +1364,20 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
         _SummaryFactorsLoadings.extend([mo.md(_factor),_dataframe_loadings])
 
     mo.vstack(_SummaryFactorsLoadings)
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    #
+    """)
+    return
+
+
+@app.cell
+def _():
+    mo.Html(src.Footer)
     return
 
 

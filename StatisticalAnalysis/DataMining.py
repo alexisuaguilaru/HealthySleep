@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.3"
+__generated_with = "0.18.4"
 app = marimo.App(width="medium", app_title="Data Mining")
 
 with app.setup:
@@ -67,6 +67,12 @@ def _(ProcessedSleepDataset, SleepDataset):
     Features = [_label for _label in SleepDataset.columns if _label != TargetLabel]
     ProcessedFeatures = [_label for _label in ProcessedSleepDataset.columns if _label != TargetLabel]
     return ProcessedFeatures, TargetLabel
+
+
+@app.cell
+def _():
+    mo.Html(src.HeaderNav)
+    return
 
 
 @app.cell(hide_code=True)
@@ -548,6 +554,20 @@ def _(FrequentPatterns):
             AssociationRules[['antecedents','consequents',*_RelevantMetrics]].map(partial(src.OutputFormatting,Precision=6)),
         ]
     )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    #
+    """)
+    return
+
+
+@app.cell
+def _():
+    mo.Html(src.Footer)
     return
 
 

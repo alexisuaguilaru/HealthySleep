@@ -2,6 +2,10 @@ x-common-marimo-analysis: &analysis
     build:
         context: ./StatisticalAnalysis
         dockerfile: Dockerfile
+    environment:
+        DOMAIN: ${DOMAIN}
+        STATISTICAL_ANALYSIS_URL: ${STATISTICAL_ANALYSIS_URL}
+        DATA_MINING_URL: ${DATA_MINING_URL}
     
     volumes:
         - ./Datasets:/Analysis/Datasets
