@@ -508,6 +508,14 @@ def _():
     return
 
 
+@app.cell
+def _():
+    mo.md(r"""
+    In this section is performed a multivariate analysis to understand how the different features interact with each other using bivariate plots and PCA to support some of previous insights and generate other ones based on the current knowledge.
+    """)
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -524,6 +532,10 @@ def _():
     It can be observed `Occupation` of a subject influences their `Quality of Sleep` and `Stress Level`, in addition to the fact that these factors have a negative correlation. The above can be verified in reality by considering that job position directly impacts the stress and pressure someone experiences.
 
     Obesity and overweight are two conditions that increase the occurrence of conditions such as sleep apnea due to airway obstruction, which can be observed in how `Quality of Sleep` is diminished according to subject's `BMI Category`, as well as the tendency to have more `Sleep Disorder` as weight increases.
+
+    `Sleep Duration` and `Physical Activity Level` have a positive correlation which means that exist a tendency in people to have more physical activity when they have more time to rest (they probably feel more energetic). Which improves their `Quality of Sleep` and reduces their `Strees Level`.
+
+    The values of `BMI Category` follows a irregular distribution on `Occupation` and this is explained by how the data was collected, which will affect the model learning. This is a limitation that should be taken into account.
     """)
     return
 
