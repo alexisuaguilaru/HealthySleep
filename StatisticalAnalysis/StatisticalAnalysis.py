@@ -61,6 +61,14 @@ def _():
     return
 
 
+@app.cell
+def _():
+    mo.md(r"""
+    The dataset is taken from [Health and Sleep relation](https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024). This dataset explores the relationship between sleep patterns and overall health. It includes detailed information on individual sleep habits, health metrics, and lifestyle factors, enabling analysis of how sleep quality and duration impact physical and mental well-being.
+    """)
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -159,6 +167,8 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
+    After a minor data exploration, some features have missing or weird values. Therefore, based on the context of each feature, the following transformations are applied:
+
     The missing values of `Sleep Disorder` are imputed with `No`, the values of `Blood Pressure` are splitted into systolic and diastolic values, and the values with `Normal Weight` in `BMI Category` are transformed to `Normal`.
 
     For a better understanding and interpretation of the target, the values of `Quality of Sleep` are rearranging from 1 to 6.
@@ -220,6 +230,14 @@ def _():
 
 
 @app.cell
+def _():
+    mo.md(r"""
+    In this section is performed a univariate analysis on both numerical and categorical features to gather initial insights based on the statistical properties and dataset's context. This analysis is focused on showing how the features impact on the patient's `Quality of Sleep`.
+    """)
+    return
+
+
+@app.cell
 def _(SleepDataset):
     # Splitting features into numerical and categorical features
 
@@ -241,6 +259,8 @@ def _():
     None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be less significant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
 
     Fifty percent of patients have a `Quality of Sleep` between 3 and 5, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a subject becomes older, which impacts the number of hours needed to feel rested after sleeping.
+
+    The fifty percent of patients are middle-aged (between 35 and 50 years old), so this dataset has a high representative of a same generational age. This implies that many patients will have a similar lifestyle and habits (similar population), so if a model is trained with this dataset will be biased.
     """)
     return
 
