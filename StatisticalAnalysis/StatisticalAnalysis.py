@@ -936,6 +936,14 @@ def _():
 
 
 @app.cell
+def _():
+    mo.md(r"""
+    In this section is performed the regression analysis, focusing on model building and validation assuming the target (`Quality of Sleep`) is continuous. The correlation matrix is examined to show the linear relationships between the variables.
+    """)
+    return
+
+
+@app.cell
 def _(NumericalFeatures):
     # Splitting numerical features into regressors and target variables
 
@@ -955,7 +963,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep`.
+    The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep` using only numerical features.
 
     Through the correlation matrix, one can better appreciate how the different factors that constitute the lifestyle and quality of a patient interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as blood pressure values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
     """)
@@ -1001,7 +1009,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of quality of sleep of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model.
+    Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of `Quality of Sleep` of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model without losing clinical information about a patient.
     """)
     return
 
@@ -1030,7 +1038,7 @@ def _():
     mo.md(r"""
     Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit, this means generating better predictions (more accurate). Therefore this model is better than the full model.
 
-    The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the subject's stress encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a patient and their sleep quality.
+    The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the subject's stress encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a patient and their sleep quality without exposing sensitive personal information.
     """)
     return
 
@@ -1077,6 +1085,14 @@ def _(
 def _():
     mo.md(r"""
     ### 5.4. Validation of Assumptions
+    """)
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    Due to the non-normal distribution of the features, many of the assumptions inherent in a linear regression model are not satisfied. Key assumptions include normality in residuals and homoscedasticity of the target.
     """)
     return
 
