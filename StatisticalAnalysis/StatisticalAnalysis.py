@@ -359,9 +359,11 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of this features will be more deliberate, as the results could be insignificant.
+    Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of these features will be more deliberate, as the results could be insignificant.
 
     Daily stress, time for physical activity, time for personal and recreational activities, diet, and rest time are factors that are dependent on subject's daily routine and lifestyle. By showing that there is evidence of dependence between the categories (features), this premise and relationship can be reinforced.
+
+    And there is no a good representation of categories in `Occupation` nor `BMI Category`, hence some combinations of these values will be more rare to analyze or to learn in a model.
     """)
     return
 
