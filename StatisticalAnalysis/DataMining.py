@@ -21,7 +21,9 @@ with app.setup:
     import statsmodels.formula.api as smf
 
     from scipy import stats
+    from gower import gower_matrix
 
+    from sklearn.preprocessing import StandardScaler , MinMaxScaler
     from sklearn.decomposition import PCA
     from sklearn.cluster import AgglomerativeClustering , KMeans , DBSCAN
     from sklearn.preprocessing import scale
@@ -99,36 +101,20 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
+@app.cell
 def _():
     mo.md(r"""
-    Using the processed dataset with encoded categorical values, K Means and Agglomerative clustering (both single and complete linkage) are employed in order to evaluate which algorithm generates the best results using Euclidean distance as the metric (due to the presence of mixed data).
-
-    No scaling transformation was performed, even though the features belong to different scales, because it was noted that rescaling "distorts" the distances between data points enough to lose part of the inherent structure they possess, that is, the groups they form and their natural separability.
-
-    Due to how each clustering algorithm works, Silhouette score was chosen to measure the quality of the algorithms and compare them based on how well they separate and generate clusters. Using the elbow method, it is found that similar results are reached where the optimal number of clusters is $6$ along with comparable scores.
+    ### 1.1. Visualization of Clusters
     """)
     return
 
 
 @app.cell
-def _(ProcessedFeatures):
-    # Creating selectors of features for plotting the values
-
-    FeatureOptionsCluster_1 = mo.ui.dropdown(
-        ProcessedFeatures,
-        value = ProcessedFeatures[0],
-        label = 'Select a Feature',
-        allow_select_none = False,
-    )
-
-    FeatureOptionsCluster_2 = mo.ui.dropdown(
-        ProcessedFeatures,
-        value = ProcessedFeatures[0],
-        label = 'Select a Feature',
-        allow_select_none = False,
-    )
-    return FeatureOptionsCluster_1, FeatureOptionsCluster_2
+def _():
+    mo.md(r"""
+    Using PCA in the processed dataset (encoded categorical features and MinMax scaler for numerical features, this transformations allow to have a same scale), no clusters were found visually. This implies that it is necessary to apply feature engineering to create another kind of relationships between features. But using an appropriate metric could show better clusters in the dataset.
+    """)
+    return
 
 
 @app.cell
@@ -140,43 +126,88 @@ def _(ProcessedFeatures, ProcessedSleepDataset, TargetLabel):
     ProcessedSleepDataset_Target = ProcessedSleepDataset[TargetLabel]
 
     DatasetClustering = ProcessedSleepDataset_Features
-    return (
-        DatasetClustering,
-        ProcessedSleepDataset_Features,
-        ProcessedSleepDataset_Target,
-    )
+    return DatasetClustering, ProcessedSleepDataset_Target
 
 
 @app.cell
-def _(
-    FeatureOptionsCluster_1,
-    FeatureOptionsCluster_2,
-    ProcessedSleepDataset_Features,
-):
-    _fig , _axes = src.CreatePlot(FigSize=(5.5,5.5))
+def _(ProcessedFeatures, ProcessedSleepDataset, TargetLabel):
+    # Applying PCA to the preprocessed dataset
 
-    _Feature_1 = FeatureOptionsCluster_1.value
-    _Feature_2 = FeatureOptionsCluster_2.value
-    sns.scatterplot(
-        x = ProcessedSleepDataset_Features[_Feature_1],
-        y = ProcessedSleepDataset_Features[_Feature_2],
-        c = src.BaseColor,
-        ax = _axes
-    )
-    src.SetLabelsToPlot(
-        _axes,
-        f'{_Feature_1} vs {_Feature_2}',
-        _Feature_1,
-        _Feature_2,
-        13,11,10
-    )
-
-    mo.vstack(
+    _PipelinePCA = Pipeline(
         [
-            mo.hstack([FeatureOptionsCluster_1,FeatureOptionsCluster_2]),
-            _fig 
+            ('Standardization',MinMaxScaler()),
+            ('PrincipalComponents',PCA(random_state=src.RANDOM_STATE))
         ]
     )
+    _SleepDatasetReducedPCA = _PipelinePCA.fit_transform(ProcessedSleepDataset[ProcessedFeatures])
+
+    _fig , _axes = plt.subplot_mosaic(
+        '1122\n.33.',
+        subplot_kw = {'frame_on':False},
+        layout = 'constrained',
+        figsize = (6,5),
+    )
+
+    _legend_handles = None
+    for (_pc_x , _pc_y) , _index_ax in zip(combinations(range(3),2),range(1,4)):
+        _ax = _axes[str(_index_ax)]
+        sns.scatterplot(
+            x = _SleepDatasetReducedPCA[:,_pc_x],
+            y = _SleepDatasetReducedPCA[:,_pc_y],
+            hue = ProcessedSleepDataset[TargetLabel],
+
+            palette = src.BasePalette(n_colors=6),
+            ax = _ax,
+        )
+        src.SetLabelsToPlot(
+            _ax,
+            None,
+            f'PC {_pc_x+1}',
+            f'PC {_pc_y+1}',
+            None,9,8
+        )
+
+        _legend_handles = _ax.get_legend_handles_labels()
+        _ax.legend_ = None
+
+    src.SetFigureTitle(
+        _fig,
+        'Dimensionality Reduction with PCA',
+        13,
+    )
+
+    _fig.legend(
+        *_legend_handles,
+        title = TargetLabel,
+        loc = 'lower right'
+    )
+
+    # _fig.savefig(f'./Resources/PCAPlot_{_CategoricalFeature.replace(' ','')}.jpg')
+    mo.vstack(
+        [
+            _fig
+        ]
+    )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    ### 1.2. Applying Clustering with Different Techniques
+    """)
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    K-Means and Agglomerative clustering (both single and complete linkage) are employed in order to evaluate which algorithm generates the best results using Gower distance as the metric (due to the presence of mixed data).
+
+    Due to how each clustering algorithm works, Silhouette score was chosen to measure the quality of the algorithms and compare them based on how well they separate and generate clusters. Using the elbow method,
+
+    it is found that similar results are reached where the optimal number of clusters is $6$ along with comparable scores.
+    """)
     return
 
 
@@ -184,12 +215,17 @@ def _(
 def _(DatasetClustering):
     # Calculating and plotting Silhouette scores for K-Means
 
-    ClusteringKMeans = KMeans(random_state=src.RANDOM_STATE)
+    ClusteringKMeans = Pipeline(
+        [
+            ('Standardization',MinMaxScaler()),
+            ('Clustering',KMeans(random_state=src.RANDOM_STATE)),
+        ]
+    )
 
     _MaxNumClusters = 10
     _SilhouetteResults = []
     for _num_clusters in range(2,_MaxNumClusters+1):
-        ClusteringKMeans.set_params(n_clusters=_num_clusters)
+        ClusteringKMeans.set_params(Clustering__n_clusters=_num_clusters)
         _labels_clusters = ClusteringKMeans.fit_predict(DatasetClustering)
 
         _score = silhouette_score(DatasetClustering,_labels_clusters)
@@ -211,12 +247,17 @@ def _(DatasetClustering):
 def _(DatasetClustering):
     # Calculating and plotting Silhouette scores for Single Agglomerative Clustering
 
-    ClusteringAgglomerativeSingle = AgglomerativeClustering(linkage='single')
+    ClusteringAgglomerativeSingle = Pipeline(
+        [
+            ('Standardization',MinMaxScaler()),
+            ('Clustering',AgglomerativeClustering(linkage='single')),
+        ]
+    )
 
     _MaxNumClusters = 10
     _SilhouetteResults = []
     for _num_clusters in range(2,_MaxNumClusters+1):
-        ClusteringAgglomerativeSingle.set_params(n_clusters=_num_clusters)
+        ClusteringAgglomerativeSingle.set_params(Clustering__n_clusters=_num_clusters)
         _labels_clusters = ClusteringAgglomerativeSingle.fit_predict(DatasetClustering)
 
         _score = silhouette_score(DatasetClustering,_labels_clusters)
@@ -237,12 +278,17 @@ def _(DatasetClustering):
 def _(DatasetClustering):
     # Calculating and plotting Silhouette scores for Complete Agglomerative Clustering
 
-    ClusteringAgglomerativeComplete = AgglomerativeClustering(linkage='complete')
+    ClusteringAgglomerativeComplete = Pipeline(
+        [
+            ('Standardization',MinMaxScaler()),
+            ('Clustering',AgglomerativeClustering(linkage='complete')),
+        ]
+    )
 
     _MaxNumClusters = 10
     _SilhouetteResults = []
     for _num_clusters in range(2,_MaxNumClusters+1):
-        ClusteringAgglomerativeComplete.set_params(n_clusters=_num_clusters)
+        ClusteringAgglomerativeComplete.set_params(Clustering__n_clusters=_num_clusters)
         _labels_clusters = ClusteringAgglomerativeComplete.fit_predict(DatasetClustering)
 
         _score = silhouette_score(DatasetClustering,_labels_clusters)
@@ -285,7 +331,7 @@ def _(
 
     _TableEvaluationResults = []
     for _clustering , _name in _ClusteringAlgorithms:
-        _clustering.set_params(n_clusters=6)
+        _clustering.set_params(Clustering__n_clusters=6)
         _labels_clusters = _clustering.fit_predict(DatasetClustering)
 
         _score = mutual_info_score(ProcessedSleepDataset_Target,_labels_clusters)
