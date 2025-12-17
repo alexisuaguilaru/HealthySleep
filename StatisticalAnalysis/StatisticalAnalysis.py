@@ -1216,6 +1216,16 @@ def _():
     return
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    Factor analysis is performed with numerical features and encoded categorical variables to encompass all possible interactions between features that can be explained through the factors.
+
+    Using the elbow method on the eigenvalues of the factors, it is determined that using four factors allows explaining $89.31\%$ of the data variance (only positive eigenvalues are considered). Additionally, it can be noted that negative eigenvalues were found, which implies the existence of highly correlated features (multicollinearity), a fact that can be observed in the correlation matrix and in the auxiliary plots using categorical features.
+    """)
+    return
+
+
 @app.cell
 def _(SleepDataset):
     # Encoding categorical features of the dataset and 
@@ -1245,16 +1255,6 @@ def _(SleepDataset):
     _NumericalScaler = StandardScaler()
     SleepDataset_Processed[SleepDataset_Processed.columns] = _NumericalScaler.fit_transform(SleepDataset_Processed)
     return (SleepDataset_Processed,)
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    Factor analysis is performed with numerical features and encoded categorical variables to encompass all possible interactions between features that can be explained through the factors.
-
-    Using the elbow method on the eigenvalues of the factors, it is determined that using four factors allows explaining $89.31\%$ of the data variance (only positive eigenvalues are considered). Additionally, it can be noted that negative eigenvalues were found, which implies the existence of highly correlated features (multicollinearity), a fact that can be observed in the correlation matrix and in the auxiliary plots using categorical features.
-    """)
-    return
 
 
 @app.cell
@@ -1311,7 +1311,7 @@ def _():
     mo.md(r"""
     Using the mean of the communalities, it is found that the Factor Analysis model has moderate quality, meaning that not all variables are adequately explained by the factors. Although some of the variances of the variables are adequately explained by the factors (such as `Gender`, `Quality of Sleep`, `Blood Pressure`, `Sleep Disorder`, `BMI Category`, `Age`, `Physical Activity`), some others are not (such as `Occupation`, `Daily Steps`).
 
-    The above compromises the confidence in the interpretation of the factors and in the final quality of the results. Therefore, the loadings of the variables that are adequately explained by the factors have greater importance in what each factor represents for the data.
+    The above compromises the confidence in the interpretation of the factors and in the final quality of the results. Therefore, the loadings of the variables that are adequately explained by the factors have greater importance in what each factor represents for the data. Based on this, the factors could be a good low-dimensional representation of the dataset that summarizes it.
     """)
     return
 
@@ -1352,15 +1352,21 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    **Factors Interpretation**
+    ### 6.1. Factors Interpretation
+    """)
+    return
 
-    * *Factor 1*: Pertains to explaining the health of a patient (their precarity or deficiencies) based on their physical condition and sleep disorders.
 
-    * *Factor 2*: Is associated with the overall quality of sleep, how well one sleeps and recovers, also encompassing how having a stressful life affects sleep (high stress levels and hypertension).
+@app.cell
+def _():
+    mo.md(r"""
+    * *Factor 1*: Pertains to explaining the health of a patient (their precarity or deficiencies) based on their physical condition and sleep disorders. This factor includes features like: `BMI Category`, `Blood Preasure`, `Sleep Disorder`.
 
-    * *Factor 3*: Is linked to the physical activity and activation levels of a patient and their connection to the presence of insomnia (possible relationship between the energy and mood someone has throughout the day).
+    * *Factor 2*: Is associated with the overall quality of sleep, how well one sleeps and recovers, also encompassing how having a stressful life affects sleep (high stress levels and hypertension). This factor includes features like: `Sleep Duration`, `Quality of Sleep`, `Strees Level`.
 
-    * *Factor 4*: Does not provide relevant information or relationships.
+    * *Factor 3*: Is linked to the physical activity and activation levels of a patient and their connection to the presence of insomnia (possible relationship between the energy and mood someone has throughout the day). This feature includes: `Physical Activity Level`, `Daily Steps`.
+
+    * *Factor 4*: Does not provide relevant information or relationships (Only explains the gender of a patient).
     """)
     return
 
@@ -1397,7 +1403,11 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
 
 @app.cell
 def _(FactorAnalysisResults, SleepDataset_Processed):
-    _SummaryFactorsLoadings = [mo.md('**Relevant Features in each Factor**')]
+    _SummaryFactorsLoadings = [
+        mo.md('**Relevant Features in each Factor**'),
+        mo.md('A feature is considred relevant if its loading is greater than 0.4.')
+    ]
+
     _Loadings = FactorAnalysisResults.loadings
     _DataframesFeaturesByFactors = dict()
     for _factor in range(4):
