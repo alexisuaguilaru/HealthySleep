@@ -402,7 +402,15 @@ def _(ClusterProfiles):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## 2. Patterns And Association Rules
+    ## 2. Frequent Patterns And Association Rules
+    """)
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    ### 2.1. Discretization of Numerical Values
     """)
     return
 
@@ -485,6 +493,14 @@ def _(EncodedSleepDataset):
             EncodedSleepDataset,
         ]
     )
+    return
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    ### 2.2. Association Rules
+    """)
     return
 
 
