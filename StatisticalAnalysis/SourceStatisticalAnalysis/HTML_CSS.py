@@ -2,9 +2,9 @@ from os import getenv
 from datetime import datetime
 
 CurrentYear = datetime.today().year
-Home_URL = getenv('DOMAIN','localhost:8080')
-StatisticalAnalysis_URL = getenv('STATISTICAL_ANALYSIS_URL','localhost:5050')
-DataMining_URL = getenv('DATA_MINING_URL','localhost:5151')
+Home_URL = 'https://'+getenv('DOMAIN','localhost:8080')
+StatisticalAnalysis_URL = 'https://'+getenv('STATISTICAL_ANALYSIS_URL','localhost:5050')
+DataMining_URL = 'https://'+getenv('DATA_MINING_URL','localhost:5151')
 
 Style = """
 <head>
