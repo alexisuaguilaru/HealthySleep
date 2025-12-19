@@ -131,6 +131,7 @@ def _(
     ProcessedSleepDataset_Target = ProcessedSleepDataset[TargetLabel]
 
     # Creating distance matrix with Gower Distance
+
     DatasetClustering = gower_matrix(SleepDataset[Features])
     return (
         DatasetClustering,
@@ -278,7 +279,7 @@ def _(DatasetClustering):
     )
 
     _fig
-    return
+    return (ClusteringAgglomerativeComplete,)
 
 
 @app.cell
@@ -319,45 +320,51 @@ def _():
     return
 
 
+@app.cell
+def _(SleepDataset):
+    SleepDataset
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Because of K-Means has the best Silhouette score and a high MI score, it is chosen for the profiles and their respective description are generated based on its results of clustering (cluster centers). The next profiles are discovered:
+    Because of complete linkage has the best Silhouette score, it is chosen for the profiles and their respective description are generated based on its results of clustering (cluster centers, centroids). The next profiles are discovered:
 
-    * **Profile 1**: Women aged 46 with low stress levels and moderate physical activity, which is reflected in a life with normal blood pressure and heart rate, allowing them to sleep for sufficient time with good rest, and not suffer from insomnia, tend to have sleep apnea derived from a tendency to be overweight. Their main professions are accountants and nursing, fields that allow for a balanced lifestyle with low stress levels.
+    * **Profile 1**: Predominantly male subjects aged 42 years with normal sleep quality and an average sleep duration of 6.5 hours. These individuals exhibit low to moderate physical activity and overweight status, alongside moderately elevated stress levels, frequently manifesting as insomnia. This profile likely represents middle-aged professionals engaged in demanding office-based roles, characterized by significant time commitment.
 
-    * **Profile 2**: People between 43 and 44 years old with moderately stressful lives, getting 6.5 hours of daily sleep derived or caused by mostly suffering from insomnia, who have low physical activity resulting in overweight along with slightly above-normal blood pressure and heart rate. Their main professions are managers and teachers, fields with constant work pressure that consume most of their time.
+    * **Profile 2**: Male subjects aged 40 years with good sleep quality and an average sleep duration of 7.5 hours. These individuals demonstrate high levels of physical activity and maintain a normal body weight, accompanied by normal stress levels and a lack of sleep disorders. This profile likely comprises middle-aged professionals with elevated socioeconomic status and employment roles requiring reduced time commitment, facilitating a higher quality of life.
 
-    * **Profile 3**: Women between 48 and 49 years old with deplorable sleep quality and rest derived from suffering from sleep apnea, which causes a highly stressful life with arrhythmias (high blood pressure and heart rate), they have high levels of physical activity which benefits their overall condition. They are mostly nurses, a field where sleep hours are low and work shifts are stressful.
+    * **Profile 3**: Predominantly male subjects aged 38 years with normal sleep quality and an average sleep duration of 7 hours. These individuals exhibit normal physical activity levels and are classified as obese, alongside normal-to-elevated stress levels, frequently experiencing sleep disorders, including obstructive sleep apnea or insomnia secondary to obesity. This profile likely represents young adult males attempting to integrate physical activity into their daily routines despite obesity-related sleep challenges.
 
-    * **Profile 4**: Men aged 36 with moderately stressful lives that allow them to have ideal rest and recovery, engage in some physical activity, which is explained by considering they don't suffer from sleep disorders or overweight/obesity. They are mostly doctors and lawyers by profession, fields that do involve stress but once they achieve a stable position allow for a more controlled life.
+    * **Profile 4**: Predominantly female subjects aged 36 years with good sleep quality and an average sleep duration of 7.2 hours. These individuals demonstrate moderate physical activity and maintain a normal body weight, accompanied by low-to-normal stress levels and a lack of sleep disorders. This profile likely comprises young professional women holding positions affording a degree of work-life balance.
 
-    * **Profile 5**: Mostly men aged 35 with deplorable sleep quality derived from suffering from sleep disorders that result in less willingness to engage in physical activity and worse quality of life (greater tendency to be overweight), which also leads to higher than normal blood pressure and heart rate. They are mostly software engineers and sales representatives, two fields that require high time demands and constant workload.
+    * **Profile 5**: Male subjects aged 30 years with normal sleep quality and an average sleep duration of 6.8 hours. These individuals exhibit normal physical activity levels and maintain a normal body weight, alongside elevated stress levels and a lack of sleep disorders. This profile likely represents young male doctors initiating their professional careers, characterized by demanding work schedules and associated stress.
 
-    * **Profile 6**: People between 42 and 43 years old with moderate sleep quality living lives with little physical activity but without sleep disorders or overweight, both their blood pressure and heart rate are slightly above normal but not alarming. They are mostly engineers and scientists, fields that limit time dedicated to physical and recreational activities.
+    * **Profile 6**: Female subjects aged 52 years with excellent sleep quality and an average sleep duration of 8.4 hours. These individuals demonstrate low levels of physical activity and maintain a normal body weight, accompanied by low stress levels and a lack of sleep disorders. This profile likely comprises established professional women or those with high socioeconomic status, facilitating a quiet lifestyle.
+
+    * **Profile 7**: Female subjects aged 43 years with normal-good sleep quality and an average sleep duration of 6.5 hours. These individuals demonstrate moderate physical activity and are classified as overweight, alongside normal-to-elevated stress levels, frequently manifesting as insomnia. This profile likely represents adult female educators whose profession demands significant time and energy, yet who incorporate physical activity into their routines.
+
+    * **Profile 8**: Female subjects aged 53 years with good sleep quality and an average sleep duration of 7 hours. These individuals demonstrate high levels of physical activity and are classified as overweight, alongside normal stress levels, frequently experiencing obstructive sleep apnea. This profile likely comprises experienced nurses who have established their professional routines and maintain a normal lifestyle without significant worries.
     """)
     return
 
 
 @app.cell
 def _(
-    ClusteringKMeans,
+    ClusteringAgglomerativeComplete,
     DatasetClustering,
-    ProcessedSleepDataset_Target,
-    TargetLabel,
+    ProcessedSleepDataset,
 ):
     # Calculating values for feature and target in each profile
 
-    ClusteringKMeans.set_params(n_clusters=6)
-    ClusteringLabels = ClusteringKMeans.fit_predict(DatasetClustering)
+    _num_clusters = 8
+    ClusteringAgglomerativeComplete.set_params(Clustering__n_clusters=_num_clusters)
+    ClusteringLabels = ClusteringAgglomerativeComplete.fit_predict(DatasetClustering)
 
-    ClusterProfiles = pd.DataFrame(
-        ClusteringKMeans.cluster_centers_,
-        columns = DatasetClustering.columns,
-    )
-    ClusterProfiles[TargetLabel] = ProcessedSleepDataset_Target.groupby(ClusteringLabels).mean()
+    ClusterProfiles = ProcessedSleepDataset.groupby(ClusteringLabels).mean()
 
-    ClusterProfiles.index = [f'Profile {_profile}' for _profile in range(1,7)]
+    ClusterProfiles.index = [f'Profile {_profile}' for _profile in range(1,_num_clusters+1)]
     ClusterProfiles = ClusterProfiles.T
     return (ClusterProfiles,)
 
