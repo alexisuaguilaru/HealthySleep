@@ -592,7 +592,7 @@ def _(
         TickSize = 10,
     )
 
-    # _fig.savefig(f'./Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg')
+    # _fig.savefig(f'../Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg')
     mo.vstack(
         [
             mo.hstack([NumericalFeatureOptions_NumCat,CategoricalFeatureOptions_NumCat]),
@@ -649,7 +649,7 @@ def _(
         TickSize = 10,
     )
 
-    # _fig.savefig(f'./Resources/BivariatePlot_{_numerical_feature_1.replace(' ','')}_{_numerical_feature_2.replace(' ','')}.jpg')
+    # _fig.savefig(f'../Resources/BivariatePlot_{_numerical_feature_1.replace(' ','')}_{_numerical_feature_2.replace(' ','')}.jpg')
     mo.vstack(
         [
             mo.hstack([NumericalFeatureOptions_1_NumNum,NumericalFeatureOptions_2_NumNum]),
@@ -857,7 +857,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         loc = 'lower right'
     )
 
-    # _fig.savefig(f'./Resources/PCAPlot_{_CategoricalFeature.replace(' ','')}.jpg')
+    # _fig.savefig(f'../Resources/PCAPlot_{_CategoricalFeature.replace(' ','')}.jpg')
     mo.vstack(
         [
             CategoricalFeatureOptions_PCA,
@@ -993,7 +993,7 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
     )
     _axes._colorbars[0].tick_params(labelsize=8)
 
-    # _fig.savefig(f'./Resources/CorrelationMatrix.jpg',bbox_inches='tight')
+    # _fig.savefig(f'../Resources/CorrelationMatrix.jpg',bbox_inches='tight')
     _fig
     return
 
@@ -1287,7 +1287,6 @@ def _(SleepDataset_Processed):
         13,11,9
     )
 
-    # _fig.savefig(f'./Resources/FactorAnalysis_Communalities.jpg')
     _fig
     return
 
@@ -1345,6 +1344,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     )
     _axes.tick_params(axis='x',rotation=90)
 
+    # _fig.savefig(f'../Resources/FactorAnalysis_Communalities.jpg')
     _fig
     return
 
@@ -1396,7 +1396,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     )
     _axes._colorbars[0].tick_params(labelsize=8)
 
-    # _fig.savefig(f'./Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
+    # _fig.savefig(f'../Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
     _fig
     return
 
