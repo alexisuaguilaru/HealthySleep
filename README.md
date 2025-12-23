@@ -1,7 +1,25 @@
-# Healthy Sleep Analysis
+# Healthy Sleep Analysis <!-- omit in toc -->
 
-## Abstract
+## Abstract <!-- omit in toc -->
 This project aims to perform a Statistical Analysis (EDA) and build a Machine Learning (ML) model to predict patient sleep quality based on their habits, quality of life, physical activity, and sleep disorders.
+
+## Table of Contents <!-- omit in toc -->
+- [About the Dataset](#about-the-dataset)
+- [Exploratory Data Analysis](#exploratory-data-analysis)
+  - [Basic Analysis](#basic-analysis)
+  - [Correlation Matrix](#correlation-matrix)
+  - [Principal Component Analysis](#principal-component-analysis)
+  - [Factor Analysis](#factor-analysis)
+- [Data Mining](#data-mining)
+  - [Cluster Analysis](#cluster-analysis)
+  - [Association Rules](#association-rules)
+- [Machine Learning Models](#machine-learning-models)
+- [Model API](#model-api)
+- [Frontend](#frontend)
+- [Installation and Usage](#installation-and-usage)
+  - [Statistical Analysis (EDA and Data Mining)](#statistical-analysis-eda-and-data-mining)
+  - [Machine Learning Models](#machine-learning-models-1)
+  - [Local Deployment](#local-deployment)
 
 ## About the Dataset
 The dataset is taken from [Health and Sleep relation](https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024). This dataset explores the relationship between sleep patterns and overall health. It includes detailed information on individual sleep habits, health metrics, and lifestyle factors, enabling analysis of how sleep quality and duration impact physical and mental well-being.
@@ -120,10 +138,10 @@ docker compose up -d --build
 http://localhost:8080/
 ```
 
-## Author, Affiliation and Contact
+## Author, Affiliation and Contact <!-- omit in toc -->
 Alexis Aguilar [Student of Bachelor's Degree in "Tecnologías para la Información en Ciencias" at Universidad Nacional Autónoma de México [UNAM](https://www.unam.mx/)]: alexis.uaguilaru@gmail.com
 
 Project developed for the subjects "[Multivariate Statistics](https://github.com/alexisuaguilaru/EstadisticaMultivariada)" and "Data Mining" for the class taught in semester 2026-1.
 
-## License
+## License <!-- omit in toc -->
 Project under [MIT License](LICENSE)
