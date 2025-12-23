@@ -64,21 +64,45 @@ The interpretation of the resulted factors is given:
 <img src="./Resources/FactorAnalysis_FactorLoadings.jpg" alt="Factor loadings" width=600 height=400/>
 
 ## Data Mining
-The full data mining process can be found in [Data Mining](./StatisticalAnalysis/DataMining.py) as an interactive Marimo notebook. This notebook explains in detail each decision taken to perform the extraction of insights.
+The full data mining process can be found in [Data Mining](./StatisticalAnalysis/DataMining.py) as an interactive Marimo notebook and deployed in [Data Mining Notebook](https://healthy-sleep.alexisaguilar.me/DataMining/). This notebook explains in detail each decision taken to perform the extraction of insights.
 
 ### Cluster Analysis
-Using K-Means on the dataset with encoded categorical features, without standarization and Euclidean distance, 6 profiles were discovered from the centroids of each clusters:
-* **Profile 1**: Consists mostly of women (aged 46) who maintain a balanced lifestyle with low stress, moderate physical activity, and normal vitals (blood pressure and heart rate). Despite achieving good sleep duration and rest, they show a tendency toward overweight resulting in sleep apnea. They are typically accountants and nurses.
-* **Profile 2**: Consists of individuals (aged 43–44) experiencing moderate stress and insomnia, which severely limits their sleep to 6.5 hours. This stress, combined with low physical activity, leads to overweight and slightly elevated blood pressure and heart rate. They are frequently managers and teachers, professions known for high constant pressure.
-* **Profile 3**: Primarily women (aged 48–49) characterized by a highly stressful life linked to a deplorable sleep quality due to sleep apnea. This poor rest causes arrhythmias (high blood pressure and heart rate). Crucially, their high physical activity levels likely benefit their overall condition despite the stress. They are mostly nurses.
-* **Profile 4**: Consists of men (aged 36) who manage their moderate stress well, allowing for ideal rest and recovery. They maintain some physical activity and do not suffer from any sleep disorders or overweight/obesity. They are typically doctors and lawyers who have established a stable, controlled professional life.
-* **Profile 5**: Dominated by men (aged 35) suffering from deplorable sleep quality due to sleep disorders. This directly results in a lack of willingness to engage in physical activity and a resulting overweight tendency, accompanied by elevated blood pressure and heart rate. They work in demanding fields like software engineering and sales.
-* **Profile 6**: Includes individuals (aged 42–43) who enjoy moderate sleep quality and are not overweight or affected by sleep disorders. They have low physical activity levels, which results in slightly elevated (but non-alarming) vitals. They are primarily engineers and scientists, professions where work demands limit the time available for exercise.
+Using PCA in the processed dataset (encoded categorical features and MinMax scaler for numerical features), no clusters were found visually. This implies that it is necessary to apply feature engineering to create another kind of relationships between features, and using an appropriate metric could show better clusters in the dataset.
+
+<img src="./Resources/Clustering_ClusterPlots.jpg" alt="Visualization of Clusters" width=500/>
+
+Agglomerative clustering is employed in order to evaluate which linkage generates the best results using Gower distance as the metric (due to the presence of mixed data types, this metric has a better quality). And Silhouette score was chosen to measure the quality of the linkages and to compare them based on how well they separate and generate clusters.
+
+Using the scree plots of the Silhouette score varying the number of clusters, the complete linkage tends to have better scores due to this linkage forms sphere-shape clusters. Therefore, clusters with patients more similar to each other.
+
+<img src="./Resources/Clustering_ScreePlotComplete.jpg" alt="Scree plot" width=500/>
+
+Using the elbow method, agglomerative clustering with complete linkage and 8 clusters achieves a Silhouette score of 0.5737 which each cluster is well-defined and represents a distinct profile with possible similarities. The next profiles (brief description) are discovered:
+
+* *Profile 1*: Middle-aged male professionals (avg. 42) in demanding office roles with 6.5 hours of sleep, moderate stress, overweight status, and frequent insomnia.
+
+* *Profile 2*: Physically active middle-aged males (avg. 40) with high socioeconomic status, enjoying 7.5 hours of sleep, normal weight, and no sleep disorders.
+
+* *Profile 3*: Young adult males (avg. 38) classified as obese with 7 hours of sleep and elevated stress, often experiencing sleep apnea or obesity-related insomnia.
+
+* *Profile 4*: Young professional women (avg. 36) with balanced lifestyles, achieving 7.2 hours of sleep, normal weight, and low stress.
+
+* *Profile 5*: Young male doctors (avg. 30) early in their careers with high stress levels and 6.8 hours of sleep despite maintaining a normal body weight.
+
+* *Profile 6*: Established professional women (avg. 52) with high socioeconomic status, excellent sleep quality (8.4 hours), low stress, and a quiet lifestyle.
+
+* *Profile 7*: Adult female educators (avg. 43) with demanding professions, 6.5 hours of sleep, and frequent insomnia despite regular physical activity.
+
+* *Profile 8*: Experienced nurses (avg. 53) with active lifestyles and 7 hours of sleep, though classified as overweight and prone to obstructive sleep apnea.
 
 ### Association Rules
-With a minimum support of 15%, confidence of 90% and lift of 5, two relevante rules were discovered for explaining and showing some associations between the data and real facts:
-* **Rule 1**: Reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
-* **Rule 2**: Shows the association that exists between having a precarious health status and the habits of an individual. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
+With a minimum support of 15%, confidence of 90% and lift of 5, two relevante rules were discovered for explaining and showing some associations between the dataset and real facts:
+
+* *Rule 1*: Reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
+    $$ \text{Sleep Duration} \in [7,9] , \text{Age} \in [50,60], \text{Stress Level} \in [2,5] \implies \\ \text{Heart Rate} \in [60,80] , \text{Quality of Sleep} \in [8,10] $$
+
+* *Rule 2*: Shows the association that exists between having a precarious health status and the habits of an subject. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
+    $$ \text{BMI Category is Overweight} , \text{Sleep Disorder is Insomnia} \implies \\ \text{Sleep Duration} \in [6,7] , \text{Daily Steps} \in [5000,7000] , \\ \text{Heart Rate} \in [60,80] , \text{Physical Activity Level} \in [20,45] $$
 
 ## Machine Learning Models
 The detailed process for model definition and creation can be found in [ModelsTraining.ipynb](./MachineLearning/ModelsTraining.ipynb). Four different classification models are proposed, trained with weighted F1 (due to the notable class imbalance in the dataset) and fine-tuned using [Optuna](https://optuna.org/) in order to predict the `Quality of Sleep` of a patient. Derived from the [Statistical Analysis](#exploratory-data-analysis), non-linear models (SVM, Random Forest, and AdaBoost) and a linear model (Logistic Regression) are employed, with the latter serving as a baseline and comparison point for the other models.

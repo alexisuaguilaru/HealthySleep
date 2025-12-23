@@ -197,7 +197,7 @@ def _(
         loc = 'lower right'
     )
 
-    # _fig.savefig(f'./Resources/PCAPlot_{_CategoricalFeature.replace(' ','')}.jpg')
+    # _fig.savefig(f'../Resources/Clustering_ClusterPlots.jpg')
     _fig
     return
 
@@ -278,6 +278,7 @@ def _(DatasetClustering):
         'Complete Agglomerative'
     )
 
+    # _fig.savefig(f'../Resources/Clustering_ScreePlotComplete.jpg')
     _fig
     return (ClusteringAgglomerativeComplete,)
 
