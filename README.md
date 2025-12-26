@@ -118,7 +118,7 @@ Based on the results and their subsequent analysis performed in [ModelsTraining.
 ## Model API 
 A RESTful API was implemented using [FastAPI](https://fastapi.tiangolo.com/) to classify incoming patient requests. The API utilizes a POST method to process the patient features via the model developed in the [Machine Learning Models](#machine-learning-models) section. For long-term model evaluation, the patient features and their predicted classification are logged into a PostgreSQL database. 
 
-The main entrypoint for the API is the `POST /Classify` endpoint, where the request body contains the patient features. The response includes the predicted level and name of the quality of sleep of the patient.
+The main entrypoint for the API is the `POST /` endpoint, where the request body contains the patient features. The response includes the predicted level and name of the quality of sleep of the patient.
 
 ## Frontend
 A simple, minimalist frontend was developed using [Vue.js](https://vuejs.org/). It features a form designed to capture the input features of the patient and display the predicted level of sleep quality in an additional field.

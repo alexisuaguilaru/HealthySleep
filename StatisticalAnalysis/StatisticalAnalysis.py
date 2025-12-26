@@ -90,7 +90,7 @@ def _():
 
     * `BMI Category` (*Ordinal*): The patient's Body Mass Index classification (Normal, Overweight, etc.)
 
-    * `Blood Pressure` (*Ordinal*): The measure of blood pressure, provided as a Systolic/Diastolic ratio
+    * `Blood Pressure` (*Ordinal*): The measure of blood pressure, provided as a Systolic/Diastolic format
 
     * `Heart Rate` (*Discrete*): The patient's average heart rate, measured in Beats Per Minute (BPM)
 
@@ -260,7 +260,7 @@ def _():
 
     Fifty percent of patients have a `Quality of Sleep` between 3 and 5, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a subject becomes older, which impacts the number of hours needed to feel rested after sleeping.
 
-    The fifty percent of patients are middle-aged (between 35 and 50 years old), so this dataset has a high representative of a same generational age. This implies that many patients will have a similar lifestyle and habits (similar population), so if a model is trained with this dataset will be biased.
+    The fifty percent of patients are middle-aged (between 35 and 50 years old), so this dataset has a high representative of a same generational age. This implies that many patients will have a similar lifestyle and habits (similar population), so if a model is trained with this dataset will be underfitted to predict the younger subjects' `Quality of Sleep`.
     """)
     return
 
@@ -311,6 +311,7 @@ def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
 
     src.SetFigureTitle(_fig,'Distribution of Numerical Features')
 
+    # _fig.savefig(f'../Resources/UnivariatePlot_Numerical.jpg')
     mo.vstack([KindPlotNumericalFeatures,_fig])
     return
 
@@ -410,12 +411,14 @@ def _(CategoricalFeatures, SleepDataset):
 
     src.SetFigureTitle(_fig,'Distribution of Categorical Features')
 
+    # _fig.savefig(f'../Resources/UnivariatePlot_Categorical.jpg')
     _fig
     return
 
 
 @app.cell
 def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
+
     _DataChi2Results = []
     for _categorical_feature_1 , _categorical_feature_2 in combinations(CategoricalFeatures,2):
         _chi2_result = stats.chi2_contingency(
@@ -503,7 +506,7 @@ def _(SleepDataset):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## 4. Multivariate Exploratory
+    ## 4. Multivariate Analysis
     """)
     return
 
@@ -592,7 +595,7 @@ def _(
         TickSize = 10,
     )
 
-    # _fig.savefig(f'../Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg')
+    # _fig.savefig(f'../Resources/BivariatePlot_{_categorical_feature.replace(' ','')}_{_numerical_feature.replace(' ','')}.jpg',bbox_inches='tight')
     mo.vstack(
         [
             mo.hstack([NumericalFeatureOptions_NumCat,CategoricalFeatureOptions_NumCat]),
@@ -722,10 +725,15 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Using elbow method on the eigenvalues, the best selection for the number of principal component is three that explains the $87.14\%$ of the variance in the dataset. Which comes from:
-    * *Sleep quality* (PC 1): Its positives loadings are concentrated on how well and long someone sleeps and its negatives on their stress levels
-    * *General health* (PC 2): Its positives loadings explain the increase in blood pressure (hypertension or another conditions) and in old age, as well as an increase in exercise to counteract the damage associated with old age
-    * *Physical condition* (PC 3): Its positives loadings are related to how much physical activities and exercise someone does and its negatives loadings to the medical condition of their body
+    PCA  is applied on the numerical features to perform a dimensionality reduction, hence using the elbow method on the eigenvalues, the best selection for the number of principal component is three that explains the $87.14\%$ of the variance in the dataset (this percentage is an acceptable reduction of the whole dataset to a few variables).
+
+    Based on an analysis of the loadings, each component explains the next relations and observations in the dataset:
+
+    * *Sleep quality* (PC 1): Its positives loadings are concentrated on how well and long someone sleeps and its negatives on their stress levels. This component highlights how stress negatively impacts recovery efficiency
+
+    * *General health* (PC 2): Its positives loadings explain the increase in blood pressure (hypertension or another conditions) with aging, as well as an increase in exercise to counteract the damage associated with old age. This component illustrates how human susceptibility to disease increases with age
+
+    * *Physical condition* (PC 3): Its positives loadings are related to how much physical activities and exercise someone does and its negatives loadings to the medical condition of their body. This component demonstrates an essential clinical factor for long-term wellness, namely regular physical activity
     """)
     return
 
@@ -744,7 +752,7 @@ def _(NumericalFeatures, SleepDataset):
 
     sns.lineplot(
         x = np.arange(1,len(NumericalFeatures)+1),
-        y = PipelinePCA['PrincipalComponents'].singular_values_,
+        y = PipelinePCA['PrincipalComponents'].explained_variance_ratio_.cumsum(),
 
         color = src.BaseColor,
         linestyle = '--',
@@ -757,13 +765,14 @@ def _(NumericalFeatures, SleepDataset):
     src.SetLabelsToPlot(
         _axes,
         'Scree Plot for Selection of\nNumber of Principal Components',
-        'Principal Components',
-        'Eigenvalues',
+        'Number of Principal Components',
+        'Cumulative Explained Variance',
         TitleSize = 13,
         LabelSize = 11,
         TickSize = 9,
     )
 
+    # _fig.savefig(f'../Resources/PCA_ScreePlotEigen.jpg')
     _fig
     return PipelinePCA, SleepDatasetReducedPCA
 
@@ -778,7 +787,7 @@ def _(NumericalFeatures, PipelinePCA):
 
     mo.vstack(
         [
-            mo.md('**Loadings of Each Principal Component**'),
+            mo.md('**Loadings of Features in Each Principal Component**'),
             _DataFrameLoadings.map(partial(src.OutputFormatting,Precision=8)),
         ]
     )
@@ -788,7 +797,7 @@ def _(NumericalFeatures, PipelinePCA):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Considering that aspects related to physical and sleep health are integrally related, it becomes natural to expect certain patterns when plotting the principal components using `BMI Category` and `Sleep Disorder` as categorical values. Specifically, it can be observed that having a high positive value in PC1 (better sleep health) and a low negative value in PC2 (greater youth) tends to result in normal weight and absence of sleep disorders.
+    Considering that aspects related to physical and sleep health are integrally related, it becomes natural to expect certain patterns when plotting the principal components using `BMI Category` and `Sleep Disorder` as categorical values. Specifically, it can be observed that having a high positive value in PC1 (better sleep health) and a low negative value in PC2 (greater youth) tends to result in normal weight and absence of sleep disorders. And this relationship illustrates the standard optimal health status (young, normal weight and no diseases).
 
     There is not a clearly separation or grouping between instances, therefore using only numerical features is insufficient to create clusters or including categorical features may be necessary to separate instances.
     """)
@@ -847,7 +856,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
 
     src.SetFigureTitle(
         _fig,
-        'PCA by Categorical Values',
+        f'PCA by {_CategoricalFeature}',
         13,
     )
 
