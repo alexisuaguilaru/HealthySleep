@@ -1310,11 +1310,15 @@ def _(SleepDataset_Processed):
     _FAResults = _FactorAnalysis.fit()
     _Eigenvalues = _FAResults.eigenvals
 
+    _PositiveEigenvalues = _Eigenvalues > 0
+    _ExplainedVariance = _Eigenvalues[_PositiveEigenvalues]
+    _ExplainedVariance_Ratio = (_ExplainedVariance/_ExplainedVariance.sum()).cumsum()
+
     _fig , _axes = src.CreatePlot(FigSize=(5,4))
 
     sns.lineplot(
-        x = range(1,len(_Eigenvalues)+1),
-        y = _Eigenvalues,
+        x = range(1,len(_ExplainedVariance)+1),
+        y = _ExplainedVariance_Ratio,
 
         color = src.BaseColor,
         linestyle = '--',
@@ -1328,10 +1332,11 @@ def _(SleepDataset_Processed):
         _axes,
         'Scree Plot for Selection of\nNumber of Factors',
         'Number of Factors',
-        'Eigenvalues',
+        'Explained Variance',
         13,11,9
     )
 
+    # _fig.savefig(f'../Resources/FactorAnalysis_ScreePlot.jpg')
     _fig
     return
 
@@ -1355,7 +1360,7 @@ def _():
     mo.md(r"""
     Using the mean of the communalities, it is found that the Factor Analysis model has moderate quality, meaning that not all variables are adequately explained by the factors. Although some of the variances of the variables are adequately explained by the factors (such as `Gender`, `Quality of Sleep`, `Blood Pressure`, `Sleep Disorder`, `BMI Category`, `Age`, `Physical Activity`), some others are not (such as `Occupation`, `Daily Steps`).
 
-    The above compromises the confidence in the interpretation of the factors and in the final quality of the results. Therefore, the loadings of the variables that are adequately explained by the factors have greater importance in what each factor represents for the data. Based on this, the factors could be a good low-dimensional representation of the dataset that summarizes it.
+    The above compromises the confidence in the interpretation of the factors and in the final quality of the results, due to insufficient data representation in `Occupation` (this implies that some occupations cannot be adequately explained with the other features). Therefore, the loadings of the variables that are adequately explained by the factors have greater importance in what each factor represents for the data. Based on this, the factors could be a good low-dimensional representation of the dataset that summarizes it.
     """)
     return
 
