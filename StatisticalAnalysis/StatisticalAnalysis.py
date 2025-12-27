@@ -947,7 +947,7 @@ def _():
 @app.cell
 def _():
     mo.md(r"""
-    In this section is performed the regression analysis, focusing on model building and validation assuming the target (`Quality of Sleep`) is continuous. The correlation matrix is examined to show the linear relationships between the variables.
+    In this section is performed the regression analysis, focusing on model building and assumptions validation assuming the target (`Quality of Sleep`) is continuous. The correlation matrix is examined to show the linear relationships between the variables.
     """)
     return
 
@@ -972,9 +972,9 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to create liner models to predict `Quality of Sleep` using only numerical features.
+    The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to train a liner models to predict `Quality of Sleep` using only numerical features.
 
-    Through the correlation matrix, one can better appreciate how the different factors that constitute the lifestyle and quality of a patient interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as blood pressure values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
+    Through the correlation matrix, it can better appreciate how the different factors that constitute the lifestyle and quality of life of a patient interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as `Blood Pressure` values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
     """)
     return
 
@@ -1018,7 +1018,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of `Quality of Sleep` of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model without losing clinical information about a patient.
+    Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of `Quality of Sleep` of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model without losing clinical information about a patient while it is reduced the overfit introduced by the additional, redundant (collinear) features.
     """)
     return
 
@@ -1031,6 +1031,23 @@ def _(NumericalFeatures, RegressorVariables, SleepDataset, TargetVariable):
     ).fit()
 
     LinearModel.summary()
+    return (LinearModel,)
+
+
+@app.cell
+def _():
+    mo.md(r"""
+    This model yields an adjusted R-squared of 0.923, suggesting a near-perfect fit. However, when comparing the predictions through the plot, significant deviations from the true values are observed, particularly for `Quality of Sleep` levels 1, 2, and 6. This discrepancy may indicate model overfitting, potentially caused by variables that are only relevant to specific levels and introduce 'noise' that hides relevant underlying relationships.
+    """)
+    return
+
+
+@app.cell
+def _(LinearModel, SleepDataset, TargetVariable):
+    _fig = src.PlotObservedPredictedValues(SleepDataset[TargetVariable],LinearModel.fittedvalues,'Full')
+
+    # _fig.savefig(f'../Resources/RegressionQuality_FullModel.jpg')
+    _fig
     return
 
 
@@ -1045,7 +1062,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit, this means generating better predictions (more accurate). Therefore this model is better than the full model.
+    Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit, this means generating better predictions (more interpretable).
 
     The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the subject's stress encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a patient and their sleep quality without exposing sensitive personal information.
     """)
@@ -1090,6 +1107,23 @@ def _(
     return (BestLinearModel,)
 
 
+@app.cell
+def _():
+    mo.md(r"""
+    This model yields an adjusted R-squared of 0.877, representing an optimal fit, although it performs worse than the full model. This is a minor trade-off considering that using fewer attributes increases model interpretability and reduces the artificial overfitting induced by multicollinear variables. The plot shows that the predictions deviate further from the observed values compared to the full model's plot, indicating that the reduced model produces slightly less accurate predictions.
+    """)
+    return
+
+
+@app.cell
+def _(BestLinearModel, SleepDataset, TargetVariable):
+    _fig = src.PlotObservedPredictedValues(SleepDataset[TargetVariable],BestLinearModel.fittedvalues,'Best')
+
+    # _fig.savefig(f'../Resources/RegressionQuality_BestModel.jpg')
+    _fig
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -1101,7 +1135,7 @@ def _():
 @app.cell
 def _():
     mo.md(r"""
-    Due to the non-normal distribution of the features, many of the assumptions inherent in a linear regression model are not satisfied. Key assumptions include normality in residuals and homoscedasticity of the target.
+    Due to the non-normal distribution of the features, many of the assumptions inherent in a linear regression model are not satisfied. Key assumptions include normality in residuals and homoscedasticity of the target. These assumptions are verified with the best model defined in the previous section.
     """)
     return
 
@@ -1117,7 +1151,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    Since none of the features are normal, their linear combination generates non-normal distributions. This is reflected when considering the residuals of the linear model, which also do not follow a normal distribution. Therefore, this assumption is not met by the model.
+    Since none of the features are normal, their linear combination generates non-normal distributions. And this implies that the residuals of the linear model do not follow a normal distribution and the p-value of Shapiro-Wilk test is 0. Therefore, this assumption is not verified by the model.
     """)
     return
 
@@ -1154,6 +1188,7 @@ def _(BestLinearModel):
         13,11,9
     )
 
+    # _fig.savefig(f'../Resources/Regression_NormalityResiduals')
     _fig
     return
 
@@ -1179,7 +1214,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    As shown in the plot, the model residuals follow a systematic (functional) pattern; therefore, they are not homoscedastic and the model predictions will not be robust.
+    As shown in the plot, the model residuals follow a systematic (functional) pattern and the p-value of Breusch-Pagan test is 0, therefore, they are not homoscedastic and the model predictions will not be robust. Furthermore, the importance and statistical significance of the variables are lower when determining a subject's `Quality of Sleep`.
     """)
     return
 
@@ -1202,6 +1237,7 @@ def _(BestLinearModel, TargetVariable):
         13,11,9,
     )
 
+    # _fig.savefig(f'../Resources/Regression_PredictedResiduals')
     _fig
     return
 
