@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.16.0"
 app = marimo.App(width="medium", app_title="Statistical Analysis")
 
 with app.setup:
@@ -45,33 +45,32 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     # Exploratory Data Analysis
 
     Sleep quality may be influenced by habits and lifestyle of a subject; therefore, understanding how these values and measures influence a subject could determine how well they sleep. Thus, this study examines how various factors that determine lifestyle of a subject can impact their sleep quality.
-    """)
+    """
+    )
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 1. Load Dataset and First Exploration
-    """)
+    mo.md(r"""## 1. Load Dataset and First Exploration""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    The dataset is taken from [Health and Sleep relation](https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024). This dataset explores the relationship between sleep patterns and overall health. It includes detailed information on individual sleep habits, health metrics, and lifestyle factors, enabling analysis of how sleep quality and duration impact physical and mental well-being.
-    """)
+    mo.md(r"""The dataset is taken from [Health and Sleep relation](https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024). This dataset explores the relationship between sleep patterns and overall health. It includes detailed information on individual sleep habits, health metrics, and lifestyle factors, enabling analysis of how sleep quality and duration impact physical and mental well-being.""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     The dataset contains `374` instances, with `12` attributes which describe the patient's sleep health. These columns (attributes) are:
 
     * `Gender` (*Nominal*): The patient's biological sex (Male or Female)
@@ -99,7 +98,8 @@ def _():
     * `Sleep Disorder` (*Nominal*): Indicates the presence or absence of a diagnosed sleep disorder, such as Sleep Apnea or Insomnia
 
     There are missing values on `Sleep Disorder` because of there are patients without sleep disorders.  The notation of `Blood Pressure` is Systolic/Diastolic form which will be transformed. There is a duplicate category in `BMI Category` (Normal and Normal Weight) which one of them will be removed. `Quality of Sleep` is the feature to predict (target) and study in this analysis.
-    """)
+    """
+    )
     return
 
 
@@ -158,21 +158,21 @@ def _(SleepDataset_Raw):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 2. Data Transformation
-    """)
+    mo.md(r"""## 2. Data Transformation""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     After a minor data exploration, some features have missing or weird values. Therefore, based on the context of each feature, the following transformations are applied:
 
     The missing values of `Sleep Disorder` are imputed with `No`, the values of `Blood Pressure` are splitted into systolic and diastolic values, and the values with `Normal Weight` in `BMI Category` are transformed to `Normal`.
 
     For a better understanding and interpretation of the target, the values of `Quality of Sleep` are rearranging from 1 to 6.
-    """)
+    """
+    )
     return
 
 
@@ -223,17 +223,13 @@ def _(SleepDataset):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 3. Univariate Analysis
-    """)
+    mo.md(r"""## 3. Univariate Analysis""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    In this section is performed a univariate analysis on both numerical and categorical features to gather initial insights based on the statistical properties and dataset's context. This analysis is focused on showing how the features impact on the patient's `Quality of Sleep`.
-    """)
+    mo.md(r"""In this section is performed a univariate analysis on both numerical and categorical features to gather initial insights based on the statistical properties and dataset's context. This analysis is focused on showing how the features impact on the patient's `Quality of Sleep`.""")
     return
 
 
@@ -247,21 +243,21 @@ def _(SleepDataset):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 3.1. Numerical Features
-    """)
+    mo.md(r"""### 3.1. Numerical Features""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     None of the features are normal, so some of the techniques that will be used will lead to insignificant results. Therefore, the values could be transformed with power transformations like Box-Cox or it could be assumed that the results will be less significant. After using Box-Cox transformation there was no improve (the transformed distributions were still non-normal under Shapiro-Wilk test), therefore the analysis of the results using the techniques that will be used will be more detailed and thorough.
 
     Fifty percent of patients have a `Quality of Sleep` between 3 and 5, and a `Sleep Duration` of between 6.4 to 7.8 hours. This can be explained by considering that stress and physical activity influence sleep onset and the recovery of the body during sleep. To this, it can add the biological degradation of the body as a subject becomes older, which impacts the number of hours needed to feel rested after sleeping.
 
     The fifty percent of patients are middle-aged (between 35 and 50 years old), so this dataset has a high representative of a same generational age. This implies that many patients will have a similar lifestyle and habits (similar population), so if a model is trained with this dataset will be underfitted to predict the younger subjects' `Quality of Sleep`.
-    """)
+    """
+    )
     return
 
 
@@ -351,21 +347,21 @@ def _(NumericalFeatures, SleepDataset):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 3.2. Categorical Features
-    """)
+    mo.md(r"""### 3.2. Categorical Features""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Most of the patients are nurses, doctors or engineers, whose jobs or occupations involve high levels of stress, and most of them have a normal BMI and no sleep disorders. After applying Chi Square test, it can be seen that there are dependent relationships between the categorical features, therefore the use of these features will be more deliberate, as the results could be insignificant.
 
     Daily stress, time for physical activity, time for personal and recreational activities, diet, and rest time are factors that are dependent on subject's daily routine and lifestyle. By showing that there is evidence of dependence between the categories (features), this premise and relationship can be reinforced.
 
     And there is no a good representation of categories in `Occupation` nor `BMI Category`, hence some combinations of these values will be more rare to analyze or to learn in a model.
-    """)
+    """
+    )
     return
 
 
@@ -437,21 +433,21 @@ def _(CategoricalFeatures, NumericalFeatures, SleepDataset):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 3.3 Final Observations
-    """)
+    mo.md(r"""### 3.3 Final Observations""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     From Spearman Correlation tests, it can be shown that `Quality of Sleep` of a patient is influenced by factors such as `Physical Activity Level`, `Stress Levels`, and `Sleep Duration`, where the first two relate to lifestyle and quality of life of a subject; additionally, the `Sleep Duration` has a significant influence and impact in determining how well one sleeps. Thus, it follows that some of the factors that measure lifestyle of a subject determine `Quality of Sleep`.
 
     As assumed, `Occupation` (job) and `BMI Category` of a subject can alter both the quality and duration of sleep, but also the own quality of life of a patient; this dual influence or relationship makes them high-impact factors on overall well-being of a subject and, specifically, how they sleep.
 
     Based on these observations, a model could be created to evaluate or predict `Quality of Sleep` of a patient based on their lifestyle or quality of life (measured through these factors and features).
-    """)
+    """
+    )
     return
 
 
@@ -505,31 +501,26 @@ def _(SleepDataset):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 4. Multivariate Analysis
-    """)
+    mo.md(r"""## 4. Multivariate Analysis""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    In this section is performed a multivariate analysis to understand how the different features interact with each other using bivariate plots and PCA to support some of previous insights and generate other ones based on the current knowledge.
-    """)
+    mo.md(r"""In this section is performed a multivariate analysis to understand how the different features interact with each other using bivariate plots and PCA to support some of previous insights and generate other ones based on the current knowledge.""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 4.1. Bivariate Analysis
-    """)
+    mo.md(r"""### 4.1. Bivariate Analysis""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     By varying the different numerical and categorical features, it can be shown how each group defined by categorical values behaves differently in terms of numerical variables (specifically `Quality of Sleep` and `Sleep Duration`). This reflects how lifestyle and daily routine interact with patient's quality of life.
 
     It can be observed `Occupation` of a subject influences their `Quality of Sleep` and `Stress Level`, in addition to the fact that these factors have a negative correlation. The above can be verified in reality by considering that job position directly impacts the stress and pressure someone experiences.
@@ -539,7 +530,8 @@ def _():
     `Sleep Duration` and `Physical Activity Level` have a positive correlation which means that exist a tendency in people to have more physical activity when they have more time to rest (they probably feel more energetic). Which improves their `Quality of Sleep` and reduces their `Strees Level`.
 
     The values of `BMI Category` follows a irregular distribution on `Occupation` and this is explained by how the data was collected, which will affect the model learning. This is a limitation that should be taken into account.
-    """)
+    """
+    )
     return
 
 
@@ -716,15 +708,14 @@ def _(
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 4.2. Principal Component Analysis
-    """)
+    mo.md(r"""### 4.2. Principal Component Analysis""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     PCA  is applied on the numerical features to perform a dimensionality reduction, hence using the elbow method on the eigenvalues, the best selection for the number of principal component is three that explains the $87.14\%$ of the variance in the dataset (this percentage is an acceptable reduction of the whole dataset to a few variables).
 
     Based on an analysis of the loadings, each component explains the next relations and observations in the dataset:
@@ -734,7 +725,8 @@ def _():
     * *General health* (PC 2): Its positives loadings explain the increase in blood pressure (hypertension or another conditions) with aging, as well as an increase in exercise to counteract the damage associated with old age. This component illustrates how human susceptibility to disease increases with age
 
     * *Physical condition* (PC 3): Its positives loadings are related to how much physical activities and exercise someone does and its negatives loadings to the medical condition of their body. This component demonstrates an essential clinical factor for long-term wellness, namely regular physical activity
-    """)
+    """
+    )
     return
 
 
@@ -796,11 +788,13 @@ def _(NumericalFeatures, PipelinePCA):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Considering that aspects related to physical and sleep health are integrally related, it becomes natural to expect certain patterns when plotting the principal components using `BMI Category` and `Sleep Disorder` as categorical values. Specifically, it can be observed that having a high positive value in PC1 (better sleep health) and a low negative value in PC2 (greater youth) tends to result in normal weight and absence of sleep disorders. And this relationship illustrates the standard optimal health status (young, normal weight and no diseases).
 
     There is not a clearly separation or grouping between instances, therefore using only numerical features is insufficient to create clusters or including categorical features may be necessary to separate instances.
-    """)
+    """
+    )
     return
 
 
@@ -878,9 +872,7 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    Using PCA with numerical attributes allows capturing and summarizing the general aspects to describe the subject's profile, achieved through their simple interactions. This can be observed by assigning point sizes according to their `Quality of Sleep` value, which allows seeing in which regions certain values are more concentrated. Specifically, using PC1 and PC2 creates diagonal strips where as their values increases, so does `Quality of Sleep` value along these strips.
-    """)
+    mo.md(r"""Using PCA with numerical attributes allows capturing and summarizing the general aspects to describe the subject's profile, achieved through their simple interactions. This can be observed by assigning point sizes according to their `Quality of Sleep` value, which allows seeing in which regions certain values are more concentrated. Specifically, using PC1 and PC2 creates diagonal strips where as their values increases, so does `Quality of Sleep` value along these strips.""")
     return
 
 
@@ -938,17 +930,13 @@ def _(NumericalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 5. Regression Analysis
-    """)
+    mo.md(r"""## 5. Regression Analysis""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    In this section is performed the regression analysis, focusing on model building and assumptions validation assuming the target (`Quality of Sleep`) is continuous. The correlation matrix is examined to show the linear relationships between the variables.
-    """)
+    mo.md(r"""In this section is performed the regression analysis, focusing on model building and assumptions validation assuming the target (`Quality of Sleep`) is continuous. The correlation matrix is examined to show the linear relationships between the variables.""")
     return
 
 
@@ -963,19 +951,19 @@ def _(NumericalFeatures):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 5.1. Correlation Matrix
-    """)
+    mo.md(r"""### 5.1. Correlation Matrix""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     The correlation matrix shows some evidence of multicollinearity, therefore it is necessary to define models based on selection algorithms (like stepwise selection) to reduce the impact of multicollinearity on the results and predictions. And also there is a correlation between regressor variables and target, making it possible to train a liner models to predict `Quality of Sleep` using only numerical features.
 
     Through the correlation matrix, it can better appreciate how the different factors that constitute the lifestyle and quality of life of a patient interact to determine how well they sleep. Also noting that some features do not have a significant correlation with the target (`Quality of Sleep`), yet there is an indirect influence; such as `Blood Pressure` values that are correlated with `Age` and `Heart Rate`, and these features have a stronger influence on the `Quality of Sleep` of a person.
-    """)
+    """
+    )
     return
 
 
@@ -1000,7 +988,7 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
         TitleSize = 11,
         TickSize = 9, 
     )
-    _axes._colorbars[0].tick_params(labelsize=8)
+    _axes.collections[0].colorbar.ax.tick_params(labelsize=8)
 
     # _fig.savefig(f'../Resources/CorrelationMatrix.jpg',bbox_inches='tight')
     _fig
@@ -1009,17 +997,13 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 5.2. Full Linear Model
-    """)
+    mo.md(r"""### 5.2. Full Linear Model""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of `Quality of Sleep` of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model without losing clinical information about a patient while it is reduced the overfit introduced by the additional, redundant (collinear) features.
-    """)
+    mo.md(r"""Using only numerical features and a full model shows that all the features are significant, except `Physical Activity Level`, and the regression itself is also significant, this means that the features could be used as a measure of `Quality of Sleep` of a patient. But for the above mentioned some features are collinear, therefore they could be removed to improve the final quality of the model without losing clinical information about a patient while it is reduced the overfit introduced by the additional, redundant (collinear) features.""")
     return
 
 
@@ -1036,9 +1020,7 @@ def _(NumericalFeatures, RegressorVariables, SleepDataset, TargetVariable):
 
 @app.cell
 def _():
-    mo.md(r"""
-    This model yields an adjusted R-squared of 0.923, suggesting a near-perfect fit. However, when comparing the predictions through the plot, significant deviations from the true values are observed, particularly for `Quality of Sleep` levels 1, 2, and 6. This discrepancy may indicate model overfitting, potentially caused by variables that are only relevant to specific levels and introduce 'noise' that hides relevant underlying relationships.
-    """)
+    mo.md(r"""This model yields an adjusted R-squared of 0.923, suggesting a near-perfect fit. However, when comparing the predictions through the plot, significant deviations from the true values are observed, particularly for `Quality of Sleep` levels 1, 2, and 6. This discrepancy may indicate model overfitting, potentially caused by variables that are only relevant to specific levels and introduce 'noise' that hides relevant underlying relationships.""")
     return
 
 
@@ -1053,19 +1035,19 @@ def _(LinearModel, SleepDataset, TargetVariable):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 5.3. Best Linear Model
-    """)
+    mo.md(r"""### 5.3. Best Linear Model""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Using Akaike Information Criterion (AIC) for selecting the best suitable subset of features with stepwise algorithm, it can be found that the best model uses only two features and achieves a significative $AIC$ and $F$ scores. This means that this model is slightly better than the full model but not best respect to $R^2_{adj}$ score, although using less features is more suitable to avoid higher variance values and artificial overfit, this means generating better predictions (more interpretable).
 
     The selected features (`Sleep Duration` and `Stress Level`) align with what empirically measures how well one sleeps, where the subject's stress encompasses their mood, physical condition, and health, while sleep duration determines the feeling of recovery and rest. Therefore, a selection of attributes is obtained that, in a general way, encompasses all aspects of a patient and their sleep quality without exposing sensitive personal information.
-    """)
+    """
+    )
     return
 
 
@@ -1109,9 +1091,7 @@ def _(
 
 @app.cell
 def _():
-    mo.md(r"""
-    This model yields an adjusted R-squared of 0.877, representing an optimal fit, although it performs worse than the full model. This is a minor trade-off considering that using fewer attributes increases model interpretability and reduces the artificial overfitting induced by multicollinear variables. The plot shows that the predictions deviate further from the observed values compared to the full model's plot, indicating that the reduced model produces slightly less accurate predictions.
-    """)
+    mo.md(r"""This model yields an adjusted R-squared of 0.877, representing an optimal fit, although it performs worse than the full model. This is a minor trade-off considering that using fewer attributes increases model interpretability and reduces the artificial overfitting induced by multicollinear variables. The plot shows that the predictions deviate further from the observed values compared to the full model's plot, indicating that the reduced model produces slightly less accurate predictions.""")
     return
 
 
@@ -1126,33 +1106,25 @@ def _(BestLinearModel, SleepDataset, TargetVariable):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 5.4. Validation of Assumptions
-    """)
+    mo.md(r"""### 5.4. Validation of Assumptions""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    Due to the non-normal distribution of the features, many of the assumptions inherent in a linear regression model are not satisfied. Key assumptions include normality in residuals and homoscedasticity of the target. These assumptions are verified with the best model defined in the previous section.
-    """)
+    mo.md(r"""Due to the non-normal distribution of the features, many of the assumptions inherent in a linear regression model are not satisfied. Key assumptions include normality in residuals and homoscedasticity of the target. These assumptions are verified with the best model defined in the previous section.""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    #### 5.4.1. Normality in Residuals
-    """)
+    mo.md(r"""#### 5.4.1. Normality in Residuals""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    Since none of the features are normal, their linear combination generates non-normal distributions. And this implies that the residuals of the linear model do not follow a normal distribution and the p-value of Shapiro-Wilk test is 0. Therefore, this assumption is not verified by the model.
-    """)
+    mo.md(r"""Since none of the features are normal, their linear combination generates non-normal distributions. And this implies that the residuals of the linear model do not follow a normal distribution and the p-value of Shapiro-Wilk test is 0. Therefore, this assumption is not verified by the model.""")
     return
 
 
@@ -1205,17 +1177,13 @@ def _(BestLinearModel):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    #### 5.4.2. Homoscedasticity
-    """)
+    mo.md(r"""#### 5.4.2. Homoscedasticity""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    As shown in the plot, the model residuals follow a systematic (functional) pattern and the p-value of Breusch-Pagan test is 0, therefore, they are not homoscedastic and the model predictions will not be robust. Furthermore, the importance and statistical significance of the variables are lower when determining a subject's `Quality of Sleep`.
-    """)
+    mo.md(r"""As shown in the plot, the model residuals follow a systematic (functional) pattern and the p-value of Breusch-Pagan test is 0, therefore, they are not homoscedastic and the model predictions will not be robust. Furthermore, the importance and statistical significance of the variables are lower when determining a subject's `Quality of Sleep`.""")
     return
 
 
@@ -1255,19 +1223,19 @@ def _(BestLinearModel):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 6. Factor Analysis
-    """)
+    mo.md(r"""## 6. Factor Analysis""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Factor analysis is performed with numerical features and encoded categorical variables to encompass all possible interactions between features that can be explained through the factors.
 
     Using the elbow method on the eigenvalues of the factors, it is determined that using four factors allows explaining $89.31\%$ of the data variance (only positive eigenvalues are considered). Additionally, it can be noted that negative eigenvalues were found, which implies the existence of highly correlated features (multicollinearity), a fact that can be observed in the correlation matrix and in the auxiliary plots using categorical features.
-    """)
+    """
+    )
     return
 
 
@@ -1357,11 +1325,13 @@ def _(SleepDataset_Processed):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Using the mean of the communalities, it is found that the Factor Analysis model has moderate quality, meaning that not all variables are adequately explained by the factors. Although some of the variances of the variables are adequately explained by the factors (such as `Gender`, `Quality of Sleep`, `Blood Pressure`, `Sleep Disorder`, `BMI Category`, `Age`, `Physical Activity`), some others are not (such as `Occupation`, `Daily Steps`).
 
     The above compromises the confidence in the interpretation of the factors and in the final quality of the results, due to insufficient data representation in `Occupation` (this implies that some occupations cannot be adequately explained with the other features). Therefore, the loadings of the variables that are adequately explained by the factors have greater importance in what each factor represents for the data. Based on this, the factors could be a good low-dimensional representation of the dataset that summarizes it.
-    """)
+    """
+    )
     return
 
 
@@ -1401,15 +1371,14 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 6.1. Factors Interpretation
-    """)
+    mo.md(r"""### 6.1. Factors Interpretation""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     * *Factor 1*: Pertains to explaining the health of a patient (their precarity or deficiencies) based on their physical condition and sleep disorders. This factor includes features like: `BMI Category`, `Blood Preasure`, `Sleep Disorder`.
 
     * *Factor 2*: Is associated with the overall quality of sleep, how well one sleeps and recovers, also encompassing how having a stressful life affects sleep (high stress levels and hypertension). This factor includes features like: `Sleep Duration`, `Quality of Sleep`, `Strees Level`.
@@ -1417,7 +1386,8 @@ def _():
     * *Factor 3*: Is linked to the physical activity and activation levels of a patient and their connection to the presence of insomnia (possible relationship between the energy and mood someone has throughout the day). This feature includes: `Physical Activity Level`, `Daily Steps`.
 
     * *Factor 4*: Does not provide relevant information or relationships (Only explains the gender of a patient).
-    """)
+    """
+    )
     return
 
 
@@ -1444,7 +1414,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
         'Features',
         13,11,8
     )
-    _axes._colorbars[0].tick_params(labelsize=8)
+    _axes.collections[0].colorbar.ax.tick_params(labelsize=8)
 
     # _fig.savefig(f'../Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
     _fig
@@ -1479,9 +1449,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
 
 @app.cell
 def _():
-    mo.md(r"""
-    #
-    """)
+    mo.md(r"""#""")
     return
 
 

@@ -1,12 +1,26 @@
-x-common-marimo-analysis: &analysis
+x-common-marimo-analysis-prod: &analysis_prod
     build:
         context: ./StatisticalAnalysis
         dockerfile: Dockerfile
         
     environment:
-        DOMAIN: ${DOMAIN}
-        STATISTICAL_ANALYSIS_URL: ${STATISTICAL_ANALYSIS_URL}
-        DATA_MINING_URL: ${DATA_MINING_URL}
+        DOMAIN: "https://${DOMAIN}"
+        STATISTICAL_ANALYSIS_URL: "https://${STATISTICAL_ANALYSIS_URL}"
+        DATA_MINING_URL: "https://${DATA_MINING_URL}"
+    
+    volumes:
+        - ./Datasets:/Analysis/Datasets
+        - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
+
+x-common-marimo-analysis-dev: &analysis_dev
+    build:
+        context: ./StatisticalAnalysis
+        dockerfile: Dockerfile
+        
+    environment:
+        DOMAIN: "localhost:8080"
+        STATISTICAL_ANALYSIS_URL: "localhost:5050"
+        DATA_MINING_URL: "localhost:5151"
     
     volumes:
         - ./Datasets:/Analysis/Datasets
@@ -31,17 +45,38 @@ services:
             - DataInference:/var/lib/postgresql/data
             - ./Database:/docker-entrypoint-initdb.d:ro
 
-    statistical-analysis:
+    statistical-analysis-dev:
         container_name: statistical-analysis
-        <<: *analysis
+        <<: *analysis_dev
+        profiles: ["dev"]
+
+        ports:
+            - "5050:8282"
+        
+        command: marimo edit --no-token --host 0.0.0.0 -p 8282 StatisticalAnalysis/StatisticalAnalysis.py
+
+    data-mining-dev:
+        container_name: data-mining
+        <<: *analysis_dev
+        profiles: ["dev"]
+
+        ports:
+            - "5151:8181"
+        
+        command: marimo edit --no-token --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
+
+    statistical-analysis-prod:
+        container_name: statistical-analysis
+        <<: *analysis_prod
+        profiles: ["prod"]
 
         ports:
             - "5050:8282"
         
         command: marimo run --host 0.0.0.0 -p 8282 StatisticalAnalysis/StatisticalAnalysis.py
 
-        # networks:
-            # - traefik_proxy
+        networks:
+            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -60,17 +95,18 @@ services:
 
             - "traefik.http.middlewares.eda-stripprefix.stripprefix.prefixes=/StatisticalAnalysis"
 
-    data-mining:
+    data-mining-prod:
         container_name: data-mining
-        <<: *analysis
+        <<: *analysis_prod
+        profiles: ["prod"]
 
         ports:
             - "5151:8181"
         
         command: marimo run --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
 
-        # networks:
-            # - traefik_proxy
+        networks:
+            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -107,8 +143,8 @@ services:
         depends_on:
             - database
 
-        # networks:
-            # - traefik_proxy
+        networks:
+            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -144,6 +180,6 @@ services:
 volumes:
     DataInference: 
 
-# networks:
-#   traefik_proxy:
-    # external: true
+networks:
+    traefik_proxy:
+        external: true
