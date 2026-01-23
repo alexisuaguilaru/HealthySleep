@@ -112,7 +112,7 @@ def _():
 @app.cell
 def _():
     mo.md(r"""
-    Using PCA in the processed dataset (encoded categorical features and MinMax scaler for numerical features, this transformations allow to have a same scale), no clusters were found visually. This implies that it is necessary to apply feature engineering to create another kind of relationships between features, and using an appropriate metric could show better clusters in the dataset. However, the plots do not show the emergence of well-defined clusters.
+    Using PCA in the processed dataset (encoded categorical features and MinMax scaler for numerical features, this transformations allow to have a same scale), no clusters were found visually. This implies that it is necessary to apply feature engineering to create another kind of relationships between features, or using an appropriate metric could show better clusters in the dataset. However, the plots do not show the emergence of well-defined clusters.
     """)
     return
 
@@ -248,6 +248,7 @@ def _(DatasetClustering):
         'Single Agglomerative'
     )
 
+    # _fig.savefig(f'../Resources/Clustering_ScreePlotSingle.jpg')
     _fig
     return
 
@@ -309,6 +310,7 @@ def _(DatasetClustering):
         'Average Agglomerative'
     )
 
+    # _fig.savefig(f'../Resources/Clustering_ScreePlotAverage.jpg')
     _fig
     return
 
