@@ -20,6 +20,7 @@ This project aims to perform a Statistical Analysis (EDA) and build a Machine Le
   - [Statistical Analysis (EDA and Data Mining)](#statistical-analysis-eda-and-data-mining)
   - [Machine Learning Models](#machine-learning-models-1)
   - [Local Deployment](#local-deployment)
+- [References](#references)
 
 ## About the Dataset
 The dataset is taken from [Health and Sleep relation](https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024). This dataset explores the relationship between sleep patterns and overall health. It includes detailed information on individual sleep habits, health metrics, and lifestyle factors, enabling analysis of how sleep quality and duration impact physical and mental well-being.
@@ -45,6 +46,7 @@ Through the correlation matrix, it can be better appreciated how the different f
 
 ### Principal Component Analysis
 Performing a Principal Component Analysis (PCA) on the numerical features allows visualizing the patients based on their *sleep quality* (PC 1), *general health* (PC 2) and *physical condition* (PC 3).
+
 Considering that aspects related to physical and sleep health are integrally related, it becomes natural to expect certain patterns when plotting the principal components using `BMI Category` and `Sleep Disorder` as categorical values. Specifically, it can be observed that having a high positive value in PC1 (better sleep health) and a low negative value in PC2 (greater youth) tends to result in normal weight and absence of sleep disorders.
 
 <img src="./Resources/PCAPlot_SleepDisorder.jpg" alt="PCA with Sleep Disorder as hue" width=500/>
@@ -71,7 +73,7 @@ Using PCA in the processed dataset (encoded categorical features and MinMax scal
 
 <img src="./Resources/Clustering_ClusterPlots.jpg" alt="Visualization of Clusters" width=500/>
 
-Agglomerative clustering is employed in order to evaluate which linkage generates the best results using Gower distance as the metric (due to the presence of mixed data types, this metric has a better quality). And Silhouette score was chosen to measure the quality of the linkages and to compare them based on how well they separate and generate clusters.
+Agglomerative clustering is used in order to evaluate which linkage generates the best results using Gower distance as the metric (due to the presence of mixed data types, this metric has a better quality). And Silhouette score was chosen to measure the quality of the linkages and to compare them based on how well they separate and generate clusters.
 
 Using the scree plots of the Silhouette score varying the number of clusters, the complete linkage tends to have better scores due to this linkage forms sphere-shape clusters. Therefore, clusters with patients more similar to each other.
 
@@ -96,7 +98,7 @@ Using the elbow method, agglomerative clustering with complete linkage and 8 clu
 * *Profile 8*: Experienced nurses (avg. 53) with active lifestyles and 7 hours of sleep, though classified as overweight and prone to obstructive sleep apnea.
 
 ### Association Rules
-With a minimum support of 15%, confidence of 90% and lift of 5, two relevante rules were discovered for explaining and showing some associations between the dataset and real facts:
+With a minimum support of 15% (approximately 56 patients), confidence of 90% and lift of 5 (these metrics create strong rules), two relevante rules were discovered for explaining and showing some associations between the dataset and real facts:
 
 * *Rule 1*: Reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
     $$ \text{Sleep Duration} \in [7,9] , \text{Age} \in [50,60], \text{Stress Level} \in [2,5] \implies \\ \text{Heart Rate} \in [60,80] , \text{Quality of Sleep} \in [8,10] $$
@@ -162,10 +164,18 @@ docker compose up -d --build
 http://localhost:8080/
 ```
 
-## Author, Affiliation and Contact <!-- omit in toc -->
-Alexis Aguilar [Student of Bachelor's Degree in "Tecnologías para la Información en Ciencias" at Universidad Nacional Autónoma de México [UNAM](https://www.unam.mx/)]: alexis.uaguilaru@gmail.com
+## References
+* [1] Orvile. (2024). *Health and Sleep Relation* [Dataset]. Kaggle. https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024
+* [2] Malhotra, A., Heilmann, C. R., Banerjee, K. K., Dunn, J. P., Bunck, M. C., & Bednarik, J. (2024). *Weight reduction and the impact on apnea-hypopnea index: A systematic meta-analysis. Sleep Medicine*, 121, 26–31. https://doi.org/10.1016/j.sleep.2024.06.014
+* [3] Chrysant, S. G. (2024). *Effects of physical activity on sleep quality and wellbeing. Hospital Practice*, 52(1–2), 13–18. https://doi.org/10.1080/21548331.2024.2320069 
+* [4] Mao, Y., Raju, G., & Zabidi, M. A. (2023). *Association Between Occupational Stress and Sleep Quality: A Systematic Review. Nature and Science of Sleep*, 15, 931–947. https://doi.org/10.2147/NSS.S431442 
+* [5] Kanthraj, H. V., Kalaburgi, R. A., & VeenaKanthraj, H. (2025). *Association Between Stress and Sleep Disorders Among Working Adults. Internat. J. Life Sciences, Biotechnol. & Pharma Res*, 14(1), 772-780.
 
-Project developed for the subjects "[Multivariate Statistics](https://github.com/alexisuaguilaru/EstadisticaMultivariada)" and "Data Mining" for the class taught in semester 2026-1.
+
+## Author, Affiliation and Contact <!-- omit in toc -->
+Alexis Aguilar [Student of Bachelor's Degree in "Tecnologías para la Información en Ciencias" (Data Science) at Universidad Nacional Autónoma de México [UNAM](https://www.unam.mx/)]: alexis.uaguilaru@gmail.com
+
+Project developed for the subjects "[Multivariate Statistics](https://github.com/alexisuaguilaru/EstadisticaMultivariada)" and "Data Mining" taught in semester 2026-1. 
 
 ## License <!-- omit in toc -->
 Project under [MIT License](LICENSE)
