@@ -21,13 +21,22 @@ x-common-marimo-analysis-dev: &analysis_dev
         dockerfile: Dockerfile
         
     environment:
-        DOMAIN: "localhost:8080"
-        STATISTICAL_ANALYSIS_URL: "localhost:5050"
-        DATA_MINING_URL: "localhost:5151"
+        DOMAIN: "http://localhost:8080"
+        STATISTICAL_ANALYSIS_URL: "http://localhost:5050"
+        DATA_MINING_URL: "http://localhost:5151"
     
     volumes:
         - ./Datasets:/Analysis/Datasets
         - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
+
+x-common-frontend: &frontend_service
+    container_name: frontend
+
+    ports:
+        - "8080:8080"
+
+    depends_on:
+        - api
 
 services:
     database:
@@ -144,8 +153,8 @@ services:
         depends_on:
             - database
 
-        networks:
-            - traefik_proxy
+        # networks:
+            # - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -157,25 +166,21 @@ services:
     frontend-dev:
         profiles: ["dev"]
 
-        container_name: frontend
+        <<: *frontend_service
+
         build:
             context: ./Frontend
             dockerfile: Dockerfile
             args:
-                VITE_API_URL: "localhost:8000"
-                VITE_STATISTICAL_ANALYSIS_URL: "localhost:5050"
-                VITE_DATA_MINING_URL: "localhost:5151"
-        
-        ports:
-            - "8080:8080"
-            
-        depends_on:
-            - api
+                VITE_API_URL: "http://localhost:8000/api"
+                VITE_STATISTICAL_ANALYSIS_URL: "http://localhost:5050"
+                VITE_DATA_MINING_URL: "http://localhost:5151"
     
     frontend-prod:
         profiles: ["prod"]
 
-        container_name: frontend
+        <<: *frontend_service
+
         build:
             context: ./Frontend
             dockerfile: Dockerfile
@@ -183,12 +188,6 @@ services:
                 VITE_API_URL: "https://${API_URL}"
                 VITE_STATISTICAL_ANALYSIS_URL: "https://${STATISTICAL_ANALYSIS_URL}"
                 VITE_DATA_MINING_URL: "https://${DATA_MINING_URL}"
-        
-        ports:
-            - "8080:8080"
-            
-        depends_on:
-            - api
 
         networks:
             - traefik_proxy

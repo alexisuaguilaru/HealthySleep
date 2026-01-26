@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.16.0"
 app = marimo.App(width="medium", app_title="Data Mining")
 
 with app.setup:
@@ -79,41 +79,31 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    # Data Mining
-    """)
+    mo.md(r"""# Data Mining""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    Derived from the statistical analysis performed, different patterns and associations were detected that can be clarified or discovered using Data Mining techniques. This notebook explores and discusses the results of these techniques (Cluster Analysis and Association Rules), which allow for the verification of the observations made during the EDA.
-    """)
+    mo.md(r"""Derived from the statistical analysis performed, different patterns and associations were detected that can be clarified or discovered using Data Mining techniques. This notebook explores and discusses the results of these techniques (Cluster Analysis and Association Rules), which allow for the verification of the observations made during the EDA.""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 1. Cluster Analysis
-    """)
+    mo.md(r"""## 1. Cluster Analysis""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    ### 1.1. Visualization of the Dataset
-    """)
+    mo.md(r"""### 1.1. Visualization of the Dataset""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    Using PCA in the processed dataset (encoded categorical features and MinMax scaler for numerical features, this transformations allow to have a same scale), no clusters were found visually. This implies that it is necessary to apply feature engineering to create another kind of relationships between features, or using an appropriate metric could show better clusters in the dataset. However, the plots do not show the emergence of well-defined clusters.
-    """)
+    mo.md(r"""Using PCA in the processed dataset (encoded categorical features and MinMax scaler for numerical features, this transformations allow to have a same scale), no clusters were found visually. This implies that it is necessary to apply feature engineering to create another kind of relationships between features, or using an appropriate metric could show better clusters in the dataset. However, the plots do not show the emergence of well-defined clusters.""")
     return
 
 
@@ -204,21 +194,21 @@ def _(
 
 @app.cell
 def _():
-    mo.md(r"""
-    ### 1.2. Applying Clustering with Different Techniques
-    """)
+    mo.md(r"""### 1.2. Applying Clustering with Different Techniques""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Agglomerative clustering is employed in order to evaluate which linkage generates the best results using Gower distance as the metric (due to the presence of mixed data K-Means can not be used).
 
     Due to how each linkage algorithm works, Silhouette score was chosen to measure the quality of the linkages and to compare them based on how well they separate and generate clusters. Using the scree plots of the Silhouette score varying the number of clusters, the complete linkage tends to have better scores due to this linkage forms sphere-shape clusters. Therefore, clusters with patients more similar to each other.
 
     Using the elbow method, agglomerative clustering with complete linkage and 8 clusters achieves a Silhouette score of 0.5737 which each cluster is well-defined and represents a distinct profile with possible similarities.
-    """)
+    """
+    )
     return
 
 
@@ -317,9 +307,7 @@ def _(DatasetClustering):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ### 1.3. Profiles of Patients
-    """)
+    mo.md(r"""### 1.3. Profiles of Patients""")
     return
 
 
@@ -331,7 +319,8 @@ def _(SleepDataset):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     Because of complete linkage has the best Silhouette score, it is chosen for the profiles and their respective description are generated based on its results of clustering (cluster centers, centroids). The next profiles are discovered:
 
     * **Profile 1**: Predominantly male subjects aged 42 years with normal sleep quality and an average sleep duration of 6.5 hours. These individuals exhibit low to moderate physical activity and overweight status, alongside moderately elevated stress levels, frequently manifesting as insomnia. This profile likely represents middle-aged professionals engaged in demanding office-based roles, characterized by significant time commitment.
@@ -349,7 +338,8 @@ def _():
     * **Profile 7**: Female subjects aged 43 years with normal-good sleep quality and an average sleep duration of 6.5 hours. These individuals demonstrate moderate physical activity and are classified as overweight, alongside normal-to-elevated stress levels, frequently manifesting as insomnia. This profile likely represents adult female educators whose profession demands significant time and energy, yet who incorporate physical activity into their routines.
 
     * **Profile 8**: Female subjects aged 53 years with good sleep quality and an average sleep duration of 7 hours. These individuals demonstrate high levels of physical activity and are classified as overweight, alongside normal stress levels, frequently experiencing obstructive sleep apnea. This profile likely comprises experienced nurses who have established their professional routines and maintain a normal lifestyle without significant worries.
-    """)
+    """
+    )
     return
 
 
@@ -404,27 +394,25 @@ def _(ClusterProfiles):
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    ## 2. Frequent Patterns And Association Rules
-    """)
+    mo.md(r"""## 2. Frequent Patterns And Association Rules""")
     return
 
 
 @app.cell
 def _():
-    mo.md(r"""
-    ### 2.1. Discretization of Numerical Values
-    """)
+    mo.md(r"""### 2.1. Discretization of Numerical Values""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     In order to apply pattern extraction techniques, the data must be binary; that is, each feature must represent the absence or presence of a certain property. Therefore, the numerical features first had to be categorized (trough creating value ranges) before applying One Hot Encoding to each of them to obtain their respective binary features (values).
 
     For features such as `Age`, `Sleep Duration`, `Heart Rate`, `Daily Steps`, and `Blood Pressure`, the official value ranges were researched according to recognizable health organizations. For the remaining features, ranges were created based on the values they take and their descriptions according to the metadata of the dataset (these ranges are more arbitrary).
-    """)
+    """
+    )
     return
 
 
@@ -501,17 +489,13 @@ def _(EncodedSleepDataset):
 
 @app.cell
 def _():
-    mo.md(r"""
-    ### 2.2. Association Rules
-    """)
+    mo.md(r"""### 2.2. Association Rules""")
     return
 
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
-    Based on the results obtained from the frequent patterns, using a minimum support of 15% (approximately 56 patients), association rules are derived whose confidence is greater than 90% and a lift greater than 5 to ensure they are strong rules and non-random behaviors. The rules discovered and considered relevant for the study are the following:
-    """)
+    mo.md(r"""Based on the results obtained from the frequent patterns, using a minimum support of 15% (approximately 56 patients), association rules are derived whose confidence is greater than 90% and a lift greater than 5 to ensure they are strong rules and non-random behaviors. The rules discovered and considered relevant for the study are the following:""")
     return
 
 
@@ -537,13 +521,15 @@ def _():
 
 @app.cell(hide_code=True)
 def _():
-    mo.md(r"""
+    mo.md(
+        r"""
     The first rule reflects the conditions for achieving the best rest/sleep and having a normal heart rate, which are having low stress levels, sleeping between 7 and 9 hours, and being between 50 and 60 years old. Overall, this rule explains how sleeping well and not living stressed impacts how well one sleeps.
 
     The second rule shows the association that exists between having a precarious health status (overweight and insomnia) and the habits of a patient. The most relevant finding is that it verifies the pattern that being overweight implies being sedentary and having low physical activity, and that this adds to the occurrence of insomnia, resulting in fewer hours of sleep.
 
     The third rule appears as a particular case within the professional life of nurses, where those suffering from hypertension tend to be overweight and have apnea. This fact can be verified by considering that the onset of hypertension is associated with being overweight and poor habits, and that apnea is frequent among overweight individuals.
-    """)
+    """
+    )
     return
 
 
@@ -596,9 +582,7 @@ def _(FrequentPatterns):
 
 @app.cell
 def _():
-    mo.md(r"""
-    #
-    """)
+    mo.md(r"""#""")
     return
 
 

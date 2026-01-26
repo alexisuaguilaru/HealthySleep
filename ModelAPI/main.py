@@ -23,7 +23,7 @@ app.add_middleware(
 )
 
 @app.post(
-    '/',
+    '/api',
     summary = 'Method for classify the quality of sleep of a patient',
     response_model = OutputMLModel,
 )

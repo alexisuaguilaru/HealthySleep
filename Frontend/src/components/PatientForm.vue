@@ -19,7 +19,8 @@ const classificationResult = ref(null);
 const isLoading = ref(false);
 const error = ref(null);
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+// console.log(API_URL);
 
 const submitForm = async () => {
     isLoading.value = true;
@@ -45,7 +46,7 @@ const submitForm = async () => {
         const response = await axios.post(API_URL, payload);
         
         classificationResult.value = response.data.NameQualitySleep;
-        console.log(classificationResult.value);
+        // console.log(classificationResult.value);
         
     } catch (e) {
         if (e.response && e.response.data && e.response.data.detail) {

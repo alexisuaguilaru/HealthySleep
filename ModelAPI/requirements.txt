@@ -1,6 +1,6 @@
 # Python 3.13.3
 
 fastapi[standard] >= 0.121.2
-scikit-learn >= 1.7.0
+scikit-learn == 1.7.0
 pandas >= 2.3.0
 psycopg2-binary >= 2.9.11
