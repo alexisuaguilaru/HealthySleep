@@ -12,6 +12,9 @@ x-common-marimo-analysis-prod: &analysis_prod
         - ./Datasets:/Analysis/Datasets
         - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
 
+    networks:
+        - traefik_proxy
+
 x-common-marimo-analysis-dev: &analysis_dev
     build:
         context: ./StatisticalAnalysis
@@ -46,9 +49,10 @@ services:
             - ./Database:/docker-entrypoint-initdb.d:ro
 
     statistical-analysis-dev:
+        profiles: ["dev"]
+
         container_name: statistical-analysis
         <<: *analysis_dev
-        profiles: ["dev"]
 
         ports:
             - "5050:8282"
@@ -56,9 +60,10 @@ services:
         command: marimo edit --no-token --host 0.0.0.0 -p 8282 StatisticalAnalysis/StatisticalAnalysis.py
 
     data-mining-dev:
+        profiles: ["dev"]
+
         container_name: data-mining
         <<: *analysis_dev
-        profiles: ["dev"]
 
         ports:
             - "5151:8181"
@@ -66,17 +71,15 @@ services:
         command: marimo edit --no-token --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
 
     statistical-analysis-prod:
+        profiles: ["prod"]
+
         container_name: statistical-analysis
         <<: *analysis_prod
-        profiles: ["prod"]
 
         ports:
             - "5050:8282"
         
         command: marimo run --host 0.0.0.0 -p 8282 StatisticalAnalysis/StatisticalAnalysis.py
-
-        networks:
-            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -96,17 +99,15 @@ services:
             - "traefik.http.middlewares.eda-stripprefix.stripprefix.prefixes=/StatisticalAnalysis"
 
     data-mining-prod:
+        profiles: ["prod"]
+
         container_name: data-mining
         <<: *analysis_prod
-        profiles: ["prod"]
 
         ports:
             - "5151:8181"
         
         command: marimo run --host 0.0.0.0 -p 8181 StatisticalAnalysis/DataMining.py
-
-        networks:
-            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -153,13 +154,35 @@ services:
             - "traefik.http.routers.api.tls.certresolver=cloudflare"
             - "traefik.http.services.api.loadbalancer.server.port=8080"
 
-    frontend:
+    frontend-dev:
+        profiles: ["dev"]
+
         container_name: frontend
         build:
             context: ./Frontend
             dockerfile: Dockerfile
             args:
-                VITE_API_URL: ${VITE_API_URL}
+                VITE_API_URL: "localhost:8000"
+                VITE_STATISTICAL_ANALYSIS_URL: "localhost:5050"
+                VITE_DATA_MINING_URL: "localhost:5151"
+        
+        ports:
+            - "8080:8080"
+            
+        depends_on:
+            - api
+    
+    frontend-prod:
+        profiles: ["prod"]
+
+        container_name: frontend
+        build:
+            context: ./Frontend
+            dockerfile: Dockerfile
+            args:
+                VITE_API_URL: "https://${API_URL}"
+                VITE_STATISTICAL_ANALYSIS_URL: "https://${STATISTICAL_ANALYSIS_URL}"
+                VITE_DATA_MINING_URL: "https://${DATA_MINING_URL}"
         
         ports:
             - "8080:8080"
@@ -167,8 +190,8 @@ services:
         depends_on:
             - api
 
-        # networks:
-            # - traefik_proxy
+        networks:
+            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
