@@ -12,7 +12,7 @@ app = FastAPI()
 origins = [
     'http://localhost',
     'http://localhost:8080',
-    'https://'+getenv('DOMAIN','project.com'),
+    getenv('DOMAIN','https://project.com'),
 ]
 app.add_middleware(
     CORSMiddleware,
