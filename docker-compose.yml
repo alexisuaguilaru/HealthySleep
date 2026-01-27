@@ -56,9 +56,9 @@ x-common-api: &api_service
     environment:
         DB_HOST: database
         DB_PORT: 5432
-        DB_NAME: ${POSTGRES_DB}
-        DB_USER: ${API_DB_USER}
-        DB_PASSWORD: ${API_DB_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
+        API_DB_USER: ${API_DB_USER}
+        API_DB_PASSWORD: ${API_DB_PASSWORD}
         DOMAIN: "https://${DOMAIN}"
 
     ports:

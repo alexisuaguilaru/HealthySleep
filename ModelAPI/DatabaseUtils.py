@@ -13,7 +13,7 @@ def GetDatabaseConnection() -> connection:
         user = getenv('API_DB_USER','api_user'),
         password = getenv('API_DB_PASSWORD','api_user_pass'),
         host = getenv('DB_HOST','localhost'),
-        port = 5432,
+        port = int(getenv('DB_PORT',5432)),
     )
 
     try:
