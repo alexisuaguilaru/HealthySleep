@@ -29,14 +29,31 @@ x-common-marimo-analysis-dev: &analysis_dev
         - ./Datasets:/Analysis/Datasets
         - ./StatisticalAnalysis:/Analysis/StatisticalAnalysis
 
+x-common-api: &api_service
+    container_name: api
+    build:
+        context: ./ModelAPI
+        dockerfile: Dockerfile
+
+    environment:
+        DB_HOST: database
+        DB_PORT: 5432
+        DB_NAME: ${POSTGRES_DB}
+        DB_USER: ${API_DB_USER}
+        DB_PASSWORD: ${API_DB_PASSWORD}
+        DOMAIN: ${DOMAIN}
+
+    ports:
+        - "8000:8000"
+        
+    depends_on:
+        - database
+
 x-common-frontend: &frontend_service
     container_name: frontend
 
     ports:
         - "8080:8080"
-
-    depends_on:
-        - api
 
 services:
     database:
@@ -133,28 +150,18 @@ services:
 
             - "traefik.http.middlewares.dm-stripprefix.stripprefix.prefixes=/DataMining"
 
-    api:
-        container_name: api
-        build:
-            context: ./ModelAPI
-            dockerfile: Dockerfile
+    api-dev:
+        profiles: ["dev"]
 
-        environment:
-            DB_HOST: database
-            DB_PORT: 5432
-            DB_NAME: ${POSTGRES_DB}
-            DB_USER: ${API_DB_USER}
-            DB_PASSWORD: ${API_DB_PASSWORD}
-            DOMAIN: ${DOMAIN}
+        <<: *api_service
+    
+    api-prod:
+        profiles: ["prod"]
 
-        ports:
-            - "8000:8000"
-        
-        depends_on:
-            - database
+        <<: *api_service
 
-        # networks:
-            # - traefik_proxy
+        networks:
+            - traefik_proxy
 
         labels:
             - "traefik.enable=true"
@@ -175,6 +182,9 @@ services:
                 VITE_API_URL: "http://localhost:8000/api"
                 VITE_STATISTICAL_ANALYSIS_URL: "http://localhost:5050"
                 VITE_DATA_MINING_URL: "http://localhost:5151"
+
+        depends_on:
+            - api-dev
     
     frontend-prod:
         profiles: ["prod"]
@@ -188,6 +198,9 @@ services:
                 VITE_API_URL: "https://${API_URL}"
                 VITE_STATISTICAL_ANALYSIS_URL: "https://${STATISTICAL_ANALYSIS_URL}"
                 VITE_DATA_MINING_URL: "https://${DATA_MINING_URL}"
+
+        depends_on:
+            - api-prod
 
         networks:
             - traefik_proxy
