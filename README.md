@@ -1,7 +1,7 @@
 # Healthy Sleep Analysis <!-- omit in toc -->
 
 ## Abstract <!-- omit in toc -->
-This project aims to perform a Statistical Analysis (EDA) and build a Machine Learning (ML) model to predict patient sleep quality based on their habits, quality of life, physical activity, and sleep disorders.
+This project aims to perform a Statistical Analysis (EDA) and build a Machine Learning (ML) model to predict patient sleep quality based on their habits, quality of life, physical activity, and sleep disorders. The project is deployed on [Healthy Sleep](https://healthy-sleep.alexisaguilar.me/).
 
 ## Table of Contents <!-- omit in toc -->
 - [About the Dataset](#about-the-dataset)
@@ -17,9 +17,8 @@ This project aims to perform a Statistical Analysis (EDA) and build a Machine Le
 - [Model API](#model-api)
 - [Frontend](#frontend)
 - [Installation and Usage](#installation-and-usage)
-  - [Statistical Analysis (EDA and Data Mining)](#statistical-analysis-eda-and-data-mining)
-  - [Machine Learning Models](#machine-learning-models-1)
-  - [Local Deployment](#local-deployment)
+  - [Development and Local Testing](#development-and-local-testing)
+  - [Deployment and Production Environment](#deployment-and-production-environment)
 - [References](#references)
 
 ## About the Dataset
@@ -120,49 +119,51 @@ Based on the results and their subsequent analysis performed in [ModelsTraining.
 ## Model API 
 A RESTful API was implemented using [FastAPI](https://fastapi.tiangolo.com/) to classify incoming patient requests. The API utilizes a POST method to process the patient features via the model developed in the [Machine Learning Models](#machine-learning-models) section. For long-term model evaluation, the patient features and their predicted classification are logged into a PostgreSQL database. 
 
-The main entrypoint for the API is the `POST /` endpoint, where the request body contains the patient features. The response includes the predicted level and name of the quality of sleep of the patient.
+The main entrypoint for the API is the `POST /api` endpoint, where the request body contains the patient features. The response includes the predicted level and name of the quality of sleep of the patient.
 
 ## Frontend
-A simple, minimalist frontend was developed using [Vue.js](https://vuejs.org/). It features a form designed to capture the input features of the patient and display the predicted level of sleep quality in an additional field.
+A simple, minimalist frontend was developed using [Vue.js](https://vuejs.org/) and deployed in [Interactive Frontend](https://healthy-sleep.alexisaguilar.me/). It features a form designed to capture the input features of the patient and display the predicted level of sleep quality in an additional field.
 
 ## Installation and Usage
-1. First it has to clone the repository and move to the project directory:
+This project was deployed following the procedures outlined in the [How To Deploy Your Project](https://github.com/alexisuaguilaru/HowToDeployYourProject) guide. The deploy utilizes [Hetzner](https://hetzner.com) for cloud hosting, with [Cloudflare](https://www.cloudflare.com) managing the domain and [Traefik](https://traefik.io/traefik) serving as the reverse proxy.
+
+1. Clone the repository and move to the project directory:
 ```bash
 git clone https://github.com/alexisuaguilaru/HealthySleep.git
 cd HealthySleep
 ```
 
-2. Preferably using a virtual environment of Python, install the libraries required for the project with:
-```bash 
-pip install -r requirements.txt
-```
-
-### Statistical Analysis (EDA and Data Mining)
-1. Run and view the Marimo notebooks with the following commands:
-```bash
-marimo run StatisticalAnalysis/StatisticalAnalysis.py
-marimo run StatisticalAnalysis/DataMining.py
-```
-
-### Machine Learning Models
-1. Open and run the Jupyter notebook with the following command:
-```bash
-jupyter notebook MachineLearning/ModelsTraining.ipynb
-```
-
-### Local Deployment 
-1. Copy the `.env_example` file to `.env`:
+### Development and Local Testing
+1. Copy the `.env_example` file to `.env` and change their values optionally:
 ```bash
 cp .env_example .env
 ```
-2. Build and start the Docker containers:
+
+2. Build and start the Docker network and containers:
 ```bash
-docker compose up -d --build
+docker network create traefik_proxy
+docker compose up --profile dev -d --build
 ```
-1. Access the frontend by navigating to:
+
+* Access the frontend by navigating to: http://localhost:8080/
+* Access the EDA by navigating to: http://localhost:5050/
+* Access the Data Mining by navigating to: http://localhost:5151/
+
+### Deployment and Production Environment
+1. Copy the `.env_example` file to `.env` and change their values (especially use your `DOMAIN` value):
 ```bash
-http://localhost:8080/
+cp .env_example .env
 ```
+
+1. Build and start the Docker network and containers:
+```bash
+docker network create traefik_proxy
+docker compose up --profile prod -d --build
+```
+
+* Access the frontend by navigating to: https://${DOMAIN}/
+* Access the EDA by navigating to: https://${DOMAIN}/StatisticalAnalysis
+* Access the Data Mining by navigating to: https://${DOMAIN}/DataMining
 
 ## References
 * [1] Orvile. (2024). *Health and Sleep Relation* [Dataset]. Kaggle. https://www.kaggle.com/datasets/orvile/health-and-sleep-relation-2024
