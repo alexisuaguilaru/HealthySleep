@@ -1,6 +1,6 @@
 x-common-database: &database_service
     container_name: database
-    image: postgres:16-alpine
+    image: postgres:16.10-alpine
 
     environment:
         POSTGRES_DB: ${POSTGRES_DB}
