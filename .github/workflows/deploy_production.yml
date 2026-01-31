@@ -23,7 +23,7 @@ jobs:
 
                 script: |
                   set +o history
-                  cd ${{ vars.PROJECT_PATH }}
+                  cd ${{ secrets.PROJECT_PATH }}
                   git pull
-                  docker compose --profile prod up -d > /dev/null 2>&1
+                  docker compose --profile prod up -d --build > /dev/null 2>&1
                   set -o history
