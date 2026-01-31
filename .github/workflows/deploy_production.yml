@@ -1,0 +1,27 @@
+name: Deploy Pipeline
+run-name: Deploy project to Hetzner
+
+on:
+    push:
+        branches: [ main ]
+
+jobs: 
+    deploy:
+        environment:
+            name: 'PRODUCTION'
+    
+        runs-on: ubuntu-slim
+        
+        steps:
+            - name: Connection to VPS via SSH
+              uses: appleboy/ssh-action@v1.2.5
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                username: ${{ secrets.SSH_USER }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                passphrase: ${{ secrets.SSH_PASSPHRASE }}
+
+                script: |
+                  cd ${{ vars.PROJECT_PATH }}
+                  git pull
+                  docker compose --profile prod up -d --build
