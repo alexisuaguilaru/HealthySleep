@@ -9,12 +9,12 @@ const DATA_MINING_URL = import.meta.env.VITE_DATA_MINING_URL || '"http://localho
     <div class="nav-links">
       <a :href="HOME_URL" target="_blank" title="Home Page">
         <i class="fa fa-home"></i> Home Page
-      </a>
-      |
+      </a> 
+      | 
       <a :href="STATISTICAL_ANALYSIS_URL" target="_blank" title="Statistical Analysis Notebook">
         <i class="fa fa-bar-chart"></i> Statistical Analysis
-      </a>
-      |
+      </a> 
+      | 
       <a :href="DATA_MINING_URL" target="_blank" title="Data Mining Notebook">
         <i class="fa fa-database"></i> Data Mining
       </a>

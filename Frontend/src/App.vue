@@ -1,6 +1,7 @@
 <script setup>
   import PatientForm from './components/PatientForm.vue'
   import NavBar from './components/NavBar.vue';
+  import FooterSection from './components/Footer.vue';
 </script>
 
 <template>
@@ -14,9 +15,7 @@
       <PatientForm />
     </main>
     
-    <footer>
-      &copy; 2025 Alexis Aguilar. <a href="https://github.com/alexisuaguilaru/HealthySleep" target="_blank">GitHub</a>
-    </footer>
+    <FooterSection />
   </div>
 
 </template>
@@ -50,20 +49,4 @@ main {
   background-color: #C9AFDB;
 }
 
-footer {
-  background-color: #E1D02A;
-  color: black;
-  padding: 1rem;
-  margin-top: auto; 
-  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-}
-
-footer a {
-  color: #7f20a8;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
 </style>
