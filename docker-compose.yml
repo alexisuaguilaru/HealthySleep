@@ -196,6 +196,7 @@ services:
             context: ./Frontend
             dockerfile: Dockerfile
             args:
+                VITE_DOMAIN_URL: "http://localhost:8080"
                 VITE_API_URL: "http://localhost:8000/api"
                 VITE_STATISTICAL_ANALYSIS_URL: "http://localhost:5050"
                 VITE_DATA_MINING_URL: "http://localhost:5151"
@@ -212,6 +213,7 @@ services:
             context: ./Frontend
             dockerfile: Dockerfile
             args:
+                VITE_DOMAIN_URL: "https://${DOMAIN}"
                 VITE_API_URL: "https://${API_URL}"
                 VITE_STATISTICAL_ANALYSIS_URL: "https://${STATISTICAL_ANALYSIS_URL}"
                 VITE_DATA_MINING_URL: "https://${DATA_MINING_URL}"

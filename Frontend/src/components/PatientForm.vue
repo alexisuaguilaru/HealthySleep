@@ -20,48 +20,47 @@ const isLoading = ref(false);
 const error = ref(null);
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-// console.log(API_URL);
 
 const submitForm = async () => {
-    isLoading.value = true;
-    error.value = null;
-    classificationResult.value = null;
+  isLoading.value = true;
+  error.value = null;
+  classificationResult.value = null;
 
-    const payload = {
-        Gender: Gender.value,
-        Age: Age.value,
-        Occupation: Occupation.value,
-        SleepDuration: SleepDuration.value,
-        PhysicalActivityLevel: PhysicalActivityLevel.value,
-        StressLevel: StressLevel.value,
-        BMICategory: BMICategory.value,
-        HeartRate: HeartRate.value,
-        DailySteps: DailySteps.value,
-        SleepDisorder: SleepDisorder.value,
-        BloodPressureSystolic: BloodPressureSystolic.value,
-        BloodPressureDiastolic: BloodPressureDiastolic.value,
-    };
+  const payload = {
+    Gender: Gender.value,
+    Age: Age.value,
+    Occupation: Occupation.value,
+    SleepDuration: SleepDuration.value,
+    PhysicalActivityLevel: PhysicalActivityLevel.value,
+    StressLevel: StressLevel.value,
+    BMICategory: BMICategory.value,
+    HeartRate: HeartRate.value,
+    DailySteps: DailySteps.value,
+    SleepDisorder: SleepDisorder.value,
+    BloodPressureSystolic: BloodPressureSystolic.value,
+    BloodPressureDiastolic: BloodPressureDiastolic.value,
+  };
 
-    try {
-        const response = await axios.post(API_URL, payload);
-        
-        classificationResult.value = response.data.NameQualitySleep;
-        // console.log(classificationResult.value);
-        
-    } catch (e) {
-        if (e.response && e.response.data && e.response.data.detail) {
-            error.value = e.response.data.detail[0].msg;
-        } else {
-            error.value = 'Connection error to API';
-        }
-    } finally {
-        isLoading.value = false;
+  try {
+    const response = await axios.post(API_URL, payload);
+      
+    classificationResult.value = response.data.NameQualitySleep;
+      
+  } catch (e) {
+    if (e.response && e.response.data && e.response.data.detail) {
+      error.value = e.response.data.detail[0].msg;
+    } else {
+      error.value = 'Connection error to API';
     }
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
 <template>
   <div class="form-container">
+    <h1>How Well Do You Sleep?</h1>
     <h2>Which Are Your Habits/Style Of Life?</h2>
     
     <form @submit.prevent="submitForm">
@@ -197,7 +196,7 @@ label {
   font-weight: bold;
   color: #5b2d79;
 }
-h2 {
+h1 , h2 {
   color: #B57EDC;
 }
 input , select {

@@ -1,19 +1,24 @@
 <script setup>
-    import PatientForm from './components/PatientForm.vue'
+  import PatientForm from './components/PatientForm.vue'
+  import NavBar from './components/NavBar.vue';
 </script>
 
 <template>
-    <div id="app-wrapper">
-        <header><h1>How Well Do You Sleep?</h1></header> 
+
+  <div id="app-wrapper">
+    <header>
+      <NavBar />
+    </header> 
     
     <main> 
-        <PatientForm />
+      <PatientForm />
     </main>
     
     <footer>
-        &copy; 2025 Alexis Aguilar. <a href="https://github.com/alexisuaguilaru/HealthySleep" target="_blank">GitHub</a>
+      &copy; 2025 Alexis Aguilar. <a href="https://github.com/alexisuaguilaru/HealthySleep" target="_blank">GitHub</a>
     </footer>
   </div>
+
 </template>
 
 <style scoped>
