@@ -183,12 +183,14 @@ const submitForm = async () => {
   background-color: white;
   border-radius: 8px;
 }
+
 .form-group {
   margin-bottom: 15px;
   align-items: center;
   display: flex;
   flex-direction: column;
 }
+
 label {
   display: block;
   width: 80%;
@@ -196,9 +198,17 @@ label {
   font-weight: bold;
   color: #5b2d79;
 }
-h1 , h2 {
+
+h1 {
+  font-size: 24px;
   color: #B57EDC;
 }
+
+h2 {
+  font-size: 20px;
+  color: #B57EDC;
+}
+
 input , select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -212,6 +222,7 @@ input , select {
   text-align: center;
   font-size: normal;
 }
+
 button {
   background-color: #B57EDC;
   color: black;
@@ -222,18 +233,22 @@ button {
   font-size: normal;
   font-weight: bold;
 }
+
 button:hover {
   background-color: #E1D02A;
 }
+
 .message {
   margin-top: 20px;
   padding: 10px;
   border-radius: 4px;
 }
+
 .error {
   background-color: #fdd;
   color: #c00;
 }
+
 .success {
   background-color: #dfd;
   color: #0c0;

@@ -23,24 +23,28 @@ const DATA_MINING_URL = import.meta.env.VITE_DATA_MINING_URL || '"http://localho
 </template>
 
 <style scoped>
+nav {
+  color: black;
+  padding: 0.5rem;
+}
+
 .nav-links {
   width: 100%;
-  margin-top: 50px;
-  padding: 20px 0;
-  border-top: 1px solid #e0e0e0;
+  padding: 10px 0;
   text-align: center;
-  color: #555;
-  font-size: 20px;
+  font-size: 26px;
+  color: white;
 }
+
 a {
-  color: #007bff;
+  color: white;
   text-decoration: none;
-  margin: 0 10px;
   transition: color 0.3s;
   font-weight: 600;
 }
+
 a:hover {
-  color: #0056b3;
+  color: #7f20a8;
   text-decoration: underline;
 }
 </style>
