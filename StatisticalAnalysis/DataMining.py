@@ -188,7 +188,7 @@ def _(
     )
 
     # _fig.savefig(f'../Resources/Clustering_ClusterPlots.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -239,7 +239,7 @@ def _(DatasetClustering):
     )
 
     # _fig.savefig(f'../Resources/Clustering_ScreePlotSingle.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -270,7 +270,7 @@ def _(DatasetClustering):
     )
 
     # _fig.savefig(f'../Resources/Clustering_ScreePlotComplete.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return (ClusteringAgglomerativeComplete,)
 
 
@@ -301,7 +301,7 @@ def _(DatasetClustering):
     )
 
     # _fig.savefig(f'../Resources/Clustering_ScreePlotAverage.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -313,7 +313,7 @@ def _():
 
 @app.cell
 def _(SleepDataset):
-    SleepDataset
+    mo.vstack([(SleepDataset)])
     return
 
 

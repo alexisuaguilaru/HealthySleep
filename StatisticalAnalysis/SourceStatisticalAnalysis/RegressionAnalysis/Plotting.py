@@ -29,7 +29,7 @@ def PlotObservedPredictedValues(
         Figure with the plot of observations vs. predictions
     """
 
-    Fig , Axes = CreatePlot()
+    Fig , Axes = CreatePlot(FigSize=(5,5))
 
     sns.scatterplot(
         x = ObservedValues,

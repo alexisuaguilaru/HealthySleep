@@ -286,10 +286,7 @@ def _():
 
 @app.cell
 def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
-    _fig , _axes = src.CreatePlot(
-        3,3,
-        (6,6)
-    )
+    _fig , _axes = src.CreatePlot(3,3,(6,6))
 
     for _ax , _feature in zip(_axes.ravel(),NumericalFeatures):
         KindPlotNumericalFeatures.value(
@@ -308,7 +305,7 @@ def _(KindPlotNumericalFeatures, NumericalFeatures, SleepDataset):
     src.SetFigureTitle(_fig,'Distribution of Numerical Features')
 
     # _fig.savefig(f'../Resources/UnivariatePlot_Numerical.jpg')
-    mo.vstack([KindPlotNumericalFeatures,_fig])
+    mo.vstack([KindPlotNumericalFeatures,_fig],heights=[1,1],align='center')
     return
 
 
@@ -378,10 +375,7 @@ def _(CategoricalFeatures, SleepDataset):
 
 @app.cell
 def _(CategoricalFeatures, SleepDataset):
-    _fig , _axes = src.CreatePlot(
-        2,2,
-        (6,6),
-    )
+    _fig , _axes = src.CreatePlot(2,2,(6,6),)
 
     for _ax , _feature in zip(_axes.ravel(),CategoricalFeatures):
         sns.countplot(
@@ -408,7 +402,7 @@ def _(CategoricalFeatures, SleepDataset):
     src.SetFigureTitle(_fig,'Distribution of Categorical Features')
 
     # _fig.savefig(f'../Resources/UnivariatePlot_Categorical.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -592,7 +586,9 @@ def _(
         [
             mo.hstack([NumericalFeatureOptions_NumCat,CategoricalFeatureOptions_NumCat]),
             _fig,
-        ]
+        ],
+        heights = [1,1],
+        align = 'center',
     )
     return
 
@@ -649,7 +645,9 @@ def _(
         [
             mo.hstack([NumericalFeatureOptions_1_NumNum,NumericalFeatureOptions_2_NumNum]),
             _fig,
-        ]
+        ],
+        heights = [1,1],
+        align = 'center',
     )
     return
 
@@ -765,7 +763,7 @@ def _(NumericalFeatures, SleepDataset):
     )
 
     # _fig.savefig(f'../Resources/PCA_ScreePlotEigen.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return PipelinePCA, SleepDatasetReducedPCA
 
 
@@ -865,7 +863,9 @@ def _(CategoricalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         [
             CategoricalFeatureOptions_PCA,
             _fig
-        ]
+        ],
+        heights = [1,1],
+        align = 'center',
     )
     return
 
@@ -923,7 +923,9 @@ def _(NumericalFeatureOptions_PCA, SleepDataset, SleepDatasetReducedPCA):
         [
             NumericalFeatureOptions_PCA,
             _fig
-        ]
+        ],
+        heights = [1,1],
+        align = 'center',
     )
     return
 
@@ -991,7 +993,7 @@ def _(RegressorVariables, SleepDataset, TargetVariable):
     _axes.collections[0].colorbar.ax.tick_params(labelsize=8)
 
     # _fig.savefig(f'../Resources/CorrelationMatrix.jpg',bbox_inches='tight')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1029,7 +1031,7 @@ def _(LinearModel, SleepDataset, TargetVariable):
     _fig = src.PlotObservedPredictedValues(SleepDataset[TargetVariable],LinearModel.fittedvalues,'Full')
 
     # _fig.savefig(f'../Resources/RegressionQuality_FullModel.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1100,7 +1102,7 @@ def _(BestLinearModel, SleepDataset, TargetVariable):
     _fig = src.PlotObservedPredictedValues(SleepDataset[TargetVariable],BestLinearModel.fittedvalues,'Best')
 
     # _fig.savefig(f'../Resources/RegressionQuality_BestModel.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1161,7 +1163,7 @@ def _(BestLinearModel):
     )
 
     # _fig.savefig(f'../Resources/Regression_NormalityResiduals')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1206,7 +1208,7 @@ def _(BestLinearModel, TargetVariable):
     )
 
     # _fig.savefig(f'../Resources/Regression_PredictedResiduals')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1305,7 +1307,7 @@ def _(SleepDataset_Processed):
     )
 
     # _fig.savefig(f'../Resources/FactorAnalysis_ScreePlot.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1365,7 +1367,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     _axes.tick_params(axis='x',rotation=90)
 
     # _fig.savefig(f'../Resources/FactorAnalysis_Communalities.jpg')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
@@ -1417,7 +1419,7 @@ def _(FactorAnalysisResults, SleepDataset_Processed):
     _axes.collections[0].colorbar.ax.tick_params(labelsize=8)
 
     # _fig.savefig(f'../Resources/FactorAnalysis_FactorLoadings.jpg',bbox_inches='tight')
-    _fig
+    mo.vstack([_fig],heights=[1],align='center')
     return
 
 
